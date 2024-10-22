@@ -1,1 +1,3 @@
-spring.application.name=burtry-demo
+spring:
+  application:
+    name: BurtryDemo
