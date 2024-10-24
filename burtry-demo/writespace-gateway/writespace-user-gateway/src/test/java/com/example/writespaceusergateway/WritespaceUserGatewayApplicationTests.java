@@ -1,10 +1,10 @@
-package icu.burtry.burtrydemo;
+package com.example.writespaceusergateway;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class BurtryDemoApplicationTests {
+class WritespaceUserGatewayApplicationTests {
 
     @Test
     void contextLoads() {
