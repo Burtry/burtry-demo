@@ -4,8 +4,9 @@
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>icu.burtry</groupId>
-		<artifactId>burtry-demo</artifactId>
+		<artifactId>writespace-gateway</artifactId>
 		<version>1.0.0-TESTDEMO</version>
+		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 
 	<artifactId>writespace-media-gateway</artifactId>

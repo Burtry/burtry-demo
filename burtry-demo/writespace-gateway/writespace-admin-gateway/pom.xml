@@ -4,10 +4,16 @@
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>icu.burtry</groupId>
-		<artifactId>burtry-demo</artifactId>
+		<artifactId>writespace-gateway</artifactId>
 		<version>1.0.0-TESTDEMO</version>
+		<relativePath/> <!-- lookup parent from repository -->
+
 	</parent>
 
 	<artifactId>writespace-admin-gateway</artifactId>
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	</properties>
 
 </project>

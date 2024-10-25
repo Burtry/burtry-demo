@@ -1,0 +1,18 @@
+spring:
+  application:
+    name: writespace-user
+
+
+  datasource:
+    url: jdbc:mysql://localhost:3306/mq?useSSL=false&serverTimezone=UTC
+    username: root
+    password: 123456
+    driver-class-name: com.mysql.jdbc.Driver
+
+
+#TODO 暂停依赖检查，待修改
+  cloud:
+    compatibility-verifier:
+      enabled: false
+server:
+  port: 8801
