@@ -6,16 +6,27 @@
         <groupId>icu.burtry</groupId>
         <artifactId>writespace-service</artifactId>
         <version>1.0.0-TESTDEMO</version>
-        <relativePath/> <!-- lookup parent from repository -->
     </parent>
 
     <artifactId>writespace-comment</artifactId>
 
-
-
     <properties>
+        <maven.compiler.source>8</maven.compiler.source>
+        <maven.compiler.target>8</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-mongodb</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>icu.burtry</groupId>
+            <artifactId>writespace-model</artifactId>
+        </dependency>
+    </dependencies>
 
 
 </project>

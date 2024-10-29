@@ -6,9 +6,14 @@
         <groupId>icu.burtry</groupId>
         <artifactId>burtry-demo</artifactId>
         <version>1.0.0-TESTDEMO</version>
+        <relativePath/>
     </parent>
 
     <artifactId>writespace-feign-api</artifactId>
+    <properties>
+        <maven.compiler.source>8</maven.compiler.source>
+        <maven.compiler.target>8</maven.compiler.target>
+    </properties>
 
 
     <dependencies>

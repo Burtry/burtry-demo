@@ -6,7 +6,10 @@
 		<groupId>icu.burtry</groupId>
 		<artifactId>burtry-demo</artifactId>
 		<version>1.0.0-TESTDEMO</version>
+		<relativePath/>
 	</parent>
+
+	<packaging>jar</packaging>
 
 	<artifactId>writespace-model</artifactId>
 
