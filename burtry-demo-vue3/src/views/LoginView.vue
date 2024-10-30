@@ -1,30 +1,38 @@
 <script setup>
-import { ref } from 'vue';
-import { useRouter } from "vue-router"
+import { onMounted, ref } from 'vue';
+import { useRouter } from "vue-router";
+
 const username = ref('');
 const password = ref('');
-
-const router = useRouter()
+const captcha = ref(''); // 添加验证码输入框的变量
+const captchaImage = ref('');
+const router = useRouter();
 
 const handLogin = () => {
     console.log('登录');
     console.log(username.value);
-    console.log(password.value)
+    console.log(password.value);
+    console.log(captcha.value); // 输出验证码
+    console.log(captchaImage.value);
 
-    //跳转到首页
-    router.push('/')
-
+    // 跳转到首页
+    router.push('/');
 };
-</script>
 
+const refreshCaptcha = () => {
+    // 重新获取验证码图片
+    captchaImage.value = 'http://localhost:8801/admin/code?time=' + new Date().getTime();
+};
+
+onMounted(() => { refreshCaptcha() })
+
+
+</script>
 
 <template>
     <div class="login-container">
-        <!-- logo -->
         <div class="logo"></div>
-        <!-- 系统名称 -->
         <div class="system-name">WriteSpace 后台管理系统</div>
-        <!-- 用户名和密码 -->
         <div class="form">
             <div class="input-group">
                 用 户 名:
@@ -34,8 +42,12 @@ const handLogin = () => {
                 密 &nbsp;&nbsp;&nbsp;&nbsp;码:
                 <el-input v-model="password" style="width: 240px" placeholder="请输入密码" show-password clearable />
             </div>
+            <div class="input-group">
+                验 证 码:
+                <el-input v-model="captcha" style="width: 140px" clearable />
+                <img :src="captchaImage" alt="验证码" style="width: 100px; height: 30px;" @click="refreshCaptcha" />
+            </div>
         </div>
-        <!-- 登录和注册按钮 -->
         <div class="buttons">
             <el-button type="primary" class="btn" @click="handLogin">登录</el-button>
             <el-button type="primary" class="btn">注册</el-button>
@@ -48,11 +60,8 @@ const handLogin = () => {
     display: flex;
     flex-direction: column;
     justify-content: center;
-    /* 水平居中 */
     align-items: center;
-    /* 垂直居中 */
     height: 100vh;
-    /* 让父容器占据整个视口高度 */
 }
 
 .logo {
@@ -63,7 +72,6 @@ const handLogin = () => {
     background-repeat: no-repeat;
     margin-bottom: 20px;
     margin-top: -200px;
-    /* 增加与系统名称的间距 */
 }
 
 .system-name {
@@ -71,7 +79,6 @@ const handLogin = () => {
     font-weight: bold;
     margin-bottom: 30px;
     margin-top: -100px;
-    /* 增加与表单的间距 */
 }
 
 .form {
@@ -90,7 +97,6 @@ const handLogin = () => {
 
 .btn {
     margin: 0 10px;
-    /* 给两个按钮之间设置水平间距 */
     width: 100px;
 }
 </style>
