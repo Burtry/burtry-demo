@@ -48,21 +48,34 @@ const handleSearch = () => {
 
 <template>
   <div>
-    <span>用户ID：</span>
-    <el-input v-model="keywordId" style="width: 200px; margin-right: 20px;" placeholder="请输入用户Id" />
-    <span>用户名：</span>
-    <el-input v-model="keywordName" style="width: 200px; margin-right: 20px;" placeholder="请输入用户名" />
-
-    <el-button type="primary" style="width: 100px; margin-left: 20px;" @click="handleSearch">查询</el-button>
+    <span>查 询：</span>
+    <el-input v-model="keywordId" style="width: 200px; " placeholder="请输入用户Id" />
+    <el-button type="primary" style="width: 100px;;" @click="handleSearch">查询</el-button>
+    <el-input v-model="keywordName" style="width: 200px; margin-left: 20px; " placeholder="请输入用户名" />
+    <el-button type="primary" style="width: 100px;" @click="handleSearch">查询</el-button>
   </div>
 
   <el-divider />
 
   <!-- 用户列表展示 -->
   <el-table :data="dataList" stripe style="width: 100%">
-    <el-table-column prop="date" label="Date" width="180" />
-    <el-table-column prop="name" label="Name" width="180" />
-    <el-table-column prop="address" label="Address" />
+    <el-table-column prop="id" label="用户ID" width="200" />
+    <el-table-column prop="name" label="用户名" width="180" />
+    <el-table-column prop="status" label="用户状态" width="180" />
+    <el-table-column prop="nick_name" label="用户昵称" width="180" />
+    <el-table-column prop="sex" label="性别" width="180" />
+    <el-table-column prop="phone" label="手机号" width="180" />
+    <el-table-column prop="email" label="邮箱" width="180" />
+
+    <el-table-column fixed="right" label="操作" min-width="150">
+      <template #default>
+        <el-button link type="primary" size="large" @click="handleClick">
+          查看
+        </el-button>
+        <el-button link type="primary" size="large">修改</el-button>
+      </template>
+    </el-table-column>
+
   </el-table>
 
 
@@ -71,3 +84,15 @@ const handleSearch = () => {
     layout="sizes, prev, pager, next, jumper,total, " :total="100" :page-sizes="[5, 10, 15, 20, 50, 100]"
     @size-change="OnSizeChange" @current-change="OnCurrentChange" class="page" />
 </template>
+
+
+<style lang="scss" scoped>
+.page {
+
+
+  margin-top: 40px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+</style>

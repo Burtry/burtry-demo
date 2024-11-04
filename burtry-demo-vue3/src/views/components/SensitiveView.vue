@@ -63,9 +63,16 @@ const addSensitive = () => {
 
   <!-- 敏感词列表展示 -->
   <el-table :data="dataList" stripe style="width: 100%">
-    <el-table-column prop="date" label="Date" width="180" />
-    <el-table-column prop="name" label="Name" width="180" />
-    <el-table-column prop="address" label="Address" />
+    <el-table-column prop="id" label="敏感词ID" width="300" />
+    <el-table-column prop="sensitive" label="敏感词" width="300" />
+    <el-table-column prop="createTime" label="创建时间" width="300" />
+    <el-table-column prop="updateTime" label="更新时间" width="300" />
+    <el-table-column fixed="right" label="操作" width="120">
+      <template #default>
+        <el-button link type="primary" size="large" @click="handleClick">修改</el-button>
+        <el-button link type="primary" size="large">删除</el-button>
+      </template>
+    </el-table-column>
   </el-table>
 
 
@@ -74,3 +81,13 @@ const addSensitive = () => {
     layout="sizes, prev, pager, next, jumper,total, " :total="100" :page-sizes="[5, 10, 15, 20, 50, 100]"
     @size-change="OnSizeChange" @current-change="OnCurrentChange" class="page" />
 </template>
+<style lang="scss" scoped>
+.page {
+
+
+  margin-top: 40px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+</style>
