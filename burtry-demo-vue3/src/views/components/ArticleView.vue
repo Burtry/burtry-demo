@@ -161,6 +161,7 @@ const OnSizeChange = (pageSize) => {
 
   <el-table :data="dataList" stripe style="width: 100%">
     <el-table-column prop="articleID" label="文章ID" width="200" />
+    <el-table-column prop="status" label="文章状态" width="100" />
     <el-table-column prop="likes" label="点赞数" width="100" />
     <el-table-column prop="views" label="浏览数" width="100" />
     <el-table-column prop="collections" label="收藏数" width="100" />

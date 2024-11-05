@@ -49,10 +49,9 @@ const handleSearch = () => {
 <template>
   <div>
     <span>查 询：</span>
-    <el-input v-model="keywordId" style="width: 200px; " placeholder="请输入用户Id" />
+    <el-input v-model="keywordId" style="width: 200px; " placeholder="请输入用户Id或用户名" />
     <el-button type="primary" style="width: 100px;;" @click="handleSearch">查询</el-button>
-    <el-input v-model="keywordName" style="width: 200px; margin-left: 20px; " placeholder="请输入用户名" />
-    <el-button type="primary" style="width: 100px;" @click="handleSearch">查询</el-button>
+
   </div>
 
   <el-divider />
