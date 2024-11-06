@@ -107,7 +107,7 @@ onMounted(() => { refreshCaptcha() })
 
 // 添加背景图片
 .login-container {
-  background-image: url('@/assets/bg.png');
+  // background-image: url('@/assets/login_bg.png');
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
