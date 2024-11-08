@@ -1,4 +1,4 @@
-class MyButtonMenu1 {                       // JS 语法
+class MyButtonMenu1 {
   constructor() {
     this.title = '暂存草稿' // 自定义菜单标题
     this.tag = 'button'

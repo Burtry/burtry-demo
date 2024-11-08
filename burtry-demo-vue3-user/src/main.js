@@ -4,9 +4,9 @@ import { createPinia } from 'pinia'
 import ElementPlus from 'element-plus'
 import zhCn from 'element-plus/es/locale/lang/zh-cn'
 import './styles/common.scss'
-import MyButtonMenu1 from "@/class/menu1";
-import MyButtonMenu2 from "@/class/menu2";
-import MyButtonMenu3 from "@/class/menu3";
+import MyButtonMenu1 from "@/menu/menu1";
+import MyButtonMenu2 from "@/menu/menu2";
+import MyButtonMenu3 from "@/menu/menu3";
 import { Boot } from '@wangeditor/editor'
 
 

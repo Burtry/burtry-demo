@@ -16,7 +16,7 @@ const router = createRouter({
         },
         // 个人中心
         {
-          path: 'user',
+          path: '/user/:id',
           name: 'user',
           component: () => import("@/views/UserView.vue")
         },
