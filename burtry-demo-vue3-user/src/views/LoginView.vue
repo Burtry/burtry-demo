@@ -52,6 +52,12 @@ onMounted(() => { refreshCaptcha() })
       <el-button type="primary" class="btn" @click="handLogin">登录</el-button>
       <el-button type="primary" class="btn" @click="handLogin">注册</el-button>
     </div>
+
+    <!-- 游客模式进入 -->
+    <div class="buttons">
+      <el-button class="btn" text @click="handLogin">游客模式进入>>></el-button>
+    </div>
+
   </div>
 
   <div class="icp">

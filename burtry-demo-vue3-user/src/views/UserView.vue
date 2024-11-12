@@ -98,6 +98,24 @@ const userInfo = ref({
         <el-descriptions-item label="地址">{{ userInfo.address }}</el-descriptions-item>
       </el-descriptions>
 
+      <div class="overview">
+        <!-- 数据总览 -->
+        <el-row>
+          <el-col :span="6">
+            <el-statistic title="文章总点赞量" :value="111" class="over-item" />
+          </el-col>
+          <el-col :span="6">
+            <el-statistic title="文章总收藏量" :value="222" class="over-item" />
+          </el-col>
+          <el-col :span="6">
+            <el-statistic title="文章总评论量" :value="333" class="over-item" />
+          </el-col>
+          <el-col :span="6">
+            <el-statistic title="文章总阅读量" :value="444" class="over-item" />
+          </el-col>
+        </el-row>
+      </div>
+
       <div class="article-info">
         <h3 style="margin-bottom: 20px;">用户发表文章</h3>
         <ArticleView :articles="articles" />
@@ -134,5 +152,20 @@ const userInfo = ref({
   background-color: rgba(255, 255, 255, 0.8);
   padding: 20px;
   border-radius: 8px;
+}
+
+.overview {
+  margin-top: 20px;
+  background-color: rgba(255, 255, 255, 0.8);
+  padding: 20px;
+  border-radius: 8px;
+  // 居中
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.over-item {
+  margin: 0 50px;
 }
 </style>

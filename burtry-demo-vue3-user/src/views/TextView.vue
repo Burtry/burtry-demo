@@ -3,6 +3,7 @@ import '@wangeditor/editor/dist/css/style.css'
 
 import { onBeforeUnmount, ref, shallowRef, onMounted } from 'vue'
 import { Editor, Toolbar } from '@wangeditor/editor-for-vue'
+import { UploadFilled } from '@element-plus/icons-vue'
 // 编辑器实例
 const editorRef = shallowRef()
 const valueHtml = ref('<p>hello</p>')
@@ -40,6 +41,15 @@ onBeforeUnmount(() => {
 const handleCreated = (editor) => {
   editorRef.value = editor
 }
+
+const fileList = ref([
+  {
+    name: 'food.jpeg',
+    url: 'https://fuss10.elemecdn.com/3/63/4e7f3a15429bfda99bce42a18cdd1jpeg.jpeg?imageMogr2/thumbnail/360x360/format/webp/quality/100',
+  },
+]);
+
+
 </script>
 
 
@@ -48,12 +58,22 @@ const handleCreated = (editor) => {
     <div class="tencent-docs-editor">
       <!-- Toolbar -->
       <Toolbar class="tencent-docs-toolbar" :editor="editorRef" :defaultConfig="toolbarConfig" :mode="mode" />
-
       <input v-model="title" class="title-input" placeholder="请输入标题" type="text" />
       <!-- Editor -->
       <Editor class="tencent-docs-editor-content" v-model="valueHtml" :defaultConfig="editorConfig" :mode="mode"
         style="height: 600px; overflow-y: hidden;" @onCreated="handleCreated" />
+      <!-- 封面图片 -->
+      <el-upload class="upload-demo" drag action="https://run.mocky.io/v3/9d059bf9-4660-45f2-925d-ce80ad6c4d15"
+        multiple>
+        <el-icon class="el-icon--upload"><upload-filled /></el-icon>
+        <div class="el-upload__text">
+          上传封面<em>点击上传</em>
+          <p style="font-size: 10px;">文件大小小于500kb</p>
+        </div>
+      </el-upload>
     </div>
+
+
   </div>
 
   <div class="icp">
@@ -63,11 +83,15 @@ const handleCreated = (editor) => {
 </template>
 
 <style lang="scss" scoped>
+.upload-demo {
+  margin-bottom: 80px;
+}
+
 .tencent-docs-editor {
   border: 1px solid #dfe1e5;
   border-radius: 8px;
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
-  max-width: 800px;
+  max-width: 900px;
   margin: 0 auto;
 }
 
@@ -88,7 +112,7 @@ const handleCreated = (editor) => {
 }
 
 .background-image {
-  height: 100vh;
+  height: 100%;
   background-image: url('@/assets/bg.png');
   background-size: cover;
   background-position: center;

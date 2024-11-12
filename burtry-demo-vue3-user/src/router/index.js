@@ -21,6 +21,11 @@ const router = createRouter({
           component: () => import("@/views/UserView.vue")
         },
         {
+          path: 'article/:id',
+          name: 'article',
+          component: () => import("../views/article/DetailArticleView.vue")
+        },
+        {
           path: 'text',
           name: 'text',
           component: () => import("../views/TextView.vue")
@@ -35,7 +40,7 @@ const router = createRouter({
     {
       path: '/:pathMatch(.*)*',
       name: 'NotFound',
-      component: () => import("@/views/NotFoundView.vue")
+      component: () => import("@/components/NotFoundView.vue")
     }
 
 
