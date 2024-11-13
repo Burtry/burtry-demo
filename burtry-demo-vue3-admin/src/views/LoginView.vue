@@ -1,6 +1,14 @@
 <script setup>
 import { onMounted, ref } from 'vue';
 import { useRouter } from "vue-router";
+import { getStringAPI, getCodeAPI } from "@/api/user";
+
+const getString = () => {
+  getStringAPI().then(res => {
+    console.log(res);
+  })
+}
+getString()
 
 const username = ref('');
 const password = ref('');
@@ -20,8 +28,12 @@ const handLogin = () => {
 };
 
 const refreshCaptcha = () => {
-  // 重新获取验证码图片
-  captchaImage.value = 'http://localhost:8801/admin/code?time=' + new Date().getTime();
+  getCodeAPI().then(res => {
+    // 创建一个URL对象，将 Blob 数据转为图片URL
+    captchaImage.value = URL.createObjectURL(res.data);
+  }).catch(err => {
+    console.error("验证码获取失败:", err);
+  });
 };
 
 onMounted(() => { refreshCaptcha() })

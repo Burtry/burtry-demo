@@ -13,7 +13,6 @@
 
 	<modules>
 		<module>writespace-admin-gateway</module>
-		<module>writespace-media-gateway</module>
 		<module>writespace-user-gateway</module>
 	</modules>
 

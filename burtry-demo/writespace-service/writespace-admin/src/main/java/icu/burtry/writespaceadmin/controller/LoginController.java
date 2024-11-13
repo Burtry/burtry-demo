@@ -15,7 +15,7 @@ import java.io.IOException;
 
 
 @RestController
-@RequestMapping("/admin")
+@RequestMapping("/api/v1")
 @Slf4j
 public class LoginController {
 
@@ -40,5 +40,10 @@ public class LoginController {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @GetMapping("/get")
+    public String string() {
+        return "Hello";
     }
 }
