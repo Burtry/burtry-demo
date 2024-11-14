@@ -2,9 +2,7 @@ package icu.burtry.writespaceadmin.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.RandomUtil;
-import cn.hutool.core.util.StrUtil;
 import cn.hutool.crypto.digest.MD5;
-import cn.hutool.extra.tokenizer.TokenizerUtil;
 import cn.hutool.jwt.JWTUtil;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -17,6 +15,7 @@ import icu.burtry.writespacemodel.vo.AdminVO;
 import icu.burtry.writespaceutils.constant.SecretConstant;
 import icu.burtry.writespaceutils.constant.StatusConstant;
 import icu.burtry.writespaceutils.result.Result;
+import icu.burtry.writespaceutils.utils.JwtUtil;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -89,10 +88,7 @@ public class LoginServiceImpl extends ServiceImpl<LoginMapper, Admin> implements
         }
 
         //生成token
-        Map<String, Object> payload = new HashMap<>();
-        payload.put("adminId",admin.getId());
-        payload.put("adminName",admin.getName());
-        String token = JWTUtil.createToken(payload, SecretConstant.SECRET.getBytes());
+        String token = JwtUtil.getToken(admin.getId(),"admin");
 
         AdminVO adminVO = new AdminVO();
         BeanUtils.copyProperties(admin,adminVO);
