@@ -11,10 +11,6 @@
 	<artifactId>writespace-gateway</artifactId>
 	<packaging>pom</packaging>
 
-	<modules>
-
-
-	</modules>
 
 	<properties>
 		<maven.compiler.source>8</maven.compiler.source>

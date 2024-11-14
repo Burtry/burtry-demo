@@ -1,7 +1,8 @@
 package icu.burtry.writespaceuser.interceptor;
 
-import icu.burtry.writespacemodel.entity.Admin;
+import icu.burtry.writespacemodel.entity.User;
 import icu.burtry.writespaceutils.thread.AdminThreadLocalUtil;
+import icu.burtry.writespaceutils.thread.UserThreadLocalUtil;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -14,12 +15,12 @@ public class UserTokenInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
 
-        String adminId = request.getHeader("userId");
+        String userId = request.getHeader("userId");
 
-        if (adminId != null) {
-            Admin admin = new Admin();
-            admin.setId(Long.valueOf(adminId));
-            AdminThreadLocalUtil.setAdminThreadLocal(admin);
+        if (userId != null) {
+            User user = new User();
+            user.setId(Long.valueOf(userId));
+            UserThreadLocalUtil.setAdminThreadLocal(user);
 
         }
         return true;

@@ -27,6 +27,9 @@ public class AuthorizeFilter implements GlobalFilter {
         if (request.getURI().getPath().contains("/code")) {
             return chain.filter(exchange);
         }
+        if (request.getURI().getPath().contains("/get")) {
+            return chain.filter(exchange);
+        }
 
         String token = request.getHeaders().getFirst("token");
 
