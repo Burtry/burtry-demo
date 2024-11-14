@@ -1,6 +1,6 @@
-package com.example.writespaceadmingateway.filter;
+package icu.burtry.writespaceadmingateway.filter;
 
-import com.example.writespaceadmingateway.utils.JwtUtil;
+import icu.burtry.writespaceadmingateway.utils.JwtUtil;
 import io.jsonwebtoken.Claims;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;

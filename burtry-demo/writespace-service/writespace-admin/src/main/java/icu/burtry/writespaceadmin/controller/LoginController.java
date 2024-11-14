@@ -6,9 +6,7 @@ import cn.hutool.captcha.generator.RandomGenerator;
 import icu.burtry.writespaceadmin.service.ILoginService;
 import icu.burtry.writespacemodel.dto.AdminLoginDTO;
 import icu.burtry.writespacemodel.dto.AdminRegisterDTO;
-import icu.burtry.writespacemodel.dto.UserLoginDTO;
-import icu.burtry.writespacemodel.dto.UserRegisterDTO;
-import icu.burtry.writespacemodel.vo.AdminVO;
+
 import icu.burtry.writespaceutils.result.Result;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +14,6 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
 
-import java.awt.image.BufferedImage;
 import java.io.IOException;
 
 
@@ -62,6 +59,11 @@ public class LoginController {
     public Result register(@RequestBody AdminRegisterDTO adminRegisterDTO) {
         log.info("管理员注册:{}",adminRegisterDTO);
         return loginService.register(adminRegisterDTO);
+    }
+
+    @GetMapping("/get")
+    public Result getString() {
+        return Result.success("Hello", "获取成功");
     }
 }
 

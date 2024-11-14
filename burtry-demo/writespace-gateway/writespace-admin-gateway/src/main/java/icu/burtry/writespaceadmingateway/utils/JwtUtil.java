@@ -1,4 +1,4 @@
-package com.example.writespaceadmingateway.utils;
+package icu.burtry.writespaceadmingateway.utils;
 
 import io.jsonwebtoken.*;
 
@@ -40,9 +40,9 @@ public class JwtUtil {
      * @return
      */
     private static Jws<Claims> getJws(String token) {
-            return Jwts.parser()
-                    .setSigningKey(generalKey())
-                    .parseClaimsJws(token);
+        return Jwts.parser()
+                .setSigningKey(generalKey())
+                .parseClaimsJws(token);
     }
 
     /**
