@@ -21,7 +21,6 @@ public class AdminTokenInterceptor implements HandlerInterceptor {
             Admin admin = new Admin();
             admin.setId(Long.valueOf(adminId));
             AdminThreadLocalUtil.setAdminThreadLocal(admin);
-
         }
         return true;
 

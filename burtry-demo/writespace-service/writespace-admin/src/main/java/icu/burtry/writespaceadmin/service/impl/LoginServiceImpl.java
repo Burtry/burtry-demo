@@ -3,7 +3,7 @@ package icu.burtry.writespaceadmin.service.impl;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.RandomUtil;
 import cn.hutool.crypto.digest.MD5;
-import cn.hutool.jwt.JWTUtil;
+
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import icu.burtry.writespaceadmin.mapper.LoginMapper;
@@ -12,19 +12,17 @@ import icu.burtry.writespacemodel.dto.AdminLoginDTO;
 import icu.burtry.writespacemodel.dto.AdminRegisterDTO;
 import icu.burtry.writespacemodel.entity.Admin;
 import icu.burtry.writespacemodel.vo.AdminVO;
-import icu.burtry.writespaceutils.constant.SecretConstant;
 import icu.burtry.writespaceutils.constant.StatusConstant;
 import icu.burtry.writespaceutils.result.Result;
 import icu.burtry.writespaceutils.utils.JwtUtil;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.Map;
 
 @Service
 @Transactional
@@ -32,6 +30,9 @@ public class LoginServiceImpl extends ServiceImpl<LoginMapper, Admin> implements
 
     @Autowired
     private LoginMapper loginMapper;
+    
+    @Autowired
+    private RedisTemplate<String,String> redisTemplate;
 
     @Override
     public Result register(AdminRegisterDTO adminRegisterDTO) {
@@ -66,7 +67,17 @@ public class LoginServiceImpl extends ServiceImpl<LoginMapper, Admin> implements
     @Override
     public Result login(AdminLoginDTO adminLoginDTO) {
         if (StringUtils.isBlank(adminLoginDTO.getUsername()) || StringUtils.isBlank(adminLoginDTO.getPassword())) {
-            return Result.error("用户名或密码为空");
+            return Result.error("输入信息有误");
+        }
+        
+        //验证验证码
+        String code = redisTemplate.opsForValue().get(adminLoginDTO.getUsername());
+
+        if (code == null) {
+            return Result.error("输入信息有误");
+        }
+        if (!(code.equals(adminLoginDTO.getCaptcha()))) {
+            return Result.error("验证码错误");
         }
 
         //根据用户名查询用户
@@ -84,7 +95,7 @@ public class LoginServiceImpl extends ServiceImpl<LoginMapper, Admin> implements
         String password = MD5.create().digestHex(adminLoginDTO.getPassword() + admin.getSalt());
 
         if (!password.equals(admin.getPassword())) {
-            return Result.error("密码错误");
+            return Result.error("输入信息有误");
         }
 
         //生成token

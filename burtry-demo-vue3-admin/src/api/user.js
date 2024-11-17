@@ -1,10 +1,13 @@
 import instance from "@/utils/http";
 
-export const getCodeAPI = () => {
+export const getCodeAPI = (username) => {
   return instance({
     url: 'api/v1/code',
     method: 'get',
-    responseType: 'blob'
+    responseType: 'blob',
+    params: {
+      username
+    }
   });
 };
 
@@ -14,3 +17,11 @@ export const getStringAPI = () => {
     method: 'get'
   });
 };
+
+export const loginAPI = (params) => {
+  return instance({
+    url: 'api/v1/login',
+    method: 'get',
+    params: params
+  });
+}

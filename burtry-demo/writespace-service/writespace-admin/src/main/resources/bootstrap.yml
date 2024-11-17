@@ -12,7 +12,6 @@ spring:
         file-extension: yml
 
 
-
 knife4j:
   enable: true
   openapi:

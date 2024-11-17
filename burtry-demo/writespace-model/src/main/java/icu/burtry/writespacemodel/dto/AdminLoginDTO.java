@@ -8,4 +8,6 @@ public class AdminLoginDTO {
     private String username;
 
     private String password;
+
+    private String captcha;
 }

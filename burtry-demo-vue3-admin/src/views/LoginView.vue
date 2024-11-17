@@ -1,34 +1,68 @@
 <script setup>
-import { onMounted, ref } from 'vue';
+import { ref } from 'vue';
 import { useRouter } from "vue-router";
-import { getStringAPI, getCodeAPI } from "@/api/user";
+import { getCodeAPI, loginAPI } from "@/api/user";
+import { ElMessage } from 'element-plus';
 
-const getString = () => {
-  getStringAPI().then(res => {
-    console.log(res);
-  })
-}
-getString()
+import { useUserStore } from "@/stores/user";
+
+const userStore = useUserStore();
+
 
 const username = ref('');
 const password = ref('');
-const captcha = ref(''); // 添加验证码输入框的变量
+const captcha = ref('');
 const captchaImage = ref('');
 const router = useRouter();
 
-const handLogin = () => {
-  console.log('登录');
-  console.log(username.value);
-  console.log(password.value);
-  console.log(captcha.value); // 输出验证码
-  console.log(captchaImage.value);
+const handLogin = async () => {
 
-  // 跳转到首页
-  router.push('/');
+  const params = {
+    username: username.value,
+    password: password.value,
+    captcha: captcha.value
+  }
+
+  if (!params.username || !params.password || !params.captcha) {
+    ElMessage.warning("请输入完整信息");
+    return;
+  }
+
+  await loginAPI(params).then(res => {
+
+    if (res.code === 0) {
+      // 登录失败
+      if (res.msg === "验证码错误") {
+        ElMessage.error("验证码错误")
+        getCaptcha(username.value)
+        return;
+      }
+      ElMessage.error(res.msg);
+      return;
+    }
+    userStore.userInfo = res.data;
+    console.log(userStore.userInfo);
+    // 跳转到首页
+    router.push('/');
+    ElMessage.success("登录成功");
+  }).catch(err => {
+    console.error("登录失败:", err);
+  })
 };
 
-const refreshCaptcha = () => {
-  getCodeAPI().then(res => {
+const visible = ref(false);
+
+const getCaptcha = (username) => {
+  if (username === "") {
+    ElMessage.warning("请先输入用户名");
+    return;
+  }
+  visible.value = true;
+  refreshCaptcha(username);
+};
+
+const refreshCaptcha = (username) => {
+  getCodeAPI(username).then(res => {
     // 创建一个URL对象，将 Blob 数据转为图片URL
     captchaImage.value = URL.createObjectURL(res.data);
   }).catch(err => {
@@ -36,7 +70,6 @@ const refreshCaptcha = () => {
   });
 };
 
-onMounted(() => { refreshCaptcha() })
 
 
 </script>
@@ -53,12 +86,16 @@ onMounted(() => { refreshCaptcha() })
       <div class="input-group">
         密 &nbsp;&nbsp;&nbsp;&nbsp;码:
         <el-input v-model="password" style="width: 240px" placeholder="请输入密码" show-password clearable />
+        <!-- 点击获取验证码 -->
       </div>
       <div class="input-group">
         验 证 码:
         <el-input v-model="captcha" style="width: 140px" clearable />
-        <img :src="captchaImage" alt="验证码" style="width: 100px; height: 30px;" @click="refreshCaptcha" />
+        <img :src="captchaImage" alt="验证码" style="width: 100px; height: 30px;" @click="refreshCaptcha(username)"
+          v-if="visible" />
+        <a @click="getCaptcha(username)" v-else class="active">点击获取验证码</a>
       </div>
+      <!-- 点击获取验证码 -->
     </div>
     <div class="buttons">
       <el-button type="primary" class="btn" @click="handLogin">登录</el-button>
@@ -113,7 +150,7 @@ onMounted(() => { refreshCaptcha() })
 
 .btn {
   margin: 0 5px;
-  width: 100px;
+  width: 200px;
 }
 
 // 添加背景图片
@@ -135,5 +172,15 @@ onMounted(() => { refreshCaptcha() })
   margin: 10px;
   font-size: small;
   color: gray;
+}
+
+.active {
+  font-size: 12px;
+  margin-left: 10px;
+
+  &:hover {
+    color: #409eff;
+    cursor: pointer;
+  }
 }
 </style>
