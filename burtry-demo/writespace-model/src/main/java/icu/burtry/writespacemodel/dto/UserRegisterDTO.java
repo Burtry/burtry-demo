@@ -11,6 +11,9 @@ public class UserRegisterDTO {
     //密码
     private String password;
 
+    //确认密码
+    private String confirmPassword;
+
     //性别
     private Integer sex;
 
@@ -25,5 +28,8 @@ public class UserRegisterDTO {
 
     //地址
     private String address;
+
+    //验证码
+    private String captcha;
 }
 
