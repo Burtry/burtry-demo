@@ -6,12 +6,16 @@ import cn.hutool.crypto.digest.MD5;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import icu.burtry.writespacemodel.dto.UserLoginDTO;
 import icu.burtry.writespacemodel.dto.UserRegisterDTO;
 import icu.burtry.writespacemodel.entity.User;
+import icu.burtry.writespacemodel.vo.UserVO;
 import icu.burtry.writespaceuser.mapper.LoginMapper;
 import icu.burtry.writespaceuser.service.LoginService;
 import icu.burtry.writespaceutils.constant.StatusConstant;
+import icu.burtry.writespaceutils.constant.VisitorConstant;
 import icu.burtry.writespaceutils.result.Result;
+import icu.burtry.writespaceutils.utils.JwtUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -78,6 +82,54 @@ public class LoginServiceImpl extends ServiceImpl<LoginMapper, User> implements 
         save(newuser);
 
         return Result.success("注册成功");
+    }
+
+    @Override
+    public Result<UserVO> login(UserLoginDTO userLoginDTO) {
+        if (userLoginDTO.getUsername().equals(VisitorConstant.VISITOR)) {
+            //生成token
+            String token = JwtUtil.getToken(0L, "user");
+            UserVO userVO = new UserVO();
+            userVO.setId(0L);
+            userVO.setToken(token);
+            return Result.success(userVO,"游客进入");
+        }
+        if(userLoginDTO.getPassword() == null) {
+            return Result.error("登录信息不完整");
+        }
+
+
+        //判断验证码是否正确
+        String captcha = redisTemplate.opsForValue().get("user_" + userLoginDTO.getUsername() + "_code");
+        if (captcha == null) {
+            return Result.error("请重新输入验证码");
+        }
+        if (!captcha.equals(userLoginDTO.getCaptcha())) {
+            return Result.error("验证码错误");
+        }
+
+        User user = getOne(Wrappers.<User>lambdaQuery().eq(User::getName, userLoginDTO.getUsername()));
+        if (user == null) {
+            return Result.error("用户不存在");
+        }
+
+    //    判断密码是否正确
+        String salt = user.getSalt();
+        String password = MD5.create().digestHex(userLoginDTO.getPassword() + salt);
+
+        if (!password.equals(user.getPassword())) {
+            return Result.error("密码错误");
+        }
+
+        //生成token
+        String token = JwtUtil.getToken(user.getId(), "user");
+
+        UserVO userVO = new UserVO();
+        BeanUtils.copyProperties(user,userVO);
+        userVO.setToken(token);
+
+        return Result.success(userVO,"登录成功!");
+
     }
 }
 

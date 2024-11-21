@@ -3,7 +3,9 @@ package icu.burtry.writespaceuser.controller;
 import cn.hutool.captcha.CaptchaUtil;
 import cn.hutool.captcha.LineCaptcha;
 import cn.hutool.captcha.generator.RandomGenerator;
+import icu.burtry.writespacemodel.dto.UserLoginDTO;
 import icu.burtry.writespacemodel.dto.UserRegisterDTO;
+import icu.burtry.writespacemodel.vo.UserVO;
 import icu.burtry.writespaceuser.service.LoginService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,14 +38,13 @@ public class LoginController {
         try {
             lineCaptcha.setGenerator(randomGenerator);
 
-            //TODO 将验证码存入Redis中方便验证
             redisTemplate.opsForValue().set("user_" + username + "_code",lineCaptcha.getCode(),120, TimeUnit.SECONDS);
 
             // 设置响应类型为图片
             response.setContentType("image/png");
             lineCaptcha.write(response.getOutputStream());
 
-            log.info("生成的验证码为:{}",lineCaptcha.getCode());
+            log.info("用户名为:" + username + "生成的验证码为:{}",lineCaptcha.getCode());
 
             response.getOutputStream().close();
         } catch (IOException e) {
@@ -60,6 +61,12 @@ public class LoginController {
     @GetMapping("/get")
     public Result get() {
         return Result.success("Hello-user", "获取成功");
+    }
+
+    @GetMapping("/login")
+    public Result<UserVO> login(UserLoginDTO userLoginDTO) {
+        log.info("用户登录{}",userLoginDTO.getUsername());
+        return loginService.login(userLoginDTO);
     }
 
 }

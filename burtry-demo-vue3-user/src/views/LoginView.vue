@@ -1,7 +1,7 @@
 <script setup>
 import { ref } from 'vue';
 import { useRouter } from "vue-router";
-import { getCodeAPI, registerAPI } from "@/api/user";
+import { getCodeAPI, loginAPI, registerAPI } from "@/api/user";
 import { ElMessage } from 'element-plus';
 
 import { useUserStore } from "@/stores/user";
@@ -14,11 +14,59 @@ const captchaImage = ref('');
 const router = useRouter();
 
 const registerVisible = ref(false);
+const dialogVisible = ref(false);
+
+const beforeHandLogin = () => {
+  if (username.value === '' || password.value === '') {
+    ElMessage.error("请输入用户名和密码")
+    return
+  }
+  dialogVisible.value = true
+  getCaptcha(username.value)
+
+
+}
 
 const handLogin = () => {
-  // 跳转到首页
-  router.push('/');
+  if (captcha.value === '') {
+    ElMessage.error("请输入验证码")
+    return
+  }
+  //TODO 调用登录接口
+  const data = {
+    username: username.value,
+    password: password.value,
+    captcha: captcha.value
+  }
+  loginAPI(data).then(res => {
+    if (res.code === 0) {
+      ElMessage.error(res.msg)
+    }
+    else {
+      if (res.msg === "验证码错误") {
+        getCaptcha(username.value)
+      }
+      ElMessage.success("登录成功")
+      userStore.userInfo = res.data;
+      router.push('/');
+    }
+  })
 };
+
+const visitorLogin = () => {
+  const data = {
+    username: "visitor"
+  }
+  loginAPI(data).then(res => {
+    if (res === 0) {
+      ElMessage.error(res.msg)
+      return
+    } else {
+      userStore.userInfo = res.data;
+      router.push('/');
+    }
+  })
+}
 
 const registerForm = ref({
   name: '',
@@ -145,22 +193,15 @@ const refreshCaptcha = (username) => {
         密 &nbsp;&nbsp;&nbsp;&nbsp;码:
         <el-input v-model="password" style="width: 240px" placeholder="请输入密码" show-password clearable />
       </div>
-      <div class="input-group">
-        验 证 码:
-        <el-input v-model="captcha" style="width: 140px" clearable />
-        <img :src="captchaImage" alt="验证码" style="width: 100px; height: 30px;" @click="refreshCaptcha(username)"
-          v-if="visible" />
-        <a @click="getCaptcha(username)" v-else class="active">点击获取验证码</a>
-      </div>
     </div>
     <div class="buttons">
-      <el-button type="primary" class="btn" @click="handLogin">登录</el-button>
+      <el-button type="primary" class="btn" @click="beforeHandLogin">登录</el-button>
       <el-button type="primary" class="btn" @click="registerVisible = true">注册</el-button>
     </div>
 
     <!-- 游客模式进入 -->
     <div class="buttons">
-      <el-button class="btn" text @click="handLogin">游客模式进入>>></el-button>
+      <el-button class="btn" text @click="visitorLogin">游客模式进入>>></el-button>
     </div>
 
   </div>
@@ -211,6 +252,23 @@ const refreshCaptcha = (username) => {
         <el-button @click="registerVisible = false">取消</el-button>
         <el-button type="primary" @click="handRegister">确定</el-button>
       </span>
+    </template>
+  </el-dialog>
+
+  <el-dialog v-model="dialogVisible" title="请输入验证码" width="500">
+    <div class="input-group">
+      验 证 码:
+      <el-input v-model="captcha" style="width: 140px" clearable />
+      <img :src="captchaImage" alt="验证码" style="width: 100px; height: 30px;" @click="refreshCaptcha(username)">
+    </div>
+    <template #footer>
+      <div class="dialog-footer">
+        <el-button type="primary" @click="handLogin">
+          登录
+        </el-button>
+        <el-button @click="dialogVisible = false">取消</el-button>
+
+      </div>
     </template>
   </el-dialog>
 

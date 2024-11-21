@@ -2,15 +2,11 @@
 import { ref } from "vue";
 import { useRouter } from "vue-router";
 const router = useRouter();
+import { useUserStore } from "@/stores/user";
+import { getStringAPI } from "@/api/user";
+const userStore = useUserStore();
 
-const userInfo = ref({
-  id: "2",
-  nickName: "Burtry",
-  phone: "13416395349",
-  email: "1231231231@qq.com",
-  status: "正常",
-  address: "No.1188, Wuzhong Avenue, Wuzhong District, Suzhou, Jiangsu Province",
-});
+const userInfo = ref(userStore.userInfo);
 
 const toUser = () => {
   router.push(`/user/${userInfo.value.id}`);
@@ -21,8 +17,16 @@ const toText = () => {
 };
 
 const exit = () => {
+  userStore.removeUserInfo();
   router.push("/login");
 };
+
+const getString = () => {
+  getStringAPI().then((res) => {
+    console.log(res);
+  });
+
+}
 </script>
 
 <template>
@@ -35,7 +39,10 @@ const exit = () => {
       </RouterLink>
     </div>
     <div class="user-section">
-      <RouterLink :to="`/user/${userInfo.id}`"><span class="user-name">{{ userInfo.nickName }}</span>
+
+      <button @click="getString()">test</button>
+      <RouterLink :to="`/user/${userInfo.id}`"><span class="user-name">{{ userInfo.nickName ? userInfo.nickName : "游客"
+          }}</span>
       </RouterLink>
 
       <el-dropdown class="avatar-dropdown" trigger="hover">

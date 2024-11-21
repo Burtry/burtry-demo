@@ -19,3 +19,18 @@ export const registerAPI = (data) => {
     data: data
   });
 };
+
+export const loginAPI = (params) => {
+  return instance({
+    url: 'api/v1/login',
+    method: 'get',
+    params: params
+  });
+}
+
+export const getStringAPI = () => {
+  return instance({
+    url: 'api/v1/get',
+    method: 'get'
+  })
+}
