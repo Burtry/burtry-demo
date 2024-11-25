@@ -27,6 +27,12 @@ const getString = () => {
   });
 
 }
+
+const updateUserInfo = () => {
+  console.log(userInfo.value);
+
+
+}
 </script>
 
 <template>
@@ -52,6 +58,7 @@ const getString = () => {
         <template #dropdown>
           <el-dropdown-menu>
             <el-dropdown-item @click="toUser">个人中心</el-dropdown-item>
+            <el-dropdown-item @click="updateUserInfo">修改资料</el-dropdown-item>
             <el-dropdown-item @click="toText">发布文章</el-dropdown-item>
             <el-dropdown-item divided @click="exit">退出登录</el-dropdown-item>
           </el-dropdown-menu>

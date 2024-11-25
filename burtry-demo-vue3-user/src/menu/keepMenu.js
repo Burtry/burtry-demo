@@ -1,24 +1,27 @@
-class MyButtonMenu2 {
+class KeepMenu {
   constructor() {
-    this.title = '发布文章' // 自定义菜单标题
+    this.title = '暂存草稿' // 自定义菜单标题
     this.tag = 'button'
   }
-
+  // editor
   getValue() {
   }
+
   isActive() {
     return false
   }
+
 
   isDisabled() {
     return false
   }
 
   // 点击菜单时触发的函数
+  // editor, value
   exec() {
-    console.log('发布文章')
+    console.log("暂存文章");
 
   }
 }
 
-export default MyButtonMenu2
+export default KeepMenu

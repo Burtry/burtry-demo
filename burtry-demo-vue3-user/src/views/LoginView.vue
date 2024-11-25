@@ -176,6 +176,11 @@ const refreshCaptcha = (username) => {
   });
 };
 
+const handleBeforeClose = () => {
+  captcha.value = ''
+  dialogVisible.value = false
+
+}
 
 
 </script>
@@ -206,11 +211,6 @@ const refreshCaptcha = (username) => {
 
   </div>
 
-  <div class="icp">
-    <a href="https://beian.miit.gov.cn/" target="_blank">
-      豫ICP备2024095519号 (仅用于学习使用，无商业用途)</a>
-  </div>
-
   <!-- 注册框 -->
   <el-dialog v-model="registerVisible" title="注册用户" width="30%" center>
     <el-form :model="registerForm" :rules="rules" label-width="auto" status-icon>
@@ -224,7 +224,10 @@ const refreshCaptcha = (username) => {
         <el-input v-model="registerForm.confirmPassword" type="password" />
       </el-form-item>
       <el-form-item label="性别" prop="sex">
-        <el-input v-model="registerForm.sex" />
+        <el-radio-group v-model="registerForm.sex">
+          <el-radio value="1">男</el-radio>
+          <el-radio value="0">女</el-radio>
+        </el-radio-group>
       </el-form-item>
       <el-form-item label="手机号" prop="phone">
         <el-input v-model="registerForm.phone" />
@@ -255,7 +258,7 @@ const refreshCaptcha = (username) => {
     </template>
   </el-dialog>
 
-  <el-dialog v-model="dialogVisible" title="请输入验证码" width="500">
+  <el-dialog v-model="dialogVisible" title="请输入验证码" width="500" :before-close="handleBeforeClose">
     <div class="input-group">
       验 证 码:
       <el-input v-model="captcha" style="width: 140px" clearable />
@@ -266,7 +269,7 @@ const refreshCaptcha = (username) => {
         <el-button type="primary" @click="handLogin">
           登录
         </el-button>
-        <el-button @click="dialogVisible = false">取消</el-button>
+        <el-button @click="handleBeforeClose">取消</el-button>
 
       </div>
     </template>
@@ -326,28 +329,5 @@ const refreshCaptcha = (username) => {
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
-}
-
-.icp {
-  /* 位于网页最下方 */
-  position: fixed;
-  bottom: 0;
-  // 水平居中
-  left: 50%;
-  transform: translateX(-50%);
-  // 颜色、字体大小、字体粗细
-  margin: 10px;
-  font-size: small;
-  color: gray;
-}
-
-.active {
-  font-size: 12px;
-  margin-left: 10px;
-
-  &:hover {
-    color: #409eff;
-    cursor: pointer;
-  }
 }
 </style>

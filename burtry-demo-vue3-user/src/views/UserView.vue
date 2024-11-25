@@ -1,6 +1,7 @@
 <script setup>
 import ArticleView from "@/views/article/UserArticleView.vue";
 import { ref } from "vue";
+import { useUserStore } from "@/stores/user";
 const articles = ref([
   {
     title: 'How to Learn Vue 3',
@@ -71,14 +72,9 @@ const articles = ref([
   },
 ]);
 
-const userInfo = ref({
-  id: "1",
-  nickName: 'Burtry',
-  phone: '13416395349',
-  email: '1231231231@qq.com',
-  status: '正常',
-  address: 'No.1188, Wuzhong Avenue, Wuzhong District, Suzhou, Jiangsu Province',
-})
+const userStore = useUserStore();
+const userInfo = userStore.userInfo;
+
 </script>
 
 <template>
@@ -93,7 +89,8 @@ const userInfo = ref({
         <el-descriptions-item label="手机号">{{ userInfo.phone }}</el-descriptions-item>
         <el-descriptions-item label="邮箱">{{ userInfo.email }}</el-descriptions-item>
         <el-descriptions-item label="状态">
-          <el-tag>{{ userInfo.status }}</el-tag>
+          <el-tag v-if="userInfo.status === 0">正常</el-tag>
+          <el-tag v-else type="danger">锁定</el-tag>
         </el-descriptions-item>
         <el-descriptions-item label="地址">{{ userInfo.address }}</el-descriptions-item>
       </el-descriptions>

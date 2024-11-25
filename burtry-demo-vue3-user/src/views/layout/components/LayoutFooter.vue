@@ -8,7 +8,7 @@
 <style lang="scss" scoped>
 .icp {
   // 位于元素最下方
-  position: fixed;
+  // position: fixed;
   bottom: 0;
   left: 0;
   width: 100%;
