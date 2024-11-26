@@ -1,35 +1,32 @@
 <script setup>
 import '@wangeditor/editor/dist/css/style.css'
-
-import { onBeforeUnmount, ref, shallowRef, onMounted } from 'vue'
+//onMounted
+import { onBeforeUnmount, ref, shallowRef } from 'vue'
 import { Plus } from '@element-plus/icons-vue'
-import { ElMessage } from 'element-plus'
+import { } from 'element-plus' //ElMessage
 import { Editor, Toolbar } from '@wangeditor/editor-for-vue'
-import { UploadFilled } from '@element-plus/icons-vue'
 // 编辑器实例
 const editorRef = shallowRef()
-const valueHtml = ref('<p>hello</p>')
-
-const title = ref('');
+const valueHtml = ref('')
 const mode = ref('');
 
-// 模拟异步获取内容
-onMounted(() => {
-  setTimeout(() => {
-    valueHtml.value = '<p>模拟 Ajax 异步设置内容</p>'
-  }, 1500)
-})
+const title = ref('');
 
 const toolbarConfig = {}
+
+//https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png
+const imageUrl = ref('')
+
+const closeComment = ref(false)
+const agreement = ref(false)
+
 toolbarConfig.insertKeys = {
   index: 31, // 自定义插入的位置
   keys: ['keepMenu'], // 自定义的菜单 key ，多个菜单用逗号分隔
 }
-
 toolbarConfig.excludeKeys = [
   'fullScreen',
-  'redo',
-  'undo',
+  'group-video'
 ]
 
 const editorConfig = { placeholder: '请输入内容...' }
@@ -43,12 +40,23 @@ onBeforeUnmount(() => {
 const handleCreated = (editor) => {
   editorRef.value = editor
 }
+// 模拟异步获取内容
+// onMounted(() => {
+//   setTimeout(() => {
+//     valueHtml.value = '<p>模拟 Ajax 异步设置内容</p>'
+//   }, 1500)
+// })
 
-//https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png
-const imageUrl = ref('')
+const articleData = ref({
+  title: title.value,
+  // TODO
+})
 
-const closeComment = ref(false)
-const agreement = ref(false)
+const handlerPublish = () => {
+  console.log(title.value);
+  console.log(valueHtml.value);
+
+}
 
 
 </script>
@@ -96,7 +104,7 @@ const agreement = ref(false)
         <el-checkbox v-model="agreement">我已阅读并同意遵守<a href="#" class="agreement">用户协议</a></el-checkbox>
         <!-- 发布按钮 -->
         <div class="buttons">
-          <el-button @click="publish" type="primary">立即发布</el-button>
+          <el-button @click="handlerPublish" type="primary">立即发布</el-button>
           <el-button @click="publish">定时发布</el-button>
         </div>
       </div>

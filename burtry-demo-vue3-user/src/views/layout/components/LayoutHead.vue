@@ -30,9 +30,8 @@ const getString = () => {
 
 const updateUserInfo = () => {
   console.log(userInfo.value);
-
-
 }
+
 </script>
 
 <template>
@@ -64,6 +63,7 @@ const updateUserInfo = () => {
           </el-dropdown-menu>
         </template>
       </el-dropdown>
+
     </div>
   </div>
 </template>

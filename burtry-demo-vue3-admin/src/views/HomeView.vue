@@ -23,6 +23,9 @@ const exit = () => {
   router.push("/login");
 }
 
+
+
+
 </script>
 
 <template>
@@ -59,7 +62,7 @@ const exit = () => {
       <el-container>
         <!-- 侧边栏区域 -->
         <el-aside class="app-aside">
-          <el-menu default-active="1" class="el-menu-vertical-demo" background-color="#545c64" text-color="#fff"
+          <el-menu class="el-menu-vertical-demo" background-color="#545c64" text-color="#fff"
             active-text-color="#94cdf5">
             <el-menu-item index="1" @click="router.push('/article')">文章管理</el-menu-item>
             <el-menu-item index="2" @click="router.push('/user')">用户管理</el-menu-item>
