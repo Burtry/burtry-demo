@@ -16,7 +16,6 @@
         <module>writespace-user</module>
         <module>writespace-article</module>
         <module>writespace-admin</module>
-        <module>writespace-media</module>
         <module>writespace-user-behavior</module>
         <module>writespace-comment</module>
         <module>writespace-search</module>
