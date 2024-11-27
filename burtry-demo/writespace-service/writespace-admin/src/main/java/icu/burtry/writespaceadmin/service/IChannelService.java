@@ -20,4 +20,25 @@ public interface IChannelService extends IService<Channel> {
      * @return
      */
     PageDTO<Channel> channelList(PageQueryDTO pageQueryDTO);
+
+    /**
+     * 启用/禁用频道
+     * @param id
+     * @return
+     */
+    Result enableChannel(Long id);
+
+    /**
+     * 删除频道
+     * @param id
+     * @return
+     */
+    Result deleteChannel(Long id);
+
+    /**
+     * 修改频道信息
+     * @param channelDTO
+     * @return
+     */
+    Result updateChannel(ChannelDTO channelDTO);
 }

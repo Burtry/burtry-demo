@@ -18,8 +18,6 @@ public class Channel {
     //频道状态 0 可用 ;1 不可用
     private Integer status;
 
-    //是否默认
-    private Integer isDefault;
 
     //创建时间
     private LocalDateTime createTime;

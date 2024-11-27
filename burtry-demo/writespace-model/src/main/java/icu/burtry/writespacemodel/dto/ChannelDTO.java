@@ -11,10 +11,10 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class ChannelDTO {
 
+    private Long id;
+
     private String name;
 
     private String description;
-
-    private Integer isDefault = 1;
 
 }

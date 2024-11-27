@@ -1,5 +1,6 @@
 package icu.burtry.writespaceadmin.service.impl;
 
+import cn.hutool.core.bean.BeanUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -51,6 +52,11 @@ public class ChannelServiceImpl extends ServiceImpl<ChannelMapper, Channel> impl
 
     @Override
     public PageDTO<Channel> channelList(PageQueryDTO pageQueryDTO) {
+
+        if (pageQueryDTO.getPageNum() == null || pageQueryDTO.getPageSize() == null || BeanUtil.isEmpty(pageQueryDTO)) {
+            return new PageDTO<>(0L,1L,Collections.emptyList());
+        }
+
         Page<Channel> page = new Page<>(pageQueryDTO.getPageNum(),pageQueryDTO.getPageSize());
 
         QueryWrapper<Channel> channelQueryWrapper = new QueryWrapper<>();
@@ -59,6 +65,15 @@ public class ChannelServiceImpl extends ServiceImpl<ChannelMapper, Channel> impl
             channelQueryWrapper.orderByDesc("create_time");
         } else  {
             channelQueryWrapper.orderByDesc(pageQueryDTO.getSortBy());
+        }
+
+        //判断keyword
+        if (!pageQueryDTO.getKeyword().isEmpty()) {
+            channelQueryWrapper.like("name", pageQueryDTO.getKeyword());
+        }
+        //判断status
+        if (pageQueryDTO.getStatus() != 2) {    //不为全部频道添加查询条件
+            channelQueryWrapper.like("status", pageQueryDTO.getStatus());
         }
 
         Page<Channel> channelPage = channelMapper.selectPage(page, channelQueryWrapper);
@@ -72,4 +87,50 @@ public class ChannelServiceImpl extends ServiceImpl<ChannelMapper, Channel> impl
         }
 
     }
+
+    @Override
+    public Result enableChannel(Long id) {
+
+        Channel channel = getById(id);
+        if(channel == null) {
+            return Result.error("频道不存在");
+        }
+
+        channel.setStatus(channel.getStatus() == 0 ? 1 : 0);    //修改成相反状态
+        updateById(channel);
+        return Result.success("修改成功");
+    }
+
+    @Override
+    public Result deleteChannel(Long id) {
+
+        Channel channel = getById(id);
+        if(channel == null) {
+            return Result.error("频道不存在");
+        }
+        removeById(id);
+
+        return Result.success("删除成功");
+    }
+
+    @Override
+    public Result updateChannel(ChannelDTO channelDTO) {
+        if (BeanUtil.isEmpty(channelDTO)) {
+            return Result.error("修改信息不能为空");
+        }
+        if(channelDTO.getId() == null) {
+            return Result.error("频道不存在");
+        }
+        Channel channel = getById(channelDTO.getId());
+        if(channel == null) {
+            return Result.error("频道不存在");
+        }
+        channel.setName(channelDTO.getName());
+        channel.setDescription(channelDTO.getDescription());
+        channel.setStatus(1); //修改信息后改为禁用状态
+        updateById(channel);
+        return Result.success("修改成功");
+    }
+
+
 }
