@@ -3,7 +3,7 @@ package icu.burtry.writespaceadmin.controller;
 import icu.burtry.writespaceadmin.service.IChannelService;
 import icu.burtry.writespacemodel.dto.ChannelDTO;
 import icu.burtry.writespacemodel.dto.PageDTO;
-import icu.burtry.writespacemodel.dto.PageQueryDTO;
+import icu.burtry.writespacemodel.dto.ChannelPageQueryDTO;
 import icu.burtry.writespacemodel.entity.Channel;
 import icu.burtry.writespaceutils.result.Result;
 import lombok.NonNull;
@@ -28,7 +28,7 @@ public class ChannelController {
     }
 
     @GetMapping()
-    public Result<PageDTO<Channel>> channelList(PageQueryDTO queryDTO) {
+    public Result<PageDTO<Channel>> channelList(ChannelPageQueryDTO queryDTO) {
         log.info("获取频道列表");
         PageDTO<Channel> channelList = channelService.channelList(queryDTO);
         return Result.success(channelList,"获取成功!");

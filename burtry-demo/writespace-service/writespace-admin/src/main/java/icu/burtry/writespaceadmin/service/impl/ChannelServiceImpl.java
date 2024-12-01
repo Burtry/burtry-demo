@@ -9,7 +9,7 @@ import icu.burtry.writespaceadmin.mapper.ChannelMapper;
 import icu.burtry.writespaceadmin.service.IChannelService;
 import icu.burtry.writespacemodel.dto.ChannelDTO;
 import icu.burtry.writespacemodel.dto.PageDTO;
-import icu.burtry.writespacemodel.dto.PageQueryDTO;
+import icu.burtry.writespacemodel.dto.ChannelPageQueryDTO;
 import icu.burtry.writespacemodel.entity.Channel;
 import icu.burtry.writespaceutils.result.Result;
 import lombok.extern.slf4j.Slf4j;
@@ -51,29 +51,29 @@ public class ChannelServiceImpl extends ServiceImpl<ChannelMapper, Channel> impl
     }
 
     @Override
-    public PageDTO<Channel> channelList(PageQueryDTO pageQueryDTO) {
+    public PageDTO<Channel> channelList(ChannelPageQueryDTO channelPageQueryDTO) {
 
-        if (pageQueryDTO.getPageNum() == null || pageQueryDTO.getPageSize() == null || BeanUtil.isEmpty(pageQueryDTO)) {
+        if (channelPageQueryDTO.getPageNum() == null || channelPageQueryDTO.getPageSize() == null || BeanUtil.isEmpty(channelPageQueryDTO)) {
             return new PageDTO<>(0L,1L,Collections.emptyList());
         }
 
-        Page<Channel> page = new Page<>(pageQueryDTO.getPageNum(),pageQueryDTO.getPageSize());
+        Page<Channel> page = new Page<>(channelPageQueryDTO.getPageNum(), channelPageQueryDTO.getPageSize());
 
         QueryWrapper<Channel> channelQueryWrapper = new QueryWrapper<>();
-        if (pageQueryDTO.getSortBy() == null || pageQueryDTO.getSortBy().isEmpty()) {
+        if (channelPageQueryDTO.getSortBy() == null || channelPageQueryDTO.getSortBy().isEmpty()) {
             //默认创建时间降序排列
             channelQueryWrapper.orderByDesc("create_time");
         } else  {
-            channelQueryWrapper.orderByDesc(pageQueryDTO.getSortBy());
+            channelQueryWrapper.orderByDesc(channelPageQueryDTO.getSortBy());
         }
 
         //判断keyword
-        if (!pageQueryDTO.getKeyword().isEmpty()) {
-            channelQueryWrapper.like("name", pageQueryDTO.getKeyword());
+        if (!channelPageQueryDTO.getKeyword().isEmpty()) {
+            channelQueryWrapper.like("name", channelPageQueryDTO.getKeyword());
         }
         //判断status
-        if (pageQueryDTO.getStatus() != 2) {    //不为全部频道添加查询条件
-            channelQueryWrapper.like("status", pageQueryDTO.getStatus());
+        if (channelPageQueryDTO.getStatus() != 2) {    //不为全部频道添加查询条件
+            channelQueryWrapper.like("status", channelPageQueryDTO.getStatus());
         }
 
         Page<Channel> channelPage = channelMapper.selectPage(page, channelQueryWrapper);

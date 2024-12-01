@@ -3,7 +3,7 @@ package icu.burtry.writespaceadmin.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import icu.burtry.writespacemodel.dto.ChannelDTO;
 import icu.burtry.writespacemodel.dto.PageDTO;
-import icu.burtry.writespacemodel.dto.PageQueryDTO;
+import icu.burtry.writespacemodel.dto.ChannelPageQueryDTO;
 import icu.burtry.writespacemodel.entity.Channel;
 import icu.burtry.writespaceutils.result.Result;
 
@@ -19,7 +19,7 @@ public interface IChannelService extends IService<Channel> {
      * 获取频道列表
      * @return
      */
-    PageDTO<Channel> channelList(PageQueryDTO pageQueryDTO);
+    PageDTO<Channel> channelList(ChannelPageQueryDTO channelPageQueryDTO);
 
     /**
      * 启用/禁用频道
