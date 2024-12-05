@@ -1,7 +1,10 @@
 <script setup>
 import { Search } from '@element-plus/icons-vue'
-import { ref } from 'vue';
+import { onMounted, ref } from 'vue';
 import ArticleView from "@/views/article/ArticleView.vue";
+
+import { getChannelListAPI } from "@/api/channel";
+import { ElMessage } from 'element-plus';
 
 const articles = ref([
   {
@@ -166,21 +169,27 @@ const articles = ref([
 
 const searchInfo = ref('');
 
-const channelList = ref([
-  { id: 1, name: '综合' },
-  { id: 2, name: '最新' },
-  { id: 3, name: '推荐' },
-  { id: 4, name: '最新' },
-  { id: 5, name: '推荐' },
-  { id: 6, name: '最新' },
-]);
+const channelList = ref([]);
+
+const getChannelList = async () => {
+  const res = await getChannelListAPI()
+  if (res.code === 0) {
+    ElMessage.error("获取频道列表失败")
+    return
+  }
+
+  channelList.value = res.data
+  activeChannel.value = channelList.value[0].id
+}
+
+onMounted(() => {
+  getChannelList();
+});
 
 const activeChannel = ref(1);
 
 const handleChannelClick = (id) => {
   activeChannel.value = id;
-  console.log(activeChannel.value);
-
 };
 
 

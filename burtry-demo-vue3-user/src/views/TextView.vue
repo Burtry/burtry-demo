@@ -1,25 +1,17 @@
 <script setup>
 import '@wangeditor/editor/dist/css/style.css'
 //onMounted
-import { onBeforeUnmount, ref, shallowRef } from 'vue'
+import { onBeforeUnmount, onMounted, ref, shallowRef } from 'vue'
 import { Plus } from '@element-plus/icons-vue'
-import { } from 'element-plus' //ElMessage
+import { ElMessage } from 'element-plus'
 import { Editor, Toolbar } from '@wangeditor/editor-for-vue'
+import { getChannelListAPI } from "@/api/channel";
+import { uploadFileAPI } from "@/api/upload";
 // 编辑器实例
 const editorRef = shallowRef()
 const valueHtml = ref('')
 const mode = ref('');
-
-const title = ref('');
-
 const toolbarConfig = {}
-
-//https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png
-const imageUrl = ref('')
-
-const closeComment = ref(false)
-const agreement = ref(false)
-
 toolbarConfig.insertKeys = {
   index: 31, // 自定义插入的位置
   keys: ['keepMenu'], // 自定义的菜单 key ，多个菜单用逗号分隔
@@ -28,7 +20,6 @@ toolbarConfig.excludeKeys = [
   'fullScreen',
   'group-video'
 ]
-
 const editorConfig = { placeholder: '请输入内容...' }
 
 // 销毁编辑器实例
@@ -46,17 +37,63 @@ const handleCreated = (editor) => {
 //     valueHtml.value = '<p>模拟 Ajax 异步设置内容</p>'
 //   }, 1500)
 // })
+//----------------------------------------------------------------------------------
+//https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png
+
+const imageUrl = ref("")
+const title = ref('');
+const channelList = ref([])
+const channelId = ref('')
+const getChannelList = async () => {
+  const res = await getChannelListAPI()
+  channelList.value = res.data.slice(3)
+}
+
+const closeComment = ref(false)
+const agreement = ref(false)
 
 const articleData = ref({
-  title: title.value,
-  // TODO
+  title: "",
+  content: "",
+  channel_id: "",
+  closeComment: false,
+  images: ""
 })
 
 const handlerPublish = () => {
-  console.log(title.value);
-  console.log(valueHtml.value);
+  if (agreement.value === false) {
+    ElMessage.error('请先阅读并同意协议')
+    return
+  }
+  articleData.value.title = title.value
+  articleData.value.content = valueHtml.value
+  articleData.value.channel_id = channelId.value
+  articleData.value.closeComment = closeComment.value
+  articleData.value.images = imageUrl.value
+  console.log(articleData.value);
 
 }
+
+const uploadImage = async (params) => {
+  const file = params.file
+  // 根据后台需求数据格式
+  const form = new FormData();
+  // 文件对象
+  form.append('file', file);
+
+  const res = await uploadFileAPI(form)
+  if (res.code === 0) {
+    ElMessage.error('上传失败')
+    return
+  }
+  imageUrl.value = res.data
+  ElMessage.success('上传成功')
+}
+
+
+onMounted(() => {
+  getChannelList()
+})
 
 
 </script>
@@ -77,8 +114,7 @@ const handlerPublish = () => {
     <div class="operation-bar">
       <!-- 封面上传 -->
       <div class="left">
-        <el-upload class="avatar-uploader" action="https://run.mocky.io/v3/9d059bf9-4660-45f2-925d-ce80ad6c4d15"
-          :show-file-list="false" :on-success="handleAvatarSuccess" :before-upload="beforeAvatarUpload">
+        <el-upload class="avatar-uploader" action="##" :show-file-list="false" :http-request="uploadImage">
           <div v-if="imageUrl" class="image-container">
             <img :src="imageUrl" class="avatar" />
           </div>

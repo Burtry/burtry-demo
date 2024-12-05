@@ -1,7 +1,6 @@
-package icu.burtry.writespaceuser.config;
+package icu.burtry.writespacearticle.config;
 
-
-import icu.burtry.writespaceuser.interceptor.UserTokenInterceptor;
+import icu.burtry.writespacearticle.interceptor.UserTokenInterceptor;
 import icu.burtry.writespaceutils.json.JacksonObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Configuration;

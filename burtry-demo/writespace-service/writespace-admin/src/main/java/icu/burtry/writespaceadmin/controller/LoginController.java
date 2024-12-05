@@ -6,10 +6,12 @@ import cn.hutool.captcha.CaptchaUtil;
 import cn.hutool.captcha.LineCaptcha;
 import cn.hutool.captcha.generator.RandomGenerator;
 import icu.burtry.writespaceadmin.service.ILoginService;
+import icu.burtry.apis.user.IUserClient;
 import icu.burtry.writespacemodel.dto.AdminLoginDTO;
 import icu.burtry.writespacemodel.dto.AdminRegisterDTO;
 
 
+import icu.burtry.writespacemodel.entity.User;
 import icu.burtry.writespaceutils.result.Result;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +35,9 @@ public class LoginController {
 
     @Autowired
     private RedisTemplate<String,String> redisTemplate;
+
+    @Autowired
+    private IUserClient userClient;
 
 
 
@@ -75,7 +80,8 @@ public class LoginController {
 
     @GetMapping("/get")
     public Result getString() {
-        return Result.success("Hello", "获取成功");
+        User user = userClient.findUserById(1L);
+        return Result.success("Hello" + user, "获取成功");
     }
 }
 

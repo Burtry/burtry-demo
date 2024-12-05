@@ -4,7 +4,7 @@ import icu.burtry.writespaceutils.result.Result;
 import icu.burtry.writespaceutils.utils.AliOSSUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
@@ -20,7 +20,7 @@ public class CommonController {
     @Autowired
     private AliOSSUtil aliOSSUtil;
 
-    @PutMapping("/upload")
+    @PostMapping("/upload")
     public Result<String> upload(MultipartFile file) {
         log.info("start file upload:{}",file);
         if (file == null) {

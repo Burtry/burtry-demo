@@ -41,6 +41,13 @@ instance.interceptors.response.use(res => {
     ElMessage({ type: 'error', message: '登录过期，请重新登录' });
     router.push('/login')
   }
+  if (e.response.status === 500) {
+    ElMessage({ type: 'error', message: '服务器错误' });
+  }
+
+  if (e.response.status === 503) {
+    ElMessage({ type: 'warning', message: '服务器维护中' });
+  }
   return Promise.reject(e)
 })
 

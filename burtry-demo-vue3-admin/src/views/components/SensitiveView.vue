@@ -18,9 +18,6 @@ const getSensitiveList = async () => {
   if (res.code === 0) {
     ElMessage.error("获取敏感词列表失败");
   }
-  if (res.msg === "服务异常") {
-    ElMessage.error("服务异常，请稍后再试");
-  }
   sensitiveList.value = res.data.list;
   pageData.value.total = res.data.total;
 }
@@ -118,10 +115,6 @@ const handleUpdateSensitive = () => {
   updateSensitiveAPI(sensitiveData.value).then(res => {
     if (res.code === 0) {
       ElMessage.error(res.msg);
-      return
-    }
-    if (res.msg === "服务异常") {
-      ElMessage.error("服务异常，请稍后再试");
       return
     }
     ElMessage.success("修改敏感词成功");

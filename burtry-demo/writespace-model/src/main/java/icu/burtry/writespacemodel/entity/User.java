@@ -1,5 +1,7 @@
 package icu.burtry.writespacemodel.entity;
 
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
 import lombok.Data;
 
 import java.time.LocalDateTime;
@@ -8,6 +10,7 @@ import java.time.LocalDateTime;
 public class User {
 
     //id
+    @TableId(type = IdType.AUTO)
     private Long id;
 
     //用户名

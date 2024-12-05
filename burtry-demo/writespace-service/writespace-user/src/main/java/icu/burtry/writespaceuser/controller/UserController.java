@@ -26,4 +26,6 @@ public class UserController {
         userService.updateInfo(userInfoDTO);
         return Result.success();
     }
+
+
 }
