@@ -6,6 +6,7 @@ import { Plus } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus'
 import { Editor, Toolbar } from '@wangeditor/editor-for-vue'
 import { getChannelListAPI } from "@/api/channel";
+import { publishArticleAPI } from "@/api/article";
 import { uploadFileAPI } from "@/api/upload";
 // 编辑器实例
 const editorRef = shallowRef()
@@ -71,6 +72,10 @@ const handlerPublish = () => {
   articleData.value.closeComment = closeComment.value
   articleData.value.images = imageUrl.value
   console.log(articleData.value);
+  publishArticleAPI(articleData.value).then(res => {
+    console.log(res);
+    ElMessage.success('发布成功')
+  })
 
 }
 

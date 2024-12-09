@@ -22,8 +22,6 @@ pinia.use(piniaPluginPersistedstate)
 app.use(pinia)
 app.use(router)
 
-
-
 const keepBtn = {
   key: 'keepMenu',
   factory() {
@@ -31,12 +29,5 @@ const keepBtn = {
   }
 }
 
-
 Boot.registerMenu(keepBtn);
-
-
-
-
-
-
 app.mount('#app')

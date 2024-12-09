@@ -2,7 +2,7 @@ import instance from "@/utils/http"
 
 export const getCodeAPI = (username) => {
   return instance({
-    url: 'api/v1/code',
+    url: '/user/api/v1/code',
     method: 'get',
     responseType: 'blob',
     params: {
@@ -14,7 +14,7 @@ export const getCodeAPI = (username) => {
 
 export const registerAPI = (data) => {
   return instance({
-    url: 'api/v1/register',
+    url: '/user/api/v1/register',
     method: 'post',
     data: data
   });
@@ -22,7 +22,7 @@ export const registerAPI = (data) => {
 
 export const loginAPI = (params) => {
   return instance({
-    url: 'api/v1/login',
+    url: '/user/api/v1/login',
     method: 'get',
     params: params
   });
@@ -30,7 +30,7 @@ export const loginAPI = (params) => {
 
 export const getStringAPI = () => {
   return instance({
-    url: 'api/v1/get',
+    url: '/user/api/v1/get',
     method: 'get'
   })
 }

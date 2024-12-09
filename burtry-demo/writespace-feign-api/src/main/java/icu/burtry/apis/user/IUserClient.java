@@ -10,4 +10,7 @@ public interface IUserClient {
 
     @GetMapping("/api/v1/user/{id}")
     User findUserById(@PathVariable("id") Long id);
+
+
+
 }

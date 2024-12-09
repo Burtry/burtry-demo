@@ -15,38 +15,16 @@
 		<maven.compiler.target>8</maven.compiler.target>
 	</properties>
 	<dependencies>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-freemarker</artifactId>
-		</dependency>
-
-
+<!--		<dependency>-->
+<!--			<groupId>org.springframework.boot</groupId>-->
+<!--			<artifactId>spring-boot-starter-freemarker</artifactId>-->
+<!--		</dependency>-->
 		<!--        seata-->
-		<dependency>
-			<groupId>com.alibaba.cloud</groupId>
-			<artifactId>spring-cloud-starter-alibaba-seata</artifactId>
-			<version>2021.1</version>
-			<exclusions>
-				<exclusion>
-					<groupId>io.seata</groupId>
-					<artifactId>seata-all</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>io.seata</groupId>
-					<artifactId>seata-spring-boot-starter</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-		<dependency>
-			<groupId>io.seata</groupId>
-			<artifactId>seata-all</artifactId>
-			<version>1.4.2</version>
-		</dependency>
-		<dependency>
-			<groupId>io.seata</groupId>
-			<artifactId>seata-spring-boot-starter</artifactId>
-			<version>1.4.2</version>
-		</dependency>
+<!--		<dependency>-->
+<!--			<groupId>io.seata</groupId>-->
+<!--			<artifactId>seata-spring-boot-starter</artifactId>-->
+<!--			<version>1.4.2</version>-->
+<!--		</dependency>-->
 
 		<dependency>
 			<groupId>com.xuxueli</groupId>
