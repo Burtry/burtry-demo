@@ -30,6 +30,11 @@ const router = createRouter({
           name: 'text',
           component: () => import("../views/TextView.vue")
         },
+        {
+          path: 'textManagement',
+          name: 'textManagement',
+          component: () => import("../views/TextManagementView.vue")
+        }
       ]
     },
     {

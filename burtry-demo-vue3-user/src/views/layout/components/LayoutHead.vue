@@ -21,6 +21,10 @@ const exit = () => {
   router.push("/login");
 };
 
+const toTextManagement = () => {
+  router.push("/textManagement");
+}
+
 const getString = () => {
   getStringAPI().then((res) => {
     console.log(res);
@@ -59,6 +63,7 @@ const updateUserInfo = () => {
             <el-dropdown-item @click="toUser">个人中心</el-dropdown-item>
             <el-dropdown-item @click="updateUserInfo">修改资料</el-dropdown-item>
             <el-dropdown-item @click="toText">发布文章</el-dropdown-item>
+            <el-dropdown-item @click="toTextManagement">文章管理</el-dropdown-item>
             <el-dropdown-item divided @click="exit">退出登录</el-dropdown-item>
           </el-dropdown-menu>
         </template>
