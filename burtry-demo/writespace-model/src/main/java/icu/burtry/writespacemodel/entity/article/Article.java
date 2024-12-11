@@ -32,6 +32,11 @@ public class Article {
     private Long channelId;
 
     /**
+     * 频道名称
+     */
+    private String channelName;
+
+    /**
      * 封面url
      */
     private String images;

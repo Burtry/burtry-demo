@@ -41,11 +41,12 @@ const handLogin = () => {
   loginAPI(data).then(res => {
     if (res.code === 0) {
       ElMessage.error(res.msg)
-    }
-    else {
       if (res.msg === "验证码错误") {
         getCaptcha(username.value)
       }
+      return
+    }
+    else {
       ElMessage.success("登录成功")
       userStore.userInfo = res.data;
       router.push('/');

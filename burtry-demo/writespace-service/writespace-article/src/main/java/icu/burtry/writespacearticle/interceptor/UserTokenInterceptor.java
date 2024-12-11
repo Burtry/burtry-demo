@@ -20,7 +20,7 @@ public class UserTokenInterceptor implements HandlerInterceptor {
         if (userId != null) {
             User user = new User();
             user.setId(Long.valueOf(userId));
-            UserThreadLocalUtil.setAdminThreadLocal(user);
+            UserThreadLocalUtil.setUserThreadLocal(user);
 
         }
         return true;

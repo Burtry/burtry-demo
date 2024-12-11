@@ -7,12 +7,12 @@ public class UserThreadLocalUtil {
     private final static ThreadLocal<User> ADMIN_THREAD_LOCAL = new ThreadLocal<>();
 
     //存入线程
-    public static void setAdminThreadLocal(User user) {
+    public static void setUserThreadLocal(User user) {
         ADMIN_THREAD_LOCAL.set(user);
     }
 
     //获取
-    public static User getAdmin() {
+    public static User getUser() {
         return ADMIN_THREAD_LOCAL.get();
     }
 

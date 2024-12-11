@@ -1,7 +1,6 @@
 package icu.burtry.writespacemodel.dto;
 
 import lombok.Data;
-
 @Data
 public class ArticleDTO {
 
@@ -30,4 +29,13 @@ public class ArticleDTO {
      * 封面url
      */
     private String images;
+
+    //快速判空
+    public boolean hasNullOrEmptyFields() {
+        return title == null || title.isBlank()
+                || content == null || content.isBlank()
+                || channelId == null
+                || closeComment == null
+                || images == null || images.isBlank();
+    }
 }

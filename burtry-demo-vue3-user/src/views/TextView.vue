@@ -56,28 +56,38 @@ const agreement = ref(false)
 const articleData = ref({
   title: "",
   content: "",
-  channel_id: "",
+  channelId: "",
   closeComment: false,
   images: ""
 })
 
-const handlerPublish = () => {
+const handlerPublish = async () => {
   if (agreement.value === false) {
     ElMessage.error('请先阅读并同意协议')
     return
   }
   articleData.value.title = title.value
   articleData.value.content = valueHtml.value
-  articleData.value.channel_id = channelId.value
+  articleData.value.channelId = channelId.value
   articleData.value.closeComment = closeComment.value
   articleData.value.images = imageUrl.value
   console.log(articleData.value);
-  publishArticleAPI(articleData.value).then(res => {
-    console.log(res);
-    ElMessage.success('发布成功')
-  })
+  const res = await publishArticleAPI(articleData.value)
+  if (res.code === 0) {
+    ElMessage.error(res.msg)
+    return
+  }
+  //发布成功后操作
+  ElMessage.success(res.msg)
+  title.value = ''
+  valueHtml.value = ''
+  imageUrl.value = ''
+  channelId.value = ''
+  closeComment.value = false
+  agreement.value = false
 
 }
+
 
 const uploadImage = async (params) => {
   const file = params.file
