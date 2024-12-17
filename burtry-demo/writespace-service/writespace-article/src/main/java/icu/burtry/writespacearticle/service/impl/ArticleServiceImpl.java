@@ -1,6 +1,9 @@
 package icu.burtry.writespacearticle.service.impl;
 
+import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.IdUtil;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import icu.burtry.apis.user.IUserClient;
 import icu.burtry.writespacearticle.mapper.ArticleConfigMapper;
@@ -13,6 +16,7 @@ import icu.burtry.writespacemodel.entity.User;
 import icu.burtry.writespacemodel.entity.article.Article;
 import icu.burtry.writespacemodel.entity.article.ArticleConfig;
 import icu.burtry.writespacemodel.entity.article.ArticleContent;
+import icu.burtry.writespacemodel.vo.ArticleVO;
 import icu.burtry.writespaceutils.constant.ArticleStatusConstant;
 import icu.burtry.writespaceutils.result.Result;
 import icu.burtry.writespaceutils.thread.UserThreadLocalUtil;
@@ -22,6 +26,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+
 
 @Service
 @Transactional
@@ -110,5 +118,52 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         articleContentMapper.insert(articleContent);
 
         return Result.success("文章发布成功!");
+    }
+
+
+    @Override
+    public Result<List<ArticleVO>> getArticleList() {
+        //此user 为只含有id的user
+        User user = UserThreadLocalUtil.getUser();
+        user = userClient.findUserById(user.getId());
+
+        if (BeanUtil.isEmpty(user)) {
+            return Result.error("用户不存在，请重试!");
+        }
+        //根据用户id获取用户文章
+        QueryWrapper<Article> articleQueryWrapper = new QueryWrapper<>();
+        articleQueryWrapper.eq("author_id",user.getId());
+
+        List<Article> list = list(articleQueryWrapper);
+
+        //获取未删除的文章
+        list = articleMapper.getNoDeleteArticle(list.stream().map(article -> article.getId()).collect(Collectors.toList()));
+
+        List<ArticleVO> articleVOList = new ArrayList<>();
+
+        for (Article article : list) {
+            ArticleVO articleVO = new ArticleVO();
+            articleVO.setId(article.getId());
+            articleVO.setTitle(article.getTitle());
+            articleVO.setLikes(article.getLikes());
+            articleVO.setViews(article.getViews());
+            articleVO.setComments(article.getComments());
+            articleVO.setUserAvatar(user.getImage());
+            articleVO.setUsername(user.getNickName());
+            articleVO.setImage(article.getImages());
+            articleVO.setPublishTime(article.getPublishTime());
+
+            //设置文章内容
+
+            ArticleContent articleContent = articleContentMapper.selectOne(Wrappers.<ArticleContent>lambdaQuery().eq(ArticleContent::getArticleId, article.getId()));
+
+            articleVO.setContent(articleContent.getContent());
+
+            articleVOList.add(articleVO);
+
+        }
+
+        return Result.success(articleVOList,"获取成功");
+
     }
 }

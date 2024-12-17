@@ -26,9 +26,7 @@ defineProps({
             <span>评论数: {{ article.comments }}</span>
           </div>
 
-          <div class="content">
-            <p>{{ article.contentPreview }}</p>
-          </div>
+          <div v-html="article.content"></div>
 
           <div class="user-info">
             <el-image class="avatar" :src="article.userAvatar" alt="User Avatar" />
@@ -141,15 +139,6 @@ h3 {
   border-radius: 5px;
 }
 
-.content p {
-  font-size: 1rem;
-  color: #333;
-  line-height: 1.5;
-  margin-bottom: 15px;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  overflow: hidden;
-}
 
 .user-info {
   display: flex;

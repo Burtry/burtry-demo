@@ -1,76 +1,30 @@
 <script setup>
-import { ref } from 'vue';
+import { onMounted, ref } from 'vue';
 import ArticleItem from './article/ArticleItem.vue';
 
-const articleList = ref([
-  {
-    title: 'How to Learn Vue 3',
-    id: '1',
-    likes: 245,
-    views: 3321,
-    comments: 120,
-    contentPreview: 'This is a comprehensive guide to learning Vue 3...',
-    userAvatar: 'https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png',
-    username: 'kooriookami',
-    image: 'https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png',
-    publishedAt: '2024-11-08', // Date the article was published
-  },
-  {
-    title: 'Vue 3 Composition API Explained',
-    likes: 300,
-    views: 4000,
-    comments: 150,
-    contentPreview: 'Let’s dive deep into the Composition API of Vue 3...',
-    userAvatar: 'https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png',
-    username: 'devguru',
-    image: 'https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png',
-    publishedAt: '2024-10-15', // Date the article was published
-  },
-  {
-    title: 'How to Learn Vue 3',
-    likes: 245,
-    views: 3321,
-    comments: 120,
-    contentPreview: 'This is a comprehensive guide to learning Vue 3...',
-    userAvatar: 'https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png',
-    username: 'kooriookami',
-    image: 'https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png',
-    publishedAt: '2024-11-08', // Date the article was published
-  },
-  {
-    title: 'Vue 3 Composition API Explained',
-    likes: 300,
-    views: 4000,
-    comments: 150,
-    contentPreview: 'Let’s dive deep into the Composition API of Vue 3...',
-    userAvatar: 'https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png',
-    username: 'devguru',
-    image: 'https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png',
-    publishedAt: '2024-10-15', // Date the article was published
-  },
-  {
-    title: 'How to Learn Vue 3',
-    likes: 245,
-    views: 3321,
-    comments: 120,
-    contentPreview: 'This is a comprehensive guide to learning Vue 3...',
-    userAvatar: 'https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png',
-    username: 'kooriookami',
-    image: 'https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png',
-    publishedAt: '2024-11-08',
-  },
-  {
-    title: 'Vue 3 Composition API Explained',
-    likes: 300,
-    views: 4000,
-    comments: 150,
-    contentPreview: 'Let’s dive deep into the Composition API of Vue 3...',
-    userAvatar: 'https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png',
-    username: 'devguru',
-    image: 'https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png',
-    publishedAt: '2024-10-15',
-  },
-]);
+import { getArticleListAPI } from "@/api/article";
+import { ElMessage } from 'element-plus';
+
+const articleList = ref([]);
+
+const getArticleList = async () => {
+  const res = await getArticleListAPI()
+  if (res.code === 0) {
+    ElMessage.error(res.msg)
+    return
+  }
+  articleList.value = res.data.map(item => {
+    //当content长度大于50时，截断并加省略号
+    if (item.content.length > 50) {
+      item.content = item.content.slice(0, 50) + '...'
+    }
+    return item
+  })
+}
+
+onMounted(() => {
+  getArticleList()
+})
 </script>
 
 <template>

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="icu.burtry.writespacearticle.mapper.ArticleMapper">
+
+
+    <select id="getNoDeleteArticle" resultType="icu.burtry.writespacemodel.entity.article.Article" parameterType="java.util.List">
+        SELECT a.*
+        FROM writespace.article a
+        left join writespace.article_config ac on a.id = ac.article_id
+        where ac.is_delete = 0
+        <if test="list != null and list.size > 0">
+            AND a.id IN
+            <foreach collection="list" item="id" open="(" separator="," close=")">
+                #{id}
+            </foreach>
+        </if>
+
+
+    </select>
+</mapper>
