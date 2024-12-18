@@ -23,3 +23,10 @@ export const deleteArticleAPI = (id) => {
     url: `article/api/v1/article/${id}`
   })
 }
+
+export const getOverViewAPI = (id) => {
+  return instance({
+    method: "get",
+    url: `article/api/v1/article/overView/${id}`
+  })
+}

@@ -2,7 +2,7 @@
 import ArticleView from "@/views/article/UserArticleView.vue";
 import { onMounted, ref } from "vue";
 import { getUserByIdAPI } from "@/api/user";
-import { getArticleListAPI } from "@/api/article";
+import { getArticleListAPI, getOverViewAPI } from "@/api/article";
 import router from "@/router";
 import { ElMessage } from "element-plus";
 const articles = ref([]);
@@ -17,6 +17,14 @@ const userInfo = ref({
   createTime: "",
   updateTime: "",
 });
+
+const overViewData = ref({
+  likes: 0,
+  comments: 0,
+  collects: 0,
+  views: 0,
+})
+
 //此用户id为路径上的userid
 const userId = router.currentRoute.value.params.id;
 
@@ -42,9 +50,24 @@ const getUserArticle = async () => {
 
 }
 
+//获取数据总览
+const getUserOverView = async () => {
+  const res = await getOverViewAPI(userId);
+  if (res.code === 0) {
+    ElMessage.error(res.msg)
+    return
+  }
+  overViewData.value.likes = res.data.sumLikes
+  overViewData.value.comments = res.data.sumComments
+  overViewData.value.collects = res.data.sumCollects
+  overViewData.value.views = res.data.sumViews
+
+}
+
 onMounted(() => {
   getUserInfo();
   getUserArticle();
+  getUserOverView();
 })
 
 </script>
@@ -70,16 +93,16 @@ onMounted(() => {
         <!-- 数据总览 -->
         <el-row>
           <el-col :span="6">
-            <el-statistic title="文章总点赞量" :value="111" class="over-item" />
+            <el-statistic title="文章总点赞量" :value="overViewData.likes" class="over-item" />
           </el-col>
           <el-col :span="6">
-            <el-statistic title="文章总收藏量" :value="222" class="over-item" />
+            <el-statistic title="文章总收藏量" :value="overViewData.collects" class="over-item" />
           </el-col>
           <el-col :span="6">
-            <el-statistic title="文章总评论量" :value="333" class="over-item" />
+            <el-statistic title="文章总评论量" :value="overViewData.comments" class="over-item" />
           </el-col>
           <el-col :span="6">
-            <el-statistic title="文章总阅读量" :value="444" class="over-item" />
+            <el-statistic title="文章总阅读量" :value="overViewData.views" class="over-item" />
           </el-col>
         </el-row>
       </div>

@@ -27,6 +27,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -194,4 +195,34 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
 
 
     }
+
+    @Override
+    public Result overView(Long id) {
+        User user = userClient.findUserById(id);
+        if(user == null) {
+            Result.error("用户信息错误!");
+        }
+        //获取该用户文章的总点赞量，总收藏量，总评论量，总阅读量
+        //根据用户id获取用户文章
+        QueryWrapper<Article> articleQueryWrapper = new QueryWrapper<>();
+        articleQueryWrapper.eq("author_id",id);
+        List<Article> list = list(articleQueryWrapper);
+        //获取该用户未删除的文章
+        list = articleMapper.getNoDeleteArticle(list.stream().map(article -> article.getId()).collect(Collectors.toList()),id);
+
+        Integer sumLikes = list.stream().mapToInt(Article::getLikes).sum();
+        Integer sumCollects = list.stream().mapToInt(Article::getCollections).sum();
+        Integer sumComments = list.stream().mapToInt(Article::getComments).sum();
+        Integer sumViews = list.stream().mapToInt(Article::getViews).sum();
+
+        HashMap<String, Integer> map = new HashMap<>();
+        map.put("sumLikes", sumLikes);
+        map.put("sumCollects", sumCollects);
+        map.put("sumComments", sumComments);
+        map.put("sumViews", sumViews);
+
+        return Result.success(map,"文章数据总览获取成功!");
+    }
+
+
 }

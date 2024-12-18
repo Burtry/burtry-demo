@@ -6,6 +6,13 @@ defineProps({
   },
 })
 
+// 定义内容最大显示长度
+const maxLength = 20;
+// 方法：截断内容并加上省略号
+const getTruncatedContent = (content) => {
+  return content.length > maxLength ? content.slice(0, maxLength) + '...' : content;
+};
+
 </script>
 
 <template>
@@ -27,13 +34,13 @@ defineProps({
           </div>
 
           <div class="content">
-            <p>{{ article.contentPreview }}</p>
+            <p v-html="article.isExpanded ? article.content : getTruncatedContent(article.content)"></p>
           </div>
 
           <div class="user-info">
             <el-image class="avatar" :src="article.userAvatar" alt="User Avatar" />
             <span>{{ article.username }}</span>
-            <span class="published-at">发布时间：{{ article.publishedAt }}</span>
+            <span class="published-at">发布时间：{{ article.publishTime }}</span>
           </div>
         </div>
       </div>

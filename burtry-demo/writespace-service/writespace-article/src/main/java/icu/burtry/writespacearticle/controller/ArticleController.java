@@ -39,5 +39,11 @@ public class ArticleController {
 
     }
 
+    @GetMapping("/overView/{id}")
+    public Result getOverView(@PathVariable("id") Long id) {
+        log.info("获取该用户文章数据总览:{}", id);
+        return articleService.overView(id);
+    }
+
 
 }

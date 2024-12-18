@@ -30,4 +30,10 @@ public interface IArticleService extends IService<Article> {
      * @return
      */
     Result deleteArticle(Long id);
+
+    /**
+     * 获取文章数据总览
+     * @param id
+     */
+    Result overView(Long id);
 }
