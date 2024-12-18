@@ -6,13 +6,10 @@ import icu.burtry.writespaceutils.result.Result;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/v1")
+@RequestMapping("/api/v1/")
 @Slf4j
 public class UserController {
 
@@ -20,11 +17,10 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-
-    @PostMapping("/info")
-    public Result updateUserInfo(@RequestBody UpdateUserInfoDTO userInfoDTO) {
-        userService.updateInfo(userInfoDTO);
-        return Result.success();
+    @GetMapping("{id}")
+    public Result getUserById(@PathVariable Long id) {
+        log.info("根据用户id查询用户:{}",id);
+        return userService.getUserInfo(id);
     }
 
 

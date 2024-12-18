@@ -34,3 +34,10 @@ export const getStringAPI = () => {
     method: 'get'
   })
 }
+
+export const getUserByIdAPI = (id) => {
+  return instance({
+    url: `/user/api/v1/${id}`,
+    method: 'get'
+  })
+}

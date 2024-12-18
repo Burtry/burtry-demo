@@ -1,5 +1,8 @@
 <script setup>
 import { Edit, Delete } from '@element-plus/icons-vue'
+import { deleteArticleAPI } from "@/api/article";
+import { ElMessage } from 'element-plus';
+import { ref } from 'vue';
 defineProps({
   article: {
     type: Object,
@@ -7,6 +10,19 @@ defineProps({
     default: () => ({})
   }
 })
+
+const delDialog = ref(false)
+
+const deleteArticle = async (id) => {
+  const res = await deleteArticleAPI(id)
+  if (res.code === 0) {
+    ElMessage.error(res.msg)
+    return
+  }
+
+  ElMessage.success(res.msg)
+  window.location.reload()
+}
 </script>
 
 <template>
@@ -31,7 +47,7 @@ defineProps({
           <div class="user-info">
             <el-image class="avatar" :src="article.userAvatar" alt="User Avatar" />
             <span>{{ article.username }}</span>
-            <span class="published-at">发布时间：{{ article.publishedAt }}</span>
+            <span class="published-at">发布时间：{{ article.publishTime }}</span>
 
             <span class="status">
               当前状态:
@@ -40,7 +56,7 @@ defineProps({
 
             <el-button size="large" class="operation-button" :icon="Edit" round>
             </el-button>
-            <el-button size="large" class="" :icon="Delete" round>
+            <el-button size="large" class="" :icon="Delete" round @click="delDialog = true">
             </el-button>
           </div>
         </div>
@@ -48,6 +64,19 @@ defineProps({
 
     </div>
   </div>
+
+
+  <el-dialog v-model="delDialog" title="删除文章" width="500">
+    <span>你确定要删除吗(真的很久！)?</span>
+    <template #footer>
+      <div class="dialog-footer">
+        <el-button @click="delDialog = false">取消</el-button>
+        <el-button type="primary" @click="deleteArticle(article.id)">
+          确认
+        </el-button>
+      </div>
+    </template>
+  </el-dialog>
 </template>
 
 <style lang="scss" scoped>

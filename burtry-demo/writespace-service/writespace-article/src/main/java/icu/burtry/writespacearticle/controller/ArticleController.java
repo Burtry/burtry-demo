@@ -24,13 +24,20 @@ public class ArticleController {
         return articleService.saveArticle(articleDTO);
     }
 
-    @GetMapping()
-    public Result<List<ArticleVO>> getArticleList() {
-        log.info("获取请求用户的文章列表");
-        return articleService.getArticleList();
+
+    @DeleteMapping("{id}")
+    public Result deleteArticleById(@PathVariable("id") Long id) {
+        log.info("用户删除文章:{}",id);
+        return articleService.deleteArticle(id);
 
     }
 
+    @GetMapping("{id}")
+    public Result<List<ArticleVO>> getArticleList(@PathVariable("id") Long id) {
+        log.info("获取请求用户的文章列表:{}",id);
+        return articleService.getArticleList(id);
+
+    }
 
 
 }

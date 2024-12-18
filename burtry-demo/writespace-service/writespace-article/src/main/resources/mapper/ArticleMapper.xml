@@ -4,18 +4,22 @@
 <mapper namespace="icu.burtry.writespacearticle.mapper.ArticleMapper">
 
 
-    <select id="getNoDeleteArticle" resultType="icu.burtry.writespacemodel.entity.article.Article" parameterType="java.util.List">
+    <select id="getNoDeleteArticle"
+            resultType="icu.burtry.writespacemodel.entity.article.Article"
+            parameterType="map">
         SELECT a.*
         FROM writespace.article a
-        left join writespace.article_config ac on a.id = ac.article_id
-        where ac.is_delete = 0
+        LEFT JOIN writespace.article_config ac ON a.id = ac.article_id
+        WHERE ac.is_delete = 0
+        <if test="id != null">
+            AND a.author_id = #{id}
+        </if>
         <if test="list != null and list.size > 0">
             AND a.id IN
             <foreach collection="list" item="id" open="(" separator="," close=")">
                 #{id}
             </foreach>
         </if>
-
-
     </select>
+
 </mapper>

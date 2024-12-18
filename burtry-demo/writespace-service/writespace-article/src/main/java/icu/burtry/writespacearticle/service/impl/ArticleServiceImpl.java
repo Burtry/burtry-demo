@@ -122,22 +122,21 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
 
 
     @Override
-    public Result<List<ArticleVO>> getArticleList() {
-        //此user 为只含有id的user
-        User user = UserThreadLocalUtil.getUser();
-        user = userClient.findUserById(user.getId());
+    public Result<List<ArticleVO>> getArticleList(Long id) {
+        //查询该用户信息
+        User user = userClient.findUserById(id);
 
         if (BeanUtil.isEmpty(user)) {
             return Result.error("用户不存在，请重试!");
         }
         //根据用户id获取用户文章
         QueryWrapper<Article> articleQueryWrapper = new QueryWrapper<>();
-        articleQueryWrapper.eq("author_id",user.getId());
+        articleQueryWrapper.eq("author_id",id);
 
         List<Article> list = list(articleQueryWrapper);
 
-        //获取未删除的文章
-        list = articleMapper.getNoDeleteArticle(list.stream().map(article -> article.getId()).collect(Collectors.toList()));
+        //获取该用户未删除的文章
+        list = articleMapper.getNoDeleteArticle(list.stream().map(article -> article.getId()).collect(Collectors.toList()),id);
 
         List<ArticleVO> articleVOList = new ArrayList<>();
 
@@ -163,7 +162,36 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
 
         }
 
-        return Result.success(articleVOList,"获取成功");
+        return Result.success(articleVOList,"用户文章获取成功");
+
+    }
+
+    @Override
+    public Result deleteArticle(Long id) {
+        User user = UserThreadLocalUtil.getUser();
+
+        Article article = getById(id);
+        if(article == null) {
+            return Result.error("文章不存在!");
+        }
+
+        if(user.getId() != article.getAuthorId()) {
+            return Result.error("只能删除自己的文章!");
+        }
+
+        //删除文章,将文章配置中的is_delete设置为1即为删除
+        ArticleConfig articleConfig = articleConfigMapper.selectOne(Wrappers.<ArticleConfig>lambdaQuery().eq(ArticleConfig::getArticleId, id));
+
+        if(articleConfig == null) {
+            return Result.error("文章信息错误，删除失败，请联系管理员!");
+        }
+
+        articleConfig.setIsDelete(1);
+
+        articleConfigMapper.updateById(articleConfig);
+
+        return Result.success("删除成功!");
+
 
     }
 }

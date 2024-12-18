@@ -1,17 +1,27 @@
 <script setup>
 import { ref } from 'vue';
-import { More, Star, ChatLineRound, View } from '@element-plus/icons-vue'
+import { More, Star, ChatLineRound } from '@element-plus/icons-vue'
 import CommentItem from "../../components/CommentItem.vue";
 
-const commentsSection = ref(null);
+import { useUserStore } from "@/stores/user";
+// import router from '@/router';
 const userInfo = ref({
-  id: 1,
-  name: 'John Doe',
-  image: 'https://via.placeholder.com/150',
-  // 发布时间
-  publishTime: '2022-01-01 12:00:00',
+  id: "",
+  name: "",
+  image: "",
 })
 
+// const articleId = ref(router.currentRoute.value.params.id);
+
+const userStore = useUserStore();
+userInfo.value.id = userStore.userInfo.id;
+userInfo.value.name = userStore.userInfo.name;
+userInfo.value.image = userStore.userInfo.image;
+
+
+
+
+const commentsSection = ref(null);
 const likeArticle = () => {
   console.log('点赞');
 

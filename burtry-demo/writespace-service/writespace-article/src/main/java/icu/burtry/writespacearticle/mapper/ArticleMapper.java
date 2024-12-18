@@ -15,5 +15,5 @@ public interface ArticleMapper extends BaseMapper<Article> {
      * @param list
      * @return
      */
-    List<Article> getNoDeleteArticle(List<Long> list);
+    List<Article> getNoDeleteArticle(List<Long> list,Long id);
 }
