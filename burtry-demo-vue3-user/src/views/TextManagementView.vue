@@ -4,33 +4,60 @@ import ArticleItem from './article/ArticleItem.vue';
 
 import { getArticleListAPI } from "@/api/article";
 import { ElMessage } from 'element-plus';
+import { useRouter } from 'vue-router'; // 用于页面跳转
+import { useUserStore } from "@/stores/user";
+// import useStore from 'element-plus/es/components/table/src/store';
+const userStore = useUserStore();
+
+//文章管理里面的id为当前登录用户的用户id
+const userId = ref(userStore.userInfo.id)
 
 const articleList = ref([]);
+const router = useRouter(); // 路由实例
 
 const getArticleList = async () => {
-  const res = await getArticleListAPI()
+  const res = await getArticleListAPI(userId.value);
   if (res.code === 0) {
-    ElMessage.error(res.msg)
-    return
+    ElMessage.error(res.msg);
+    return;
   }
+
+  if (res.data.length === 0) {
+    return; // 如果没有文章，不需要继续处理
+  }
+
   articleList.value = res.data.map(item => {
-    //当content长度大于50时，截断并加省略号
+    // 当 content 长度大于 50 时，截断并加省略号
     if (item.content.length > 50) {
-      item.content = item.content.slice(0, 50) + '...'
+      item.content = item.content.slice(0, 50) + '...';
     }
-    return item
-  })
-}
+    return item;
+  });
+};
+
+// 跳转到发布文章页面
+const goToPublish = () => {
+  router.push('/text'); // 假设发布文章页面路径是 `/publish`
+};
 
 onMounted(() => {
-  getArticleList()
-})
+  getArticleList();
+});
 </script>
 
 <template>
   <div class="text-management">
     <h1 style="margin-bottom: 20px;">文章管理</h1>
-    <ul class="article-list">
+
+    <!-- 当文章列表为空时显示暂无页面 -->
+    <div v-if="articleList.length === 0" class="empty-container">
+      <el-empty :image-size="400">
+        <el-button type="primary" @click="goToPublish">立即发布文章</el-button>
+      </el-empty>
+    </div>
+
+    <!-- 当文章列表不为空时显示文章列表 -->
+    <ul v-else class="article-list">
       <li v-for="article in articleList" :key="article.id">
         <ArticleItem :article="article" />
       </li>
@@ -41,7 +68,6 @@ onMounted(() => {
 <style lang="scss" scoped>
 .text-management {
   padding: 20px 50px;
-
 }
 
 .container {
@@ -49,6 +75,39 @@ onMounted(() => {
   width: 100%;
   display: flex;
   background: #f5f5f5;
+}
 
+.empty-container {
+  text-align: center;
+  margin-top: 50px;
+
+  p {
+    font-size: 18px;
+    color: #666;
+    margin-bottom: 20px;
+  }
+
+  .publish-button {
+    background-color: #409eff;
+    border: none;
+    color: white;
+    padding: 10px 20px;
+    font-size: 16px;
+    border-radius: 4px;
+    cursor: pointer;
+
+    &:hover {
+      background-color: #66b1ff;
+    }
+  }
+}
+
+.article-list {
+  list-style: none;
+  padding: 0;
+
+  li {
+    margin-bottom: 15px;
+  }
 }
 </style>

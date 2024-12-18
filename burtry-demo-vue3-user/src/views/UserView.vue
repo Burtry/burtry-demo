@@ -1,79 +1,51 @@
 <script setup>
 import ArticleView from "@/views/article/UserArticleView.vue";
-import { ref } from "vue";
-import { useUserStore } from "@/stores/user";
-const articles = ref([
-  {
-    title: 'How to Learn Vue 3',
-    id: '1',
-    likes: 245,
-    views: 3321,
-    comments: 120,
-    contentPreview: 'This is a comprehensive guide to learning Vue 3...',
-    userAvatar: 'https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png',
-    username: 'kooriookami',
-    image: 'https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png',
-    publishedAt: '2024-11-08', // Date the article was published
-  },
-  {
-    title: 'Vue 3 Composition API Explained',
-    likes: 300,
-    views: 4000,
-    comments: 150,
-    contentPreview: 'Let’s dive deep into the Composition API of Vue 3...',
-    userAvatar: 'https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png',
-    username: 'devguru',
-    image: 'https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png',
-    publishedAt: '2024-10-15', // Date the article was published
-  },
-  {
-    title: 'How to Learn Vue 3',
-    likes: 245,
-    views: 3321,
-    comments: 120,
-    contentPreview: 'This is a comprehensive guide to learning Vue 3...',
-    userAvatar: 'https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png',
-    username: 'kooriookami',
-    image: 'https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png',
-    publishedAt: '2024-11-08', // Date the article was published
-  },
-  {
-    title: 'Vue 3 Composition API Explained',
-    likes: 300,
-    views: 4000,
-    comments: 150,
-    contentPreview: 'Let’s dive deep into the Composition API of Vue 3...',
-    userAvatar: 'https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png',
-    username: 'devguru',
-    image: 'https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png',
-    publishedAt: '2024-10-15', // Date the article was published
-  },
-  {
-    title: 'How to Learn Vue 3',
-    likes: 245,
-    views: 3321,
-    comments: 120,
-    contentPreview: 'This is a comprehensive guide to learning Vue 3...',
-    userAvatar: 'https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png',
-    username: 'kooriookami',
-    image: 'https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png',
-    publishedAt: '2024-11-08',
-  },
-  {
-    title: 'Vue 3 Composition API Explained',
-    likes: 300,
-    views: 4000,
-    comments: 150,
-    contentPreview: 'Let’s dive deep into the Composition API of Vue 3...',
-    userAvatar: 'https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png',
-    username: 'devguru',
-    image: 'https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png',
-    publishedAt: '2024-10-15',
-  },
-]);
+import { onMounted, ref } from "vue";
+import { getUserByIdAPI } from "@/api/user";
+import { getArticleListAPI } from "@/api/article";
+import router from "@/router";
+import { ElMessage } from "element-plus";
+const articles = ref([]);
 
-const userStore = useUserStore();
-const userInfo = userStore.userInfo;
+const userInfo = ref({
+  id: "",
+  nickName: "",
+  phone: "",
+  email: "",
+  status: "",
+  avatar: "",
+  createTime: "",
+  updateTime: "",
+});
+//此用户id为路径上的userid
+const userId = router.currentRoute.value.params.id;
+
+//获取用户信息
+const getUserInfo = async () => {
+  const res = await getUserByIdAPI(userId);
+  if (res.code === 0) {
+    ElMessage.error(res.msg)
+    return
+  }
+  userInfo.value = res.data;
+
+}
+
+//获取用户文章信息
+const getUserArticle = async () => {
+  const res = await getArticleListAPI(userId);
+  if (res.code === 0) {
+    ElMessage.error(res.msg)
+    return
+  }
+  articles.value = res.data;
+
+}
+
+onMounted(() => {
+  getUserInfo();
+  getUserArticle();
+})
 
 </script>
 
@@ -82,8 +54,7 @@ const userInfo = userStore.userInfo;
     <div class="user-info">
       <el-descriptions border>
         <el-descriptions-item :rowspan="2" :width="140" label="头像" align="center">
-          <el-image style="width: 100px; height: 100px"
-            src="https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png" />
+          <el-image style="width: 100px; height: 100px" :src="userInfo.image" fit="cover" />
         </el-descriptions-item>
         <el-descriptions-item label="用户昵称">{{ userInfo.nickName }}</el-descriptions-item>
         <el-descriptions-item label="手机号">{{ userInfo.phone }}</el-descriptions-item>
@@ -114,8 +85,14 @@ const userInfo = userStore.userInfo;
       </div>
 
       <div class="article-info">
-        <h3 style="margin-bottom: 20px;">用户发表文章</h3>
-        <ArticleView :articles="articles" />
+        <div v-if="articles.length === 0">
+          <el-empty :image-size="200">
+          </el-empty>
+        </div>
+        <div v-else>
+          <h3 style="margin-bottom: 20px;">用户发表文章</h3>
+          <ArticleView :articles="articles" />
+        </div>
       </div>
     </div>
   </div>
