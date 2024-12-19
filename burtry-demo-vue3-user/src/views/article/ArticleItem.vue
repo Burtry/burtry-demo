@@ -48,10 +48,14 @@ const deleteArticle = async (id) => {
             <el-image class="avatar" :src="article.userAvatar" alt="User Avatar" />
             <span>{{ article.username }}</span>
             <span class="published-at">发布时间：{{ article.publishTime }}</span>
+            <span class="published-at">所述频道：{{ article.channelName }}</span>
 
             <span class="status">
               当前状态:
-              <el-tag type="success">已发布</el-tag>
+              <el-tag
+                :type="article.status === 1 ? 'warning' : article.status === 2 ? 'info' : article.status === 3 ? 'primary' : article.status == 4 ? 'success' : 'danger'">{{
+                  article.status === 1 ? "草稿" : article.status === 2 ? "审核中" : article.status ===
+                    3 ? "待发布" : article.status == 4 ? "已发布" : "已锁定" }}</el-tag>
             </span>
 
             <el-button size="large" class="operation-button" :icon="Edit" round>

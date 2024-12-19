@@ -9,10 +9,13 @@ export const publishArticleAPI = (data) => {
   })
 }
 
-export const getArticleListAPI = (id) => {
+export const getArticleListAPI = (id, status) => {
   return instance({
     method: "get",
-    url: `article/api/v1/article/${id}`
+    url: `article/api/v1/article/${id}`,
+    params: {
+      status: status
+    }
   })
 
 }

@@ -41,7 +41,7 @@ const getUserInfo = async () => {
 
 //获取用户文章信息
 const getUserArticle = async () => {
-  const res = await getArticleListAPI(userId);
+  const res = await getArticleListAPI(userId, 4);  //status: 4 为已发布文章
   if (res.code === 0) {
     ElMessage.error(res.msg)
     return

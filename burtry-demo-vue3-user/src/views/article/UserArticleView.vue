@@ -41,6 +41,7 @@ const getTruncatedContent = (content) => {
             <el-image class="avatar" :src="article.userAvatar" alt="User Avatar" />
             <span>{{ article.username }}</span>
             <span class="published-at">发布时间：{{ article.publishTime }}</span>
+            <span class="published-at">所述频道：{{ article.channelName }}</span>
           </div>
         </div>
       </div>
@@ -52,7 +53,7 @@ const getTruncatedContent = (content) => {
 .published-at {
   font-size: 0.8rem;
   color: #999;
-  margin-left: 100px;
+  margin-left: 50px;
 }
 
 .article-container {

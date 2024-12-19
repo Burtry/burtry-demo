@@ -12,11 +12,13 @@ const userStore = useUserStore();
 //文章管理里面的id为当前登录用户的用户id
 const userId = ref(userStore.userInfo.id)
 
+const articleStatus = ref('0'); // 文章状态
+
 const articleList = ref([]);
 const router = useRouter(); // 路由实例
 
 const getArticleList = async () => {
-  const res = await getArticleListAPI(userId.value);
+  const res = await getArticleListAPI(userId.value, articleStatus.value);
   if (res.code === 0) {
     ElMessage.error(res.msg);
     router.push("/")
@@ -24,6 +26,8 @@ const getArticleList = async () => {
   }
 
   if (res.data.length === 0) {
+    ElMessage.info("暂无文章");
+    articleList.value = [];
     return; // 如果没有文章，不需要继续处理
   }
 
@@ -36,10 +40,13 @@ const getArticleList = async () => {
   });
 };
 
+
 // 跳转到发布文章页面
 const goToPublish = () => {
-  router.push('/text'); // 假设发布文章页面路径是 `/publish`
+  router.push('/text');
 };
+
+
 
 onMounted(() => {
   getArticleList();
@@ -51,6 +58,14 @@ onMounted(() => {
     <h1 style="margin-bottom: 20px;">文章管理</h1>
 
     <!-- 当文章列表为空时显示暂无页面 -->
+    <el-radio-group v-model="articleStatus" @change="getArticleList">
+      <el-radio value="0">全部</el-radio>
+      <el-radio value="1">草稿箱</el-radio>
+      <el-radio value="2">待审核</el-radio>
+      <el-radio value="3">待发布</el-radio>
+      <el-radio value="4">已发布</el-radio>
+      <el-radio value="5">已锁定</el-radio>
+    </el-radio-group>
     <div v-if="articleList.length === 0" class="empty-container">
       <el-empty :image-size="400">
         <el-button type="primary" @click="goToPublish">立即发布文章</el-button>
