@@ -4,15 +4,28 @@ import { useRouter } from "vue-router";
 const router = useRouter();
 import { useUserStore } from "@/stores/user";
 import { getStringAPI } from "@/api/user";
+import { ElMessage } from "element-plus";
 const userStore = useUserStore();
 
 const userInfo = ref(userStore.userInfo);
 
 const toUser = () => {
+  console.log(userInfo.value);
+
+  if (userInfo.value.id === "0") {
+    ElMessage.warning("请先登录");
+    router.push("/login");
+    return;
+  }
   router.push(`/user/${userInfo.value.id}`);
 };
 
 const toText = () => {
+  if (userInfo.value.id === "0") {
+    ElMessage.warning("请先登录");
+    router.push("/login");
+    return;
+  }
   router.push("/text");
 };
 
@@ -22,6 +35,11 @@ const exit = () => {
 };
 
 const toTextManagement = () => {
+  if (userInfo.value.id === "0") {
+    ElMessage.warning("请先登录");
+    router.push("/login");
+    return;
+  }
   router.push("/textManagement");
 }
 
@@ -33,6 +51,11 @@ const getString = () => {
 }
 
 const updateUserInfo = () => {
+  if (userInfo.value.id === "0") {
+    ElMessage.warning("请先登录");
+    router.push("/login");
+    return;
+  }
   console.log(userInfo.value);
 }
 

@@ -19,6 +19,7 @@ const getArticleList = async () => {
   const res = await getArticleListAPI(userId.value);
   if (res.code === 0) {
     ElMessage.error(res.msg);
+    router.push("/")
     return;
   }
 
