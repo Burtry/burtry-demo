@@ -8,7 +8,7 @@ import { Editor, Toolbar } from '@wangeditor/editor-for-vue'
 import { getChannelListAPI } from "@/api/channel";
 import { publishArticleAPI, getArticleByIdAPI } from "@/api/article";
 import { uploadFileAPI } from "@/api/upload";
-
+import router from '@/router';
 import { useRoute } from 'vue-router';
 const route = useRoute();
 // 编辑器实例
@@ -79,6 +79,8 @@ const handlerPublish = async () => {
   articleData.value.closeComment = closeComment.value
   articleData.value.images = imageUrl.value
   console.log(articleData.value);
+
+
   const res = await publishArticleAPI(articleData.value)
   if (res.code === 0) {
     ElMessage.error(res.msg)
@@ -92,6 +94,9 @@ const handlerPublish = async () => {
   channelId.value = ''
   closeComment.value = false
   agreement.value = false
+
+  //跳转到文章管理
+  router.push('/textManagement')
 
 }
 
@@ -128,7 +133,7 @@ onMounted(() => {
       valueHtml.value = res.data.content
       imageUrl.value = res.data.image
       channelId.value = res.data.channelId
-      closeComment.value = res.data.closeComment === 0 ? false : true
+      closeComment.value = res.data.isComment === 0 ? false : true
 
     })
   }

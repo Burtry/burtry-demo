@@ -139,9 +139,11 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         article.setTitle(articleDTO.getTitle());
         article.setUpdateTime(LocalDateTime.now());
         article.setImages(articleDTO.getImages());
-        article.setChannelId(article.getChannelId());
+        article.setChannelId(articleDTO.getChannelId());
         //设置文章状态    (待审核状态)
         article.setStatus(ArticleStatusConstant.AWAITING_REVIEW);
+        Channel channel = userClient.getChannelById(articleDTO.getChannelId());
+        article.setChannelName(channel.getName());
         updateById(article);
 
         //TODO 审核 异步审核 ,计划发送消息到消息队列进行审核
