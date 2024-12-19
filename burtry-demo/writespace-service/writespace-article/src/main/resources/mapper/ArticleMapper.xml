@@ -14,6 +14,9 @@
         <if test="id != null">
             AND a.author_id = #{id}
         </if>
+        <if test="status != null and status != 0">
+            AND a.status = #{status}
+        </if>
         <if test="list != null and list.size > 0">
             AND a.id IN
             <foreach collection="list" item="id" open="(" separator="," close=")">

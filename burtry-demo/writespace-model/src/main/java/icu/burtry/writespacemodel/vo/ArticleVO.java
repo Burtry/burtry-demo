@@ -25,5 +25,9 @@ public class ArticleVO {
 
     private String image;
 
+    private Integer status;
+
+    private String channelName;
+
     private LocalDateTime publishTime;
 }

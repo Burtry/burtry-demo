@@ -22,7 +22,7 @@ public interface IArticleService extends IService<Article> {
      * 获取用户的文章列表
      * @return
      */
-    Result<List<ArticleVO>> getArticleList(Long id);
+    Result<List<ArticleVO>> getArticleList(Long id,Integer status);
 
     /**
      * 用户删除本人文章

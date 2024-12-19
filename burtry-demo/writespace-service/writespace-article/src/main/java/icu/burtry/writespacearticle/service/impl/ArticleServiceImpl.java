@@ -27,6 +27,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -123,7 +124,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
 
 
     @Override
-    public Result<List<ArticleVO>> getArticleList(Long id) {
+    public Result<List<ArticleVO>> getArticleList(Long id, Integer status) {
         //查询该用户信息
         User user = userClient.findUserById(id);
 
@@ -134,10 +135,18 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         QueryWrapper<Article> articleQueryWrapper = new QueryWrapper<>();
         articleQueryWrapper.eq("author_id",id);
 
+        //添加文章状态条件
+        if(status != 0) {   //为0则查询全部文章。不为0则查询相关状态文章
+            articleQueryWrapper.eq("status",status);
+        }
+
         List<Article> list = list(articleQueryWrapper);
 
         //获取该用户未删除的文章
-        list = articleMapper.getNoDeleteArticle(list.stream().map(article -> article.getId()).collect(Collectors.toList()),id);
+        list = articleMapper.getNoDeleteArticle(list.stream().map(Article::getId).collect(Collectors.toList()),id,status);
+
+        //根据发布时间降序排序
+        list = list.stream().sorted(Comparator.comparing(Article::getPublishTime).reversed()).collect(Collectors.toList());
 
         List<ArticleVO> articleVOList = new ArrayList<>();
 
@@ -151,6 +160,8 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
             articleVO.setUserAvatar(user.getImage());
             articleVO.setUsername(user.getNickName());
             articleVO.setImage(article.getImages());
+            articleVO.setStatus(article.getStatus());
+            articleVO.setChannelName(article.getChannelName());
             articleVO.setPublishTime(article.getPublishTime());
 
             //设置文章内容
@@ -208,7 +219,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         articleQueryWrapper.eq("author_id",id);
         List<Article> list = list(articleQueryWrapper);
         //获取该用户未删除的文章
-        list = articleMapper.getNoDeleteArticle(list.stream().map(article -> article.getId()).collect(Collectors.toList()),id);
+        list = articleMapper.getNoDeleteArticle(list.stream().map(article -> article.getId()).collect(Collectors.toList()),id,4);   //此处的4为所有已发布文章的文章列表
 
         Integer sumLikes = list.stream().mapToInt(Article::getLikes).sum();
         Integer sumCollects = list.stream().mapToInt(Article::getCollections).sum();

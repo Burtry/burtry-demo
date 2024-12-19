@@ -33,9 +33,9 @@ public class ArticleController {
     }
 
     @GetMapping("{id}")
-    public Result<List<ArticleVO>> getArticleList(@PathVariable("id") Long id) {
-        log.info("获取请求用户的文章列表:{}",id);
-        return articleService.getArticleList(id);
+    public Result<List<ArticleVO>> getArticleList(@PathVariable("id") Long id,@RequestParam("status") Integer status) {
+        log.info("获取请求用户的文章列表:{},{}",id,status);
+        return articleService.getArticleList(id,status);
 
     }
 
