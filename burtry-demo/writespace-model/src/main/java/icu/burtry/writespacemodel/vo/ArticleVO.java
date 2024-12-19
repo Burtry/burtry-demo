@@ -30,4 +30,6 @@ public class ArticleVO {
     private String channelName;
 
     private LocalDateTime publishTime;
+
+    private LocalDateTime updateTime;
 }

@@ -3,6 +3,7 @@ import { Edit, Delete } from '@element-plus/icons-vue'
 import { deleteArticleAPI } from "@/api/article";
 import { ElMessage } from 'element-plus';
 import { ref } from 'vue';
+import router from '@/router';
 defineProps({
   article: {
     type: Object,
@@ -10,7 +11,6 @@ defineProps({
     default: () => ({})
   }
 })
-
 const delDialog = ref(false)
 
 const deleteArticle = async (id) => {
@@ -22,6 +22,16 @@ const deleteArticle = async (id) => {
 
   ElMessage.success(res.msg)
   window.location.reload()
+}
+
+const toText = (article) => {
+  router.push({
+    path: '/text',
+    query: {
+      id: article.id
+    }
+
+  })
 }
 </script>
 
@@ -42,12 +52,14 @@ const deleteArticle = async (id) => {
             <span>评论数: {{ article.comments }}</span>
           </div>
 
-          <div v-html="article.content"></div>
+          <div class="article-content-text" v-html="article.content"></div>
 
           <div class="user-info">
             <el-image class="avatar" :src="article.userAvatar" alt="User Avatar" />
             <span>{{ article.username }}</span>
             <span class="published-at">发布时间：{{ article.publishTime }}</span>
+            <span class="published-at">最近编辑时间：{{ article.publishTime === article.updateTime ? '无' :
+              article.updateTime }}</span>
             <span class="published-at">所述频道：{{ article.channelName }}</span>
 
             <span class="status">
@@ -58,8 +70,13 @@ const deleteArticle = async (id) => {
                     3 ? "待发布" : article.status == 4 ? "已发布" : "已锁定" }}</el-tag>
             </span>
 
-            <el-button size="large" class="operation-button" :icon="Edit" round>
-            </el-button>
+            <el-popconfirm title="你确定要前往编辑吗?" @confirm="toText(article)" width="150px">
+              <template #reference>
+                <el-button size="large" class="operation-button" :icon="Edit" round>
+                </el-button>
+              </template>
+            </el-popconfirm>
+
             <el-button size="large" class="" :icon="Delete" round @click="delDialog = true">
             </el-button>
           </div>
@@ -95,7 +112,7 @@ const deleteArticle = async (id) => {
 .published-at {
   font-size: 0.8rem;
   color: #999;
-  margin-left: 100px;
+  margin-left: 50px;
 }
 
 .article-container {
@@ -126,6 +143,17 @@ const deleteArticle = async (id) => {
   align-items: flex-start;
   width: 100%;
   margin-bottom: 20px;
+}
+
+.article-content-text {
+  white-space: nowrap;
+  /* 不换行 */
+  overflow: hidden;
+  /* 超出隐藏 */
+  text-overflow: ellipsis;
+  /* 显示省略号 */
+  width: 40%;
+  /* 设置宽度 */
 }
 
 .image-container {

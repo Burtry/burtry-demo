@@ -5,6 +5,11 @@ import lombok.Data;
 public class ArticleDTO {
 
     /**
+     * 文章id
+     */
+    private Long id;
+
+    /**
      * 文章标题
      */
     private String title;

@@ -31,13 +31,7 @@ const getArticleList = async () => {
     return; // 如果没有文章，不需要继续处理
   }
 
-  articleList.value = res.data.map(item => {
-    // 当 content 长度大于 50 时，截断并加省略号
-    if (item.content.length > 50) {
-      item.content = item.content.slice(0, 50) + '...';
-    }
-    return item;
-  });
+  articleList.value = res.data;
 };
 
 

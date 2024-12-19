@@ -33,3 +33,13 @@ export const getOverViewAPI = (id) => {
     url: `article/api/v1/article/overView/${id}`
   })
 }
+
+export const getArticleByIdAPI = (id) => {
+  return instance({
+    method: "get",
+    url: `article/api/v1/article`,
+    params: {
+      id: id
+    }
+  })
+}

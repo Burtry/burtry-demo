@@ -2,6 +2,7 @@ package icu.burtry.writespacearticle.controller;
 
 import icu.burtry.writespacearticle.service.IArticleService;
 import icu.burtry.writespacemodel.dto.ArticleDTO;
+import icu.burtry.writespacemodel.vo.ArticleContentVO;
 import icu.burtry.writespacemodel.vo.ArticleVO;
 import icu.burtry.writespaceutils.result.Result;
 import lombok.extern.slf4j.Slf4j;
@@ -43,6 +44,14 @@ public class ArticleController {
     public Result getOverView(@PathVariable("id") Long id) {
         log.info("获取该用户文章数据总览:{}", id);
         return articleService.overView(id);
+    }
+
+
+    @GetMapping("")
+    public Result<ArticleContentVO> getArticleVOById(Long id) {
+        log.info("根据文章id获取文章VO:{}",id);
+        return articleService.getArticleVOById(id);
+
     }
 
 

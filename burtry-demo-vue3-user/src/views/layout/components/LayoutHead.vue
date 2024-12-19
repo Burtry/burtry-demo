@@ -3,7 +3,7 @@ import { ref } from "vue";
 import { useRouter } from "vue-router";
 const router = useRouter();
 import { useUserStore } from "@/stores/user";
-import { getStringAPI } from "@/api/user";
+// import { getStringAPI } from "@/api/user";
 import { ElMessage } from "element-plus";
 const userStore = useUserStore();
 
@@ -43,12 +43,11 @@ const toTextManagement = () => {
   router.push("/textManagement");
 }
 
-const getString = () => {
-  getStringAPI().then((res) => {
-    console.log(res);
-  });
-
-}
+// const getString = () => {
+//   getStringAPI().then((res) => {
+//     console.log(res);
+//   });
+// }
 
 const updateUserInfo = () => {
   if (userInfo.value.id === "0") {
@@ -72,14 +71,14 @@ const updateUserInfo = () => {
     </div>
     <div class="user-section">
 
-      <button @click="getString()">test</button>
+      <!-- <button @click="getString()">test</button> -->
       <RouterLink :to="`/user/${userInfo.id}`"><span class="user-name">{{ userInfo.nickName ? userInfo.nickName : "游客"
           }}</span>
       </RouterLink>
 
       <el-dropdown class="avatar-dropdown" trigger="hover">
         <RouterLink :to="`/user/${userInfo.id}`">
-          <el-avatar src="https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png" />
+          <el-avatar :src="userStore.userInfo.image" />
         </RouterLink>
         <template #dropdown>
           <el-dropdown-menu>

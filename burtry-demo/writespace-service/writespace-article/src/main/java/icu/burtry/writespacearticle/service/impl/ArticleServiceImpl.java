@@ -16,11 +16,13 @@ import icu.burtry.writespacemodel.entity.User;
 import icu.burtry.writespacemodel.entity.article.Article;
 import icu.burtry.writespacemodel.entity.article.ArticleConfig;
 import icu.burtry.writespacemodel.entity.article.ArticleContent;
+import icu.burtry.writespacemodel.vo.ArticleContentVO;
 import icu.burtry.writespacemodel.vo.ArticleVO;
 import icu.burtry.writespaceutils.constant.ArticleStatusConstant;
 import icu.burtry.writespaceutils.result.Result;
 import icu.burtry.writespaceutils.thread.UserThreadLocalUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -56,6 +58,12 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
 
         if (articleDTO.hasNullOrEmptyFields()) {
             return Result.error("文章信息不完整，请检查后重试");
+        }
+
+        if(articleDTO.getId() != null) {
+            //TODO 执行文章更新操作
+            updateArticle(articleDTO);
+            return Result.success("文章修改成功!");
         }
 
         //此user只包含userId
@@ -108,7 +116,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         ArticleConfig articleConfig = new ArticleConfig();
         articleConfig.setArticleId(articleId);
         articleConfig.setIsDelete(0);   //未删除状态
-        articleConfig.setIsComment(articleDTO.getCloseComment()? 0 : 1);    //0可评论 , 1关闭评论
+        articleConfig.setIsComment(articleDTO.getCloseComment()? 1 : 0);    //0可评论 , 1关闭评论
 
         //保存文章配置
         articleConfigMapper.insert(articleConfig);
@@ -120,6 +128,39 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         articleContentMapper.insert(articleContent);
 
         return Result.success("文章发布成功!");
+    }
+
+    private void updateArticle(ArticleDTO articleDTO) {
+
+        //获取文章
+        Article article = getById(articleDTO.getId());
+
+        //更新文章
+        article.setTitle(articleDTO.getTitle());
+        article.setUpdateTime(LocalDateTime.now());
+        article.setImages(articleDTO.getImages());
+        article.setChannelId(article.getChannelId());
+        //设置文章状态    (待审核状态)
+        article.setStatus(ArticleStatusConstant.AWAITING_REVIEW);
+        updateById(article);
+
+        //TODO 审核 异步审核 ,计划发送消息到消息队列进行审核
+
+
+        //更新文章配置
+        ArticleConfig articleConfig = articleConfigMapper.selectOne(Wrappers.<ArticleConfig>lambdaQuery().eq(ArticleConfig::getArticleId, articleDTO.getId()));
+
+        articleConfig.setIsComment(articleDTO.getCloseComment() ? 1 : 0);
+
+        articleConfigMapper.updateById(articleConfig);
+
+        //更新文章内容
+        ArticleContent articleContent = articleContentMapper.selectOne(Wrappers.<ArticleContent>lambdaQuery().eq(ArticleContent::getArticleId, articleDTO.getId()));
+
+        articleContent.setContent(articleDTO.getContent());
+        articleContentMapper.updateById(articleContent);
+
+
     }
 
 
@@ -163,6 +204,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
             articleVO.setStatus(article.getStatus());
             articleVO.setChannelName(article.getChannelName());
             articleVO.setPublishTime(article.getPublishTime());
+            articleVO.setUpdateTime(article.getUpdateTime());
 
             //设置文章内容
 
@@ -233,6 +275,36 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         map.put("sumViews", sumViews);
 
         return Result.success(map,"文章数据总览获取成功!");
+    }
+
+    @Override
+    public Result<ArticleContentVO> getArticleVOById(Long id) {
+        if(id == null) {
+            return Result.error("ID信息错误!");
+        }
+        ArticleContentVO articleContentVO = new ArticleContentVO();
+        Article article = getById(id);
+        if(article == null) {
+            return Result.error("文章不存在!");
+        }
+        articleContentVO.setImage(article.getImages());
+        articleContentVO.setTitle(article.getTitle());
+        articleContentVO.setId(article.getId());
+        articleContentVO.setChannelId(article.getChannelId());
+
+        //获取文章内容
+        ArticleContent articleContent = articleContentMapper.selectOne(Wrappers.<ArticleContent>lambdaQuery().eq(ArticleContent::getArticleId, id));
+
+        articleContentVO.setContent(articleContent.getContent());
+
+        //获取文章配置
+        ArticleConfig articleConfig = articleConfigMapper.selectOne(Wrappers.<ArticleConfig>lambdaQuery().eq(ArticleConfig::getArticleId, id));
+
+        articleContentVO.setIsComment(articleConfig.getIsComment());
+
+
+        return Result.success(articleContentVO,"获取成功!");
+
     }
 
 

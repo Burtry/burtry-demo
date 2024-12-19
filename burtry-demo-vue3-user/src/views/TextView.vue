@@ -6,8 +6,11 @@ import { Plus } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus'
 import { Editor, Toolbar } from '@wangeditor/editor-for-vue'
 import { getChannelListAPI } from "@/api/channel";
-import { publishArticleAPI } from "@/api/article";
+import { publishArticleAPI, getArticleByIdAPI } from "@/api/article";
 import { uploadFileAPI } from "@/api/upload";
+
+import { useRoute } from 'vue-router';
+const route = useRoute();
 // 编辑器实例
 const editorRef = shallowRef()
 const valueHtml = ref('')
@@ -53,7 +56,9 @@ const getChannelList = async () => {
 const closeComment = ref(false)
 const agreement = ref(false)
 
+const articleId = ref("")
 const articleData = ref({
+  id: "",
   title: "",
   content: "",
   channelId: "",
@@ -61,11 +66,13 @@ const articleData = ref({
   images: ""
 })
 
+
 const handlerPublish = async () => {
   if (agreement.value === false) {
     ElMessage.error('请先阅读并同意协议')
     return
   }
+  articleData.value.id = articleId.value
   articleData.value.title = title.value
   articleData.value.content = valueHtml.value
   articleData.value.channelId = channelId.value
@@ -108,6 +115,25 @@ const uploadImage = async (params) => {
 
 onMounted(() => {
   getChannelList()
+  // //获取要编辑的文章
+  articleId.value = route.query.id ? route.query.id : ""
+  if (articleId.value) {
+    //获取该文章
+    getArticleByIdAPI(articleId.value).then(res => {
+      if (res.code === 0) {
+        ElMessage.error(res.msg)
+        return
+      }
+      title.value = res.data.title
+      valueHtml.value = res.data.content
+      imageUrl.value = res.data.image
+      channelId.value = res.data.channelId
+      closeComment.value = res.data.closeComment === 0 ? false : true
+
+    })
+  }
+
+
 })
 
 
@@ -156,7 +182,7 @@ onMounted(() => {
         <!-- 发布按钮 -->
         <div class="buttons">
           <el-button @click="handlerPublish" type="primary">立即发布</el-button>
-          <el-button @click="publish">定时发布</el-button>
+          <!-- <el-button @click="publish">定时发布</el-button> -->
         </div>
       </div>
     </div>
