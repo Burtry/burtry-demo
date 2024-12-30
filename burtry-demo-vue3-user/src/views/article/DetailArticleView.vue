@@ -1,27 +1,43 @@
 <script setup>
-import { ref,onMounted } from 'vue';
+import { ref, onMounted } from 'vue';
 import { More, Star, ChatLineRound } from '@element-plus/icons-vue'
 import CommentItem from "../../components/CommentItem.vue";
-
-import { useUserStore } from "@/stores/user";
+import { ElMessage } from 'element-plus';
+import { getArticleDetailByIdAPI } from "@/api/article"
 import router from '@/router';
-const userInfo = ref({
-  id: "",
-  name: "",
-  image: "",
-})
+import { useUserStore } from "@/stores/user";
+
+const userStore = useUserStore();
 
 
 const articleId = ref(router.currentRoute.value.params.id);
 
-const userStore = useUserStore();
+const userInfo = ref({
+  id: 0,
+  username: "",
+  image: ""
+});
+
+
+const articleDetail = ref({});
+
+const getArticleDetail = async () => {
+  const res = await getArticleDetailByIdAPI(articleId.value);
+  if (res.code === 0) {
+    ElMessage.error(res.msg);
+    return;
+  }
+  articleDetail.value = res.data;
+
+}
+
 userInfo.value.id = userStore.userInfo.id;
-userInfo.value.name = userStore.userInfo.name;
+userInfo.value.username = userStore.userInfo.username;
 userInfo.value.image = userStore.userInfo.image;
-
-
 onMounted(() => {
-  console.log(articleId.value);
+
+  getArticleDetail();
+
 })
 
 
@@ -80,16 +96,17 @@ const comments = [
 <template>
   <div class="bg">
     <div class="article-content">
-      <h1>{{ userInfo.name }} 标题</h1>
+      <h1>{{ articleDetail.title }} 标题</h1>
 
       <!-- 用户信息 -->
       <div class="user-info">
-        <RouterLink :to="`/user/${userInfo.id}`"><el-image class="user-image" :src="userInfo.image" /></RouterLink>
+        <RouterLink :to="`/user/${articleDetail.userId}`"><el-image class="user-image" :src="userInfo.image" />
+        </RouterLink>
         <div class="user-center">
-          <RouterLink :to="`/user/${userInfo.id}`">
-            <div class="user-name">{{ userInfo.name }}</div>
+          <RouterLink :to="`/user/${articleDetail.userId}`">
+            <div class="user-name">{{ articleDetail.username }}</div>
           </RouterLink>
-          <div class="publish-time">编辑于{{ userInfo.publishTime }}</div>
+          <div class="publish-time">编辑于{{ articleDetail.updateTime }}</div>
         </div>
         <div class="user-right">
           <el-dropdown>
@@ -108,21 +125,19 @@ const comments = [
       </div>
 
       <!-- 文章内容 -->
-      <div class="article-text">
-        文章内容文章内容文章内容文章内容文章内容文章内容文章内容文章内容文章内容文章内容文章内容文章内容文章内容文章内容文章内容文章内容文章内容文章内容文章内容文章内容文章内容文章内容
-        文章内容文章内容文章内容文章内容文章内容文章内容文章内容文章内容文章内容文章内容文章内容文章内容文章内容文章内容文章内容文章内容文章内容文章内容文章内容文章内容文章内容文章内容
+      <div class="article-text" v-html="articleDetail.content">
       </div>
       <el-divider />
 
       <!-- 评论区 -->
       <div class="article-comment" ref="commentsSection">
-        <h1 style="color: #62666d; font-size: 18px; margin-bottom: 20px;">评论&nbsp;{{ userInfo.id }}</h1>
+        <h1 style="color: #62666d; font-size: 18px; margin-bottom: 20px;">评论&nbsp;{{ articleDetail.userId }}</h1>
         <!-- 评论输入框 -->
         <div class="comment-input">
-          <RouterLink :to="`/user/${userInfo.id}`">
-            <el-image class="user-image comment-image" :src="userInfo.image" />
-          </RouterLink>
+
+          <el-image class="user-image comment-image" :src="userInfo.image" />
           <el-input type="textarea" placeholder="请输入一条友善的评论" :rows="3" />
+
         </div>
         <!-- 评论按钮 -->
         <div class="comment-button">

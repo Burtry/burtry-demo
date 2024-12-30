@@ -43,3 +43,13 @@ export const getArticleByIdAPI = (id) => {
     }
   })
 }
+
+export const getArticleDetailByIdAPI = (id) => {
+  return instance({
+    method: "get",
+    url: `article/api/v1/article/articleDetail`,
+    params: {
+      id: id
+    }
+  })
+}
