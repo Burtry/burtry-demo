@@ -17,6 +17,7 @@ import icu.burtry.writespacemodel.entity.article.Article;
 import icu.burtry.writespacemodel.entity.article.ArticleConfig;
 import icu.burtry.writespacemodel.entity.article.ArticleContent;
 import icu.burtry.writespacemodel.vo.ArticleContentVO;
+import icu.burtry.writespacemodel.vo.ArticleDetailVO;
 import icu.burtry.writespacemodel.vo.ArticleVO;
 import icu.burtry.writespaceutils.constant.ArticleStatusConstant;
 import icu.burtry.writespaceutils.result.Result;
@@ -309,5 +310,38 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
 
     }
 
+    @Override
+    public Result<ArticleDetailVO> getArticleDetailById(Long id) {
+        if(id == null) {
+            return Result.error("ID信息错误!");
+        }
+        ArticleDetailVO articleDetailVO = new ArticleDetailVO();
+        Article article = getById(id);
+        if(article == null) {
+            return Result.error("文章不存在!");
+        }
 
+        articleDetailVO.setId(article.getId());
+        articleDetailVO.setTitle(article.getTitle());
+
+        //获取用户头像
+        //根据用户id查询用户
+        User user = userClient.findUserById(article.getAuthorId());
+        if(user == null) {
+            return Result.error("作者不存在!");
+        }
+
+        articleDetailVO.setUserAvatar(user.getImage());
+        articleDetailVO.setUsername(user.getNickName());
+        articleDetailVO.setUserId(user.getId());
+        articleDetailVO.setUpdateTime(article.getUpdateTime());
+
+        //获取文章内容
+        ArticleContent articleContent = articleContentMapper.selectOne(Wrappers.<ArticleContent>lambdaQuery().eq(ArticleContent::getArticleId, id));
+
+        articleDetailVO.setContent(articleContent.getContent());
+
+        return Result.success(articleDetailVO,"获取成功!");
+
+    }
 }

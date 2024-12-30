@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import icu.burtry.writespacemodel.dto.ArticleDTO;
 import icu.burtry.writespacemodel.entity.article.Article;
 import icu.burtry.writespacemodel.vo.ArticleContentVO;
+import icu.burtry.writespacemodel.vo.ArticleDetailVO;
 import icu.burtry.writespacemodel.vo.ArticleVO;
 import icu.burtry.writespaceutils.result.Result;
 
@@ -44,4 +45,11 @@ public interface IArticleService extends IService<Article> {
      * @return
      */
     Result<ArticleContentVO> getArticleVOById(Long id);
+
+    /**
+     * 根据文章id获取文章详情VO
+     * @param id
+     * @return
+     */
+    Result<ArticleDetailVO> getArticleDetailById(Long id);
 }
