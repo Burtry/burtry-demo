@@ -1,23 +1,28 @@
 <script setup>
-import { ref } from 'vue';
+import { ref,onMounted } from 'vue';
 import { More, Star, ChatLineRound } from '@element-plus/icons-vue'
 import CommentItem from "../../components/CommentItem.vue";
 
 import { useUserStore } from "@/stores/user";
-// import router from '@/router';
+import router from '@/router';
 const userInfo = ref({
   id: "",
   name: "",
   image: "",
 })
 
-// const articleId = ref(router.currentRoute.value.params.id);
+
+const articleId = ref(router.currentRoute.value.params.id);
 
 const userStore = useUserStore();
 userInfo.value.id = userStore.userInfo.id;
 userInfo.value.name = userStore.userInfo.name;
 userInfo.value.image = userStore.userInfo.image;
 
+
+onMounted(() => {
+  console.log(articleId.value);
+})
 
 
 

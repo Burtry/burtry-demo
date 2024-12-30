@@ -44,7 +44,11 @@ const toText = (article) => {
         </div>
 
         <div class="text-content">
-          <h3 class="title" @click="$router.push(`/article/${article.id}`)">{{ article.title }}</h3>
+          <h3 class="title" v-if="article.status === 4" @click="$router.push(`/article/${article.id}`)">{{ article.title
+            }}
+          </h3>
+
+          <h3 v-else>{{ article.title }}</h3>
 
           <div class="meta">
             <span>点赞数: {{ article.likes }}</span>
