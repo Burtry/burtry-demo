@@ -121,6 +121,11 @@ public class LoginServiceImpl extends ServiceImpl<LoginMapper, User> implements 
             return Result.error("密码错误");
         }
 
+        //判断用户是否锁定
+        if(user.getStatus() == 1) {
+            return Result.error("用户已锁定!请联系管理员!");
+        }
+
         //生成token
         String token = JwtUtil.getToken(user.getId(), "user");
 

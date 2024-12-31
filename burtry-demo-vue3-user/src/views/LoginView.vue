@@ -44,6 +44,10 @@ const handLogin = () => {
       if (res.msg === "验证码错误") {
         getCaptcha(username.value)
       }
+      dialogVisible.value = false
+      username.value = ''
+      password.value = ''
+      captcha.value = ''
       return
     }
     else {
