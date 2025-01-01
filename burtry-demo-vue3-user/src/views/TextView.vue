@@ -16,10 +16,6 @@ const editorRef = shallowRef()
 const valueHtml = ref('')
 const mode = ref('');
 const toolbarConfig = {}
-toolbarConfig.insertKeys = {
-  index: 31, // 自定义插入的位置
-  keys: ['keepMenu'], // 自定义的菜单 key ，多个菜单用逗号分隔
-}
 toolbarConfig.excludeKeys = [
   'fullScreen',
   'group-video'
@@ -63,10 +59,12 @@ const articleData = ref({
   content: "",
   channelId: "",
   closeComment: false,
-  images: ""
+  images: "",
+  status: 1, //1为草稿，2为待审核  //默认为草稿
+  publishTime: ""
 })
 
-
+//立即发布
 const handlerPublish = async () => {
   if (agreement.value === false) {
     ElMessage.error('请先阅读并同意协议')
@@ -78,7 +76,8 @@ const handlerPublish = async () => {
   articleData.value.channelId = channelId.value
   articleData.value.closeComment = closeComment.value
   articleData.value.images = imageUrl.value
-  console.log(articleData.value);
+  //立即发布
+  articleData.value.status = 2
 
 
   const res = await publishArticleAPI(articleData.value)
@@ -98,6 +97,34 @@ const handlerPublish = async () => {
   //跳转到文章管理
   router.push('/textManagement')
 
+}
+
+//保存草稿
+const handlerSave = async () => {
+  articleData.value.id = articleId.value
+  articleData.value.title = title.value
+  articleData.value.content = valueHtml.value
+  articleData.value.channelId = channelId.value
+  articleData.value.closeComment = closeComment.value
+  articleData.value.images = imageUrl.value
+  //暂存草稿
+  articleData.value.status = 1
+
+  const res = await publishArticleAPI(articleData.value)
+  if (res.code === 0) {
+    ElMessage.error(res.msg)
+    return
+  }
+  //草稿暂存成功后操作
+  ElMessage.success(res.msg)
+  title.value = ''
+  valueHtml.value = ''
+  imageUrl.value = ''
+  channelId.value = ''
+  closeComment.value = false
+
+  //跳转到文章管理
+  router.push('/textManagement')
 }
 
 
@@ -140,8 +167,6 @@ onMounted(() => {
 
 
 })
-
-
 </script>
 
 
@@ -187,7 +212,8 @@ onMounted(() => {
         <!-- 发布按钮 -->
         <div class="buttons">
           <el-button @click="handlerPublish" type="primary">立即发布</el-button>
-          <!-- <el-button @click="publish">定时发布</el-button> -->
+          <el-button @click="handlerPublish" type="default">定时发布</el-button>
+          <el-button @click="handlerSave" type="default">暂存草稿</el-button>
         </div>
       </div>
     </div>

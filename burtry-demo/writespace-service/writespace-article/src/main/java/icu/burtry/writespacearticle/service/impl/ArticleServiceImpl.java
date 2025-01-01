@@ -4,6 +4,7 @@ import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.IdUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import icu.burtry.apis.user.IUserClient;
 import icu.burtry.writespacearticle.mapper.ArticleConfigMapper;
@@ -100,14 +101,15 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         article.setReports(0);
         article.setCreateTime(LocalDateTime.now());
         article.setUpdateTime(LocalDateTime.now());
+        article.setStatus(articleDTO.getStatus());
 
-        //立即发布,设置发布时间为now
-        article.setPublishTime(LocalDateTime.now());
-        //设置文章状态    (待审核状态)
-        article.setStatus(ArticleStatusConstant.AWAITING_REVIEW);
-
+        if(articleDTO.getPublishTime() != null) {
+            article.setPublishTime(articleDTO.getPublishTime());
+        } else  {
+            //立即发布,设置发布时间为now
+            article.setPublishTime(LocalDateTime.now());
+        }
         //TODO 审核 异步审核 ,计划发送消息到消息队列进行审核
-
 
         //审核成功保存文章
         save(article);

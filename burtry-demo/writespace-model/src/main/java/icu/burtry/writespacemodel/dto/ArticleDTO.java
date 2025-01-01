@@ -1,6 +1,9 @@
 package icu.burtry.writespacemodel.dto;
 
 import lombok.Data;
+
+import java.time.LocalDateTime;
+
 @Data
 public class ArticleDTO {
 
@@ -34,6 +37,16 @@ public class ArticleDTO {
      * 封面url
      */
     private String images;
+
+    /**
+     * 文章状态     // 1草稿 ,2待审核
+     */
+    private Integer status;
+
+    /**
+     * 发布时间
+     */
+    private LocalDateTime publishTime;
 
     //快速判空
     public boolean hasNullOrEmptyFields() {
