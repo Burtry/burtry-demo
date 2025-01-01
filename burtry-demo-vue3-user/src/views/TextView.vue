@@ -51,7 +51,8 @@ const getChannelList = async () => {
 
 const closeComment = ref(false)
 const agreement = ref(false)
-
+const scheduledPublishTime = ref('')
+const scheduledDialog = ref(false)
 const articleId = ref("")
 const articleData = ref({
   id: "",
@@ -79,6 +80,7 @@ const handlerPublish = async () => {
   //立即发布
   articleData.value.status = 2
 
+  articleData.value.publishTime = ""
 
   const res = await publishArticleAPI(articleData.value)
   if (res.code === 0) {
@@ -110,6 +112,8 @@ const handlerSave = async () => {
   //暂存草稿
   articleData.value.status = 1
 
+  articleData.value.publishTime = ""
+
   const res = await publishArticleAPI(articleData.value)
   if (res.code === 0) {
     ElMessage.error(res.msg)
@@ -126,6 +130,42 @@ const handlerSave = async () => {
   //跳转到文章管理
   router.push('/textManagement')
 }
+
+
+const scheduledPublish = async () => {
+  if (agreement.value === false) {
+    ElMessage.error('请先阅读并同意协议')
+    return
+  }
+  articleData.value.id = articleId.value
+  articleData.value.title = title.value
+  articleData.value.content = valueHtml.value
+  articleData.value.channelId = channelId.value
+  articleData.value.closeComment = closeComment.value
+  articleData.value.images = imageUrl.value
+  //定时发布
+  articleData.value.status = 2  //待审核状态
+  articleData.value.publishTime = scheduledPublishTime.value
+
+  const res = await publishArticleAPI(articleData.value)
+  if (res.code === 0) {
+    ElMessage.error(res.msg)
+    return
+  }
+  //定时发布成功后操作
+  ElMessage.success(res.msg)
+  title.value = ''
+  valueHtml.value = ''
+  imageUrl.value = ''
+  channelId.value = ''
+  closeComment.value = false
+  agreement.value = false
+
+  //跳转到文章管理
+  router.push('/textManagement')
+}
+
+
 
 
 const uploadImage = async (params) => {
@@ -212,11 +252,23 @@ onMounted(() => {
         <!-- 发布按钮 -->
         <div class="buttons">
           <el-button @click="handlerPublish" type="primary">立即发布</el-button>
-          <el-button @click="handlerPublish" type="default">定时发布</el-button>
           <el-button @click="handlerSave" type="default">暂存草稿</el-button>
+          <el-button @click="scheduledDialog = true" type="default">定时发布</el-button>
+          <div v-if="scheduledDialog">
+            <el-date-picker v-model="scheduledPublishTime" type="datetime" placeholder="选择时间"
+              format="YYYY-MM-DD hh:mm:ss" value-format="x">
+            </el-date-picker>
+            <el-button @click="scheduledPublish" type="primary"
+              style="margin-left: 40px; margin-top: 10px;">确认</el-button>
+            <el-button @click="scheduledPublishTime = '', scheduledDialog = false" type="default"
+              style="margin-left: 10px; margin-top: 10px;">取消</el-button>
+          </div>
+
         </div>
       </div>
     </div>
+
+
 
 
   </div>

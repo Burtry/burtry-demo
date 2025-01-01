@@ -29,7 +29,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -104,7 +106,8 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         article.setStatus(articleDTO.getStatus());
 
         if(articleDTO.getPublishTime() != null) {
-            article.setPublishTime(articleDTO.getPublishTime());
+            //将时间戳转换成LocalDateTime类型
+            article.setPublishTime(LocalDateTime.ofInstant(Instant.ofEpochMilli(articleDTO.getPublishTime()), ZoneId.systemDefault()));
         } else  {
             //立即发布,设置发布时间为now
             article.setPublishTime(LocalDateTime.now());
@@ -144,7 +147,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         article.setImages(articleDTO.getImages());
         article.setChannelId(articleDTO.getChannelId());
         //设置文章状态    (待审核状态)
-        article.setStatus(ArticleStatusConstant.AWAITING_REVIEW);
+        article.setStatus(articleDTO.getStatus());
         Channel channel = userClient.getChannelById(articleDTO.getChannelId());
         article.setChannelName(channel.getName());
         updateById(article);

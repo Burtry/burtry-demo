@@ -46,7 +46,7 @@ public class ArticleDTO {
     /**
      * 发布时间
      */
-    private LocalDateTime publishTime;
+    private Long publishTime;
 
     //快速判空
     public boolean hasNullOrEmptyFields() {
