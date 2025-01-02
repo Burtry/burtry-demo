@@ -13,4 +13,11 @@ public interface UserService extends IService<User> {
      * @return
      */
     Result getUserInfo(Long id);
+
+    /**
+     * 更新用户信息
+     * @param userInfoDTO
+     * @return
+     */
+    Result updateUserInfo(UpdateUserInfoDTO userInfoDTO);
 }

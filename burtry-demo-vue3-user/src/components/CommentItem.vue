@@ -19,14 +19,14 @@ defineProps({
   <div class="comment-item">
     <!-- 用户头像 -->
     <RouterLink :to="`/user/${comments.userId}`">
-      <el-image class="user-image" :src="comments.image" />
+      <el-image class="user-image" :src="comments.userAvatar" />
     </RouterLink>
 
     <!-- 评论详情 -->
     <div class="comment-content">
       <!-- 用户名 -->
       <RouterLink :to="`/user/${comments.userId}`" class="user-name">
-        {{ comments.userName }}
+        {{ comments.username }}
       </RouterLink>
       <!-- 评论内容 -->
       <p class="comment-text">{{ comments.content }}</p>

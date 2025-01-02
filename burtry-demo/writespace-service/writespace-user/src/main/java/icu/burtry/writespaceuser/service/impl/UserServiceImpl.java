@@ -1,10 +1,10 @@
 package icu.burtry.writespaceuser.service.impl;
 
+import cn.hutool.core.bean.BeanUtil;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import icu.burtry.writespacemodel.dto.UpdateUserInfoDTO;
 import icu.burtry.writespacemodel.entity.User;
 import icu.burtry.writespacemodel.vo.UserInfoVO;
-import icu.burtry.writespacemodel.vo.UserVO;
 import icu.burtry.writespaceuser.mapper.UserMapper;
 import icu.burtry.writespaceuser.service.UserService;
 import icu.burtry.writespaceutils.result.Result;
@@ -36,5 +36,27 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         BeanUtils.copyProperties(user,userVO);
 
         return Result.success(userVO,"用户信息获取成功！");
+    }
+
+    @Override
+    public Result updateUserInfo(UpdateUserInfoDTO userInfoDTO) {
+        if (BeanUtil.isEmpty(userInfoDTO)) {
+            return Result.error("信息不完整!");
+        }
+        User user = getById(userInfoDTO.getId());
+        if(user == null) {
+            return Result.error("用户不存在!");
+        }
+
+        user.setPhone(userInfoDTO.getPhone());
+        user.setImage(userInfoDTO.getUrl());//设置头像
+        user.setSex(userInfoDTO.getSex());
+        user.setNickName(userInfoDTO.getNickName());
+        user.setEmail(userInfoDTO.getEmail());
+        user.setAddress(userInfoDTO.getAddress());
+
+        updateById(user);
+
+        return Result.success("更新成功!" );
     }
 }

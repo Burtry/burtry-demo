@@ -6,6 +6,7 @@ import { ElMessage } from 'element-plus';
 import { getArticleDetailByIdAPI } from "@/api/article"
 import router from '@/router';
 import { useUserStore } from "@/stores/user";
+import { postCommentAPI, getCommentListAPI } from "@/api/comment";
 
 const userStore = useUserStore();
 
@@ -54,41 +55,52 @@ const collectArticle = () => {
 }
 
 const commentArticle = () => {
-  console.log('评论');
   if (commentsSection.value) {
     commentsSection.value.scrollIntoView({ behavior: 'smooth' });
   }
 
 }
 
+const comments = ref([])
 
+const commentContent = ref('');
 
-const comments = [
-  {
-    id: 1,
-    userId: 1,
-    userName: 'John Doe',
-    image: 'https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png',
-    content: '这是一个评论内容。',
-    publishTime: '2022-01-01 12:00:00'
-  },
-  {
-    id: 2,
-    userId: 2,
-    userName: 'Jane Smith',
-    image: 'https://via.placeholder.com/50',
-    content: '这是另一个评论内容。',
-    publishTime: '2022-01-02 14:00:00'
-  },
-  {
-    id: 3,
-    userId: 3,
-    userName: 'Bob Johnson',
-    image: 'https://via.placeholder.com/50',
-    content: '这是第三个评论内容。',
-    publishTime: '2022-01-03 16:00:00'
+const getCommentList = async () => {
+  const res = await getCommentListAPI(articleId.value);
+  if (res.code === 0) {
+    ElMessage.error(res.msg);
+    return;
   }
-]
+  comments.value = res.data;
+}
+
+const saveComment = async () => {
+  const data = {
+    articleId: articleId.value,
+    content: commentContent.value,
+    userId: userInfo.value.id
+  }
+
+  if (data.content === '') {
+    ElMessage.error('评论内容不能为空');
+    return;
+  }
+  const res = await postCommentAPI(data);
+  if (res.code === 0) {
+    ElMessage.error(res.msg);
+    return;
+  }
+  ElMessage.success('评论成功');
+  commentContent.value = '';
+
+  //重新获取评论列表
+  getCommentList();
+}
+
+onMounted(() => {
+  getCommentList();
+})
+
 
 
 </script>
@@ -100,7 +112,8 @@ const comments = [
 
       <!-- 用户信息 -->
       <div class="user-info">
-        <RouterLink :to="`/user/${articleDetail.userId}`"><el-image class="user-image" :src="userInfo.image" />
+        <RouterLink :to="`/user/${articleDetail.userId}`"><el-image class="user-image"
+            :src="articleDetail.userAvatar" />
         </RouterLink>
         <div class="user-center">
           <RouterLink :to="`/user/${articleDetail.userId}`">
@@ -131,17 +144,17 @@ const comments = [
 
       <!-- 评论区 -->
       <div class="article-comment" ref="commentsSection">
-        <h1 style="color: #62666d; font-size: 18px; margin-bottom: 20px;">评论&nbsp;{{ articleDetail.userId }}</h1>
+        <h1 style="color: #62666d; font-size: 18px; margin-bottom: 20px;">评论&nbsp;{{ comments.length }}</h1>
         <!-- 评论输入框 -->
         <div class="comment-input">
 
           <el-image class="user-image comment-image" :src="userInfo.image" />
-          <el-input type="textarea" placeholder="请输入一条友善的评论" :rows="3" />
+          <el-input v-model="commentContent" type="textarea" placeholder="请输入一条友善的评论" :rows="3" />
 
         </div>
         <!-- 评论按钮 -->
         <div class="comment-button">
-          <el-button type="primary">发表评论</el-button>
+          <el-button type="primary" @click="saveComment">发表评论</el-button>
         </div>
 
         <!-- 评论列表 -->
@@ -173,7 +186,7 @@ const comments = [
         <el-icon class="icon-action" @click="commentArticle">
           <ChatLineRound />
         </el-icon>
-        <span class="icon-text">{{ userInfo.id }}</span>
+        <span class="icon-text">{{ comments.length }}</span>
 
 
       </div>

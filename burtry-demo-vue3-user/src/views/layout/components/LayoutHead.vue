@@ -43,18 +43,15 @@ const toTextManagement = () => {
   router.push("/textManagement");
 }
 
-// const getString = () => {
-//   getStringAPI().then((res) => {
-//     console.log(res);
-//   });
-// }
 
+//TODO
 const updateUserInfo = () => {
   if (userInfo.value.id === "0") {
     ElMessage.warning("请先登录");
     router.push("/login");
     return;
   }
+
   console.log(userInfo.value);
 }
 
