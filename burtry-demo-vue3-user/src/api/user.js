@@ -41,3 +41,11 @@ export const getUserByIdAPI = (id) => {
     method: 'get'
   })
 }
+
+export const updateUserInfoAPI = (data) => {
+  return instance({
+    url: '/user/api/v1/',
+    method: 'put',
+    data: data
+  })
+}

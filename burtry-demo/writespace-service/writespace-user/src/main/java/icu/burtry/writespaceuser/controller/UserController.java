@@ -25,7 +25,7 @@ public class UserController {
 
 
     @PutMapping("")
-    public Result updateUserInfo(UpdateUserInfoDTO userInfoDTO) {
+    public Result updateUserInfo(@RequestBody UpdateUserInfoDTO userInfoDTO) {
         log.info("更新用户信息:{}",userInfoDTO);
         return userService.updateUserInfo(userInfoDTO);
     }
