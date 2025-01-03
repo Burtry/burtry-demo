@@ -3,6 +3,7 @@ package icu.burtry.writespacearticle.service.impl;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.IdUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -12,6 +13,7 @@ import icu.burtry.writespacearticle.mapper.ArticleContentMapper;
 import icu.burtry.writespacearticle.mapper.ArticleMapper;
 import icu.burtry.writespacearticle.service.IArticleService;
 import icu.burtry.writespacemodel.dto.ArticleDTO;
+import icu.burtry.writespacemodel.dto.ArticleLoadDTO;
 import icu.burtry.writespacemodel.entity.Channel;
 import icu.burtry.writespacemodel.entity.User;
 import icu.burtry.writespacemodel.entity.article.Article;
@@ -21,6 +23,7 @@ import icu.burtry.writespacemodel.vo.ArticleContentVO;
 import icu.burtry.writespacemodel.vo.ArticleDetailVO;
 import icu.burtry.writespacemodel.vo.ArticleVO;
 import icu.burtry.writespaceutils.constant.ArticleStatusConstant;
+import icu.burtry.writespaceutils.constant.ChannelConstant;
 import icu.burtry.writespaceutils.result.Result;
 import icu.burtry.writespaceutils.thread.UserThreadLocalUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -32,10 +35,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 
@@ -347,6 +347,50 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         articleDetailVO.setContent(articleContent.getContent());
 
         return Result.success(articleDetailVO,"获取成功!");
+    }
 
+    @Override
+    public Result<List<ArticleVO>> load(ArticleLoadDTO articleLoadDTO) {
+        if (BeanUtil.isEmpty(articleLoadDTO)) {
+            return Result.error("请求参数异常，请重试!");
+        }
+
+        Page<Article> page = new Page<>(articleLoadDTO.getPageNum(), articleLoadDTO.getPageSize());
+
+        //按发布时间倒序排序查询10条文章、频道筛选、已发布文章且未删除的文章
+        IPage<Article> articlePage = articleMapper.loadArticles(page, articleLoadDTO.getChannelId());
+
+        List<Article> articleList = articlePage.getRecords();
+
+        ArrayList<ArticleVO> articleVOS = new ArrayList<>();
+
+        for (Article article : articleList) {
+            ArticleVO articleVO = new ArticleVO();
+            //获取每个文章内容
+            ArticleContent articleContent = articleContentMapper.selectOne(Wrappers.<ArticleContent>lambdaQuery().eq(ArticleContent::getArticleId, article.getId()));
+            if(articleContent != null) {
+                //设置文章内容
+                articleVO.setContent(articleContent.getContent());
+            } else {
+                articleVO.setContent("获取文章内容错误!");
+            }
+
+            User user = userClient.findUserById(article.getAuthorId());
+            //属性设置
+            articleVO.setId(article.getId());
+            articleVO.setTitle(article.getTitle());
+            articleVO.setLikes(article.getLikes());
+            articleVO.setViews(article.getViews());
+            articleVO.setComments(article.getComments());
+            articleVO.setUserAvatar(user.getImage());
+            articleVO.setUsername(user.getNickName());
+            articleVO.setImage(article.getImages());
+            articleVO.setStatus(article.getStatus());
+            articleVO.setChannelName(article.getChannelName());
+            articleVO.setPublishTime(article.getPublishTime());
+            articleVO.setUpdateTime(article.getUpdateTime());
+            articleVOS.add(articleVO);
+        }
+        return Result.success(articleVOS,"获取成功！");
     }
 }

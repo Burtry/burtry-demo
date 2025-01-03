@@ -27,14 +27,14 @@ defineProps({
       </div>
 
       <!-- Content Snippet -->
-      <p class="article-snippet">{{ article.contentPreview }}</p>
+      <p class="article-snippet" v-html="article.content"></p>
 
       <!-- Author and Time -->
       <div class="article-footer">
         <span style="font-weight: bolder;">作者:</span>
         <RouterLink :to="`/user/${article.userId}`"> <span class="author-name">{{ article.username }}</span>
         </RouterLink>
-        <span class="publish-time">{{ article.publishedAt }}</span>
+        <span class="publish-time">{{ article.publishTime }}</span>
       </div>
     </div>
   </div>

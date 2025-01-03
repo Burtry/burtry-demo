@@ -25,4 +25,17 @@
         </if>
     </select>
 
+    <select id="loadArticles" resultType="icu.burtry.writespacemodel.entity.article.Article">
+        SELECT a.*, ac.is_delete
+        FROM writespace.article a
+        JOIN writespace.article_config ac ON a.id = ac.article_id
+        WHERE a.status = 4
+        AND ac.is_delete = 0
+        <if test="channelId != 1 and channelId != 2 and channelId != 3">
+            AND a.channel_id = #{channelId}
+        </if>
+        ORDER BY a.publish_time DESC
+    </select>
+
+
 </mapper>

@@ -6,6 +6,8 @@ import ArticleView from "@/views/article/ArticleView.vue";
 import { getChannelListAPI } from "@/api/channel";
 import { ElMessage } from 'element-plus';
 
+import { getHomeArticleListAPI } from "@/api/article";
+
 const articles = ref([
   {
     title: 'How to Learn Vue 3',
@@ -18,154 +20,31 @@ const articles = ref([
     userId: '1',
     image: 'https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png',
     publishedAt: '2024-11-08', // Date the article was published
-  },
-  {
-    title: 'How to Learn Vue 3',
-    id: '1',
-    likes: 245,
-    views: 3321,
-    comments: 120,
-    contentPreview: 'This is a comprehensive guide to learning Vue 3...',
-    username: 'kooriookami',
-    userId: '1',
-    image: 'https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png',
-    publishedAt: '2024-11-08', // Date the article was published
-  },
-  {
-    title: 'How to Learn Vue 3',
-    id: '1',
-    likes: 245,
-    views: 3321,
-    comments: 120,
-    contentPreview: 'This is a comprehensive guide to learning Vue 3...',
-    username: 'kooriookami',
-    userId: '1',
-    image: 'https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png',
-    publishedAt: '2024-11-08', // Date the article was published
-  },
-  {
-    title: 'How to Learn Vue 3',
-    id: '1',
-    likes: 245,
-    views: 3321,
-    comments: 120,
-    contentPreview: 'This is a comprehensive guide to learning Vue 3...',
-    username: 'kooriookami',
-    userId: '1',
-    image: 'https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png',
-    publishedAt: '2024-11-08', // Date the article was published
-  },
-  {
-    title: 'How to Learn Vue 3',
-    id: '1',
-    likes: 245,
-    views: 3321,
-    comments: 120,
-    contentPreview: 'This is a comprehensive guide to learning Vue 3...',
-    username: 'kooriookami',
-    userId: '1',
-    image: 'https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png',
-    publishedAt: '2024-11-08', // Date the article was published
-  },
-  {
-    title: 'How to Learn Vue 3',
-    id: '1',
-    likes: 245,
-    views: 3321,
-    comments: 120,
-    contentPreview: 'This is a comprehensive guide to learning Vue 3...',
-    username: 'kooriookami',
-    userId: '1',
-    image: 'https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png',
-    publishedAt: '2024-11-08', // Date the article was published
-  },
-  {
-    title: 'How to Learn Vue 3',
-    id: '1',
-    likes: 245,
-    views: 3321,
-    comments: 120,
-    contentPreview: 'This is a comprehensive guide to learning Vue 3...',
-    username: 'kooriookami',
-    userId: '1',
-    image: 'https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png',
-    publishedAt: '2024-11-08', // Date the article was published
-  },
-  {
-    title: 'How to Learn Vue 3',
-    id: '1',
-    likes: 245,
-    views: 3321,
-    comments: 120,
-    contentPreview: 'This is a comprehensive guide to learning Vue 3...',
-    username: 'kooriookami',
-    userId: '1',
-    image: 'https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png',
-    publishedAt: '2024-11-08', // Date the article was published
-  },
-  {
-    title: 'How to Learn Vue 3',
-    id: '1',
-    likes: 245,
-    views: 3321,
-    comments: 120,
-    contentPreview: 'This is a comprehensive guide to learning Vue 3...',
-    username: 'kooriookami',
-    userId: '1',
-    image: 'https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png',
-    publishedAt: '2024-11-08', // Date the article was published
-  },
-  {
-    title: 'How to Learn Vue 3',
-    id: '1',
-    likes: 245,
-    views: 3321,
-    comments: 120,
-    contentPreview: 'This is a comprehensive guide to learning Vue 3...',
-    username: 'kooriookami',
-    userId: '1',
-    image: 'https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png',
-    publishedAt: '2024-11-08', // Date the article was published
-  },
-  {
-    title: 'How to Learn Vue 3',
-    id: '1',
-    likes: 245,
-    views: 3321,
-    comments: 120,
-    contentPreview: 'This is a comprehensive guide to learning Vue 3...',
-    username: 'kooriookami',
-    userId: '1',
-    image: 'https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png',
-    publishedAt: '2024-11-08', // Date the article was published
-  },
-  {
-    title: 'How to Learn Vue 3',
-    id: '1',
-    likes: 245,
-    views: 3321,
-    comments: 120,
-    contentPreview: 'This is a comprehensive guide to learning Vue 3...',
-    username: 'kooriookami',
-    userId: '1',
-    image: 'https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png',
-    publishedAt: '2024-11-08', // Date the article was published
-  },
-  {
-    title: 'How to Learn Vue 3',
-    id: '1',
-    likes: 245,
-    views: 3321,
-    comments: 120,
-    contentPreview: 'This is a comprehensive guide to learning Vue 3...',
-    username: 'kooriookami',
-    userId: '1',
-    image: 'https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png',
-    publishedAt: '2024-11-08', // Date the article was published
-  },
-
-
+  }
 ]);
+const noMore = ref(false);
+const loadData = ref({
+  channelId: "", // 频道id
+  pageNum: 1,
+  pageSize: 10,
+})
+
+// 获取文章列表
+const loadArticles = async () => {
+  loadData.value.channelId = activeChannel.value;
+  const res = await getHomeArticleListAPI(loadData.value)
+  if (res.code === 0) {
+    ElMessage.error("获取文章列表失败")
+    return
+  }
+  if (res.data.length === 0) {
+    noMore.value = true;
+    loading.value = false;
+    return
+  }
+  articles.value.push(...res.data)
+  loading.value = false;
+}
 
 const searchInfo = ref('');
 
@@ -177,9 +56,11 @@ const getChannelList = async () => {
     ElMessage.error("获取频道列表失败")
     return
   }
-
   channelList.value = res.data
   activeChannel.value = channelList.value[0].id
+
+  // 获取文章列表
+  loadArticles();
 }
 
 onMounted(() => {
@@ -190,27 +71,26 @@ const activeChannel = ref(1);
 
 const handleChannelClick = (id) => {
   activeChannel.value = id;
+  loadData.value.pageNum = 1;
+  articles.value = [];
+  noMore.value = false;
+  loadArticles();
 };
 
+const loading = ref(false);
 
-const pageData = ref({
-  pageNum: 1,
-  pageSize: 10,
-  total: 100
-});
+const load = () => {
+  if (loading.value) return;  // 防止在加载期间再次触发
 
-const OnSizeChange = (val) => {
-  console.log(val);
-};
-
-const OnCurrentChange = (val) => {
-  console.log(val);
-};
+  loading.value = true;
+  loadData.value.pageNum++;
+  loadArticles();
+}
 
 </script>
 
 <template>
-  <div class="bg">
+  <div class="bg" v-infinite-scroll="load">
     <div class="search-container">
       <el-input v-model="searchInfo" class="search" placeholder="输入关键字搜索" :prefix-icon="Search" clearable />
       <el-button type="primary" class="submit">搜索</el-button>
@@ -225,21 +105,25 @@ const OnCurrentChange = (val) => {
       </el-button>
     </div>
     <el-divider />
-    <div class="article-list">
+    <div class="article-list" style="overflow: auto">
       <div v-for="article in articles" :key="article.id" class="article-item">
         <ArticleView :article="article" />
       </div>
-      <!-- 分页条 -->
-      <el-pagination v-model:current-page="pageData.pageNum" v-model:page-size="pageData.pageSize"
-        :page-sizes="[5, 10, 15, 20]" size="large" background layout="sizes, prev, pager, next, jumper, total"
-        :total="pageData.total" @size-change="OnSizeChange" @current-change="OnCurrentChange" class="page" />
+      <p v-if="loading" class="loading">Loading...</p>
+      <p v-if="noMore" class="loading">没有更多内容了...</p>
     </div>
-
-
   </div>
 </template>
 
 <style lang="scss" scoped>
+.loading {
+  text-align: center;
+  margin-top: 20px;
+  font-size: 18px;
+  color: #999;
+  margin-left: 47%;
+}
+
 .bg {
   min-height: 100vh;
   height: auto;
@@ -315,6 +199,7 @@ const OnCurrentChange = (val) => {
   background-color: rgba(255, 255, 255, 0.6);
   border-radius: 10px;
   padding: 20px;
+
 }
 
 .article-item {

@@ -53,3 +53,11 @@ export const getArticleDetailByIdAPI = (id) => {
     }
   })
 }
+
+export const getHomeArticleListAPI = (data) => {
+  return instance({
+    method: "post",
+    url: `article/api/v1/article/load`,
+    data: data
+  })
+}
