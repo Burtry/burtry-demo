@@ -81,6 +81,12 @@ const saveComment = async () => {
     userId: userInfo.value.id
   }
 
+  if (userStore.userInfo.id === "0") {
+    ElMessage.error('请先登录');
+    router.push('/login');
+    return;
+  }
+
   if (data.content === '') {
     ElMessage.error('评论内容不能为空');
     return;

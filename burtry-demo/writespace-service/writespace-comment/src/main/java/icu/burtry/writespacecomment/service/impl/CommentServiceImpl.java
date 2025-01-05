@@ -35,6 +35,10 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, ArticleCommen
             return Result.error("参数错误，请重试!");
         }
 
+        if(commentDTO.getUserId() == 0L) {
+            return Result.error("请先登录");
+        }
+
         if(commentDTO.getContent().isEmpty()) {
             return Result.error("评论不能为空!");
         }
