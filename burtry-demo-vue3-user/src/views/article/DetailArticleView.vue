@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, onBeforeUnmount } from 'vue';
 import { More, Star, ChatLineRound } from '@element-plus/icons-vue'
 import CommentItem from "../../components/CommentItem.vue";
 import { ElMessage } from 'element-plus';
@@ -7,7 +7,7 @@ import { getArticleDetailByIdAPI } from "@/api/article"
 import router from '@/router';
 import { useUserStore } from "@/stores/user";
 import { postCommentAPI, getCommentListAPI } from "@/api/comment";
-import { likeBehaviorAPI, getDataAPI, readBehaviorAPI } from "@/api/behavior";
+import { likeBehaviorAPI, getDataAPI, readBehaviorAPI, collectBehaviorAPI } from "@/api/behavior";
 // 使用 import 来引入图片
 import likeIcon from '@/assets/like.svg';
 import likedIcon from '@/assets/liked.svg';
@@ -29,10 +29,12 @@ const comments = ref([])
 const commentContent = ref('');
 const articleDetail = ref({});
 const isLiked = ref(false);  // 默认未点赞
+const isCollected = ref(false);  // 默认未收藏
 
 const behaviorNum = ref({
-  like: 0,
-  views: 0
+  likes: 0,
+  views: 0,
+  collects: 0
 })
 
 const getArticleDetail = async () => {
@@ -63,9 +65,9 @@ const likeArticle = async () => {
   }
 
   if (res.data === "点赞") {
-    behaviorNum.value.like += 1;
+    behaviorNum.value.likes += 1;
   } else {
-    behaviorNum.value.like -= 1;
+    behaviorNum.value.likes -= 1;
   }
 
   isLiked.value = !isLiked.value;
@@ -78,19 +80,41 @@ const getBehavior = async () => {
     ElMessage.error(res.msg);
     return;
   }
-  behaviorNum.value.like = res.data.likes;
+  behaviorNum.value.likes = res.data.likes;
   behaviorNum.value.views = res.data.views;
+  behaviorNum.value.collects = res.data.collects;
   if (res.data.likeMe === 1) {
     isLiked.value = true;
+  }
+  if (res.data.collectMe === 1) {
+    isCollected.value = true;
   }
 }
 
 
 
 
-const collectArticle = () => {
-  console.log('收藏');
+const collectArticle = async () => {
+  const data = {
+    articleId: articleId.value,
+    operation: isCollected.value ? 0 : 1, // 1 收藏 0 取消收藏
+  }
 
+  const res = await collectBehaviorAPI(data);
+  if (res.code === 0) {
+    ElMessage.error(res.msg);
+    return;
+  }
+  if (res.data === "已收藏") {
+    ElMessage.warning('已收藏');
+    return;
+  }
+  if (res.data === "收藏") {
+    behaviorNum.value.collects += 1;
+  } else {
+    behaviorNum.value.collects -= 1;
+  }
+  isCollected.value = !isCollected.value;
 }
 
 //点击评论滚到评论区
@@ -139,19 +163,26 @@ const saveComment = async () => {
   getCommentList();
 }
 
+let timeId = null;
+
 onMounted(() => {
   getCommentList();
   getArticleDetail();
+  //延迟加载，当超过一定时间后执行阅读行为
+  timeId = setTimeout(async () => {
+    const res = await readBehaviorAPI(articleId.value);
+    if (res.code === 0) {
+      console.log(res.msg);
+    }
+  }, 5000)  // 5s后执行阅读行为
+
 })
 
-//延迟加载，当超过一定时间后执行阅读行为
-setTimeout(async () => {
-  const res = await readBehaviorAPI(articleId.value);
-  if (res.code === 0) {
-    console.log(res.msg);
+onBeforeUnmount(() => {
+  if (timeId) {
+    clearTimeout(timeId);//否则清除定时器
   }
-
-}, 5000)
+})
 
 </script>
 
@@ -227,13 +258,13 @@ setTimeout(async () => {
         <!-- 点赞 -->
         <img :src="isLiked ? likedIcon : likeIcon" alt="icon" width="30" height="30" class="icon-action ts"
           @click="likeArticle" />
-        <span class="icon-text">{{ behaviorNum.like }}</span>
+        <span class="icon-text">{{ behaviorNum.likes }}</span>
 
         <!-- 收藏 -->
-        <el-icon class="icon-action" @click="collectArticle">
+        <el-icon class="icon-action" :class="{ 'active-collect': isCollected }" @click="collectArticle">
           <Star />
         </el-icon>
-        <span class="icon-text">{{ behaviorNum.collect }}</span>
+        <span class="icon-text">{{ behaviorNum.collects }}</span>
 
         <!-- 评论 -->
         <el-icon class="icon-action" @click="commentArticle">
@@ -385,10 +416,13 @@ setTimeout(async () => {
 
 }
 
+.active-collect {
+  color: #409eff;
+}
+
 .icon-action {
   font-size: 2rem;
   /* 使用相对单位 */
-  color: #333;
   margin: 15px 0;
   /* 保持元素之间的间距 */
   cursor: pointer;

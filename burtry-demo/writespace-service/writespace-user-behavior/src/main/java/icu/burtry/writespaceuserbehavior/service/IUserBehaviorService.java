@@ -1,5 +1,6 @@
 package icu.burtry.writespaceuserbehavior.service;
 
+import icu.burtry.writespacemodel.dto.CollectBehaviorDTO;
 import icu.burtry.writespacemodel.dto.LikeBehaviorDTO;
 import icu.burtry.writespaceutils.result.Result;
 
@@ -22,4 +23,10 @@ public interface IUserBehaviorService {
      * @return
      */
     Result read(Long articleId);
+
+    /**
+     * 收藏文章
+     * @param collectBehaviorDTO
+     */
+    Result collect(CollectBehaviorDTO collectBehaviorDTO);
 }

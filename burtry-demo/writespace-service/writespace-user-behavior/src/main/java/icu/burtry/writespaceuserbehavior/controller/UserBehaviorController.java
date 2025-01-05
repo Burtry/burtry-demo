@@ -1,5 +1,6 @@
 package icu.burtry.writespaceuserbehavior.controller;
 
+import icu.burtry.writespacemodel.dto.CollectBehaviorDTO;
 import icu.burtry.writespacemodel.dto.LikeBehaviorDTO;
 import icu.burtry.writespaceuserbehavior.service.IUserBehaviorService;
 import icu.burtry.writespaceutils.result.Result;
@@ -20,6 +21,12 @@ public class UserBehaviorController {
     public Result like(@RequestBody LikeBehaviorDTO likeBehaviorDTO) {
         log.info("进行点赞:{}",likeBehaviorDTO);
         return userBehaviorService.like(likeBehaviorDTO);
+    }
+
+    @PostMapping("/collect")
+    public Result collect(@RequestBody CollectBehaviorDTO collectBehaviorDTO) {
+        log.info("收藏文章:{}",collectBehaviorDTO);
+        return userBehaviorService.collect(collectBehaviorDTO);
     }
 
     @PostMapping("/read")

@@ -29,3 +29,11 @@ export const readBehaviorAPI = (articleId) => {
   })
 
 }
+
+export const collectBehaviorAPI = (data) => {
+  return instance({
+    url: 'behavior/api/v1/behavior/collect',
+    method: 'post',
+    data: data
+  })
+}
