@@ -31,7 +31,7 @@ public class UserBehaviorServiceImpl implements IUserBehaviorService {
 
         User user = UserThreadLocalUtil.getUser();
         if(user == null || user.getId() == 0L) {
-            return Result.error("需要登录!");
+            return Result.error("需要登录");
         }
 
         if(likeBehaviorDTO.getOperation() == 1) {

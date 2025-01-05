@@ -56,7 +56,12 @@ const likeArticle = async () => {
   }
   const res = await likeBehaviorAPI(data);
   if (res.code === 0) {
-    ElMessage.error(res.msg);
+    if (res.msg == "需要登录") {
+      ElMessage.error('请先登录');
+      router.push('/login');
+    } else {
+      ElMessage.error(res.msg);
+    }
     return;
   }
   if (res.data === "已点赞") {
@@ -102,9 +107,15 @@ const collectArticle = async () => {
 
   const res = await collectBehaviorAPI(data);
   if (res.code === 0) {
-    ElMessage.error(res.msg);
+    if (res.msg == "需要登录") {
+      ElMessage.error('请先登录');
+      router.push('/login');
+    } else {
+      ElMessage.error(res.msg);
+    }
     return;
   }
+
   if (res.data === "已收藏") {
     ElMessage.warning('已收藏');
     return;

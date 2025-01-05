@@ -12,6 +12,7 @@ import icu.burtry.writespacemodel.entity.User;
 import icu.burtry.writespacemodel.vo.UserVO;
 import icu.burtry.writespaceuser.mapper.LoginMapper;
 import icu.burtry.writespaceuser.service.LoginService;
+import icu.burtry.writespaceutils.constant.ImageConstant;
 import icu.burtry.writespaceutils.constant.StatusConstant;
 import icu.burtry.writespaceutils.constant.VisitorConstant;
 import icu.burtry.writespaceutils.result.Result;
@@ -92,6 +93,7 @@ public class LoginServiceImpl extends ServiceImpl<LoginMapper, User> implements 
             UserVO userVO = new UserVO();
             userVO.setId(0L);
             userVO.setToken(token);
+            userVO.setImage(ImageConstant.DEFAULT_USER_IMAGE);
             return Result.success(userVO,"游客进入");
         }
         if(userLoginDTO.getPassword() == null) {

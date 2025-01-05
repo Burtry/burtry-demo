@@ -134,13 +134,15 @@ const openUpdateUserInfo = () => {
     </div>
     <div class="user-section">
 
-      <!-- <button @click="getString()">test</button> -->
-      <RouterLink :to="`/user/${userInfo.id}`"><span class="user-name">{{ userInfo.nickName ? userInfo.nickName : "游客"
-          }}</span>
+      <div v-if="userInfo.id === '0'" class="user-name you-user-name">游客</div>
+      <RouterLink v-else :to="`/user/${userInfo.id}`"><span class="user-name">{{ userInfo.nickName }}</span>
       </RouterLink>
 
       <el-dropdown class="avatar-dropdown" trigger="hover">
-        <RouterLink :to="`/user/${userInfo.id}`">
+        <div v-if="userInfo.id === '0'" class="user-name you-user-name">
+          <el-avatar :src="userStore.userInfo.image" />
+        </div>
+        <RouterLink v-else :to="`/user/${userInfo.id}`">
           <el-avatar :src="userStore.userInfo.image" />
         </RouterLink>
         <template #dropdown>
@@ -243,6 +245,12 @@ const openUpdateUserInfo = () => {
 
     &:hover {
       color: #409eff;
+    }
+  }
+
+  .you-user-name {
+    &:hover {
+      color: #3c3c3c;
     }
   }
 

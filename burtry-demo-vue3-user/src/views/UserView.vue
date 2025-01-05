@@ -37,10 +37,19 @@ const userId = router.currentRoute.value.params.id;
 const getUserInfo = async () => {
   const res = await getUserByIdAPI(userId);
   if (res.code === 0) {
-    ElMessage.error(res.msg)
-    return
+    if (res.msg === "用户不存在") {
+      ElMessage.error("用户不存在")
+      router.push("/404")
+      return
+    } else {
+      ElMessage.error(res.msg)
+      return
+    }
   }
   userInfo.value = res.data;
+
+  getUserArticle();
+  getUserOverView();
 
 }
 
@@ -71,8 +80,6 @@ const getUserOverView = async () => {
 
 onMounted(() => {
   getUserInfo();
-  getUserArticle();
-  getUserOverView();
 })
 
 </script>
