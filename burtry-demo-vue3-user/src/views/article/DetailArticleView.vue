@@ -7,20 +7,33 @@ import { getArticleDetailByIdAPI } from "@/api/article"
 import router from '@/router';
 import { useUserStore } from "@/stores/user";
 import { postCommentAPI, getCommentListAPI } from "@/api/comment";
+import { likeBehaviorAPI, getLikesAPI } from "@/api/behavior";
+// 使用 import 来引入图片
+import likeIcon from '@/assets/like.svg';
+import likedIcon from '@/assets/liked.svg';
 
 const userStore = useUserStore();
-
-
 const articleId = ref(router.currentRoute.value.params.id);
-
+const commentsSection = ref(null);
 const userInfo = ref({
   id: 0,
   username: "",
   image: ""
 });
+userInfo.value.id = userStore.userInfo.id;
+userInfo.value.username = userStore.userInfo.username;
+userInfo.value.image = userStore.userInfo.image;
 
 
+const comments = ref([])
+const commentContent = ref('');
 const articleDetail = ref({});
+const isLiked = ref(false);  // 默认未点赞
+
+const behaviorNum = ref({
+  like: 0,
+  collect: 0,
+})
 
 const getArticleDetail = async () => {
   const res = await getArticleDetailByIdAPI(articleId.value);
@@ -30,41 +43,69 @@ const getArticleDetail = async () => {
   }
   articleDetail.value = res.data;
 
+  //获取点赞数
+  getLikes();
+
 }
 
-userInfo.value.id = userStore.userInfo.id;
-userInfo.value.username = userStore.userInfo.username;
-userInfo.value.image = userStore.userInfo.image;
 onMounted(() => {
-
   getArticleDetail();
-
 })
 
 
+const likeArticle = async () => {
+  const data = {
+    articleId: articleId.value,
+    operation: isLiked.value ? 0 : 1, // 如果已经点赞，操作为取消点赞；否则为点赞 //1 点赞 0 取消点赞
+  }
+  const res = await likeBehaviorAPI(data);
+  if (res.code === 0) {
+    ElMessage.error(res.msg);
+    return;
+  }
+  if (res.data === "已点赞") {
+    ElMessage.warning('已点赞');
+    return;
+  }
 
-const commentsSection = ref(null);
-const likeArticle = () => {
-  console.log('点赞');
+  if (res.data === "点赞") {
+    behaviorNum.value.like += 1;
+  } else {
+    behaviorNum.value.like -= 1;
+  }
 
+  isLiked.value = !isLiked.value;
 }
+
+
+const getLikes = async () => {
+  const res = await getLikesAPI(articleId.value);
+  if (res.code === 0) {
+    ElMessage.error(res.msg);
+    return;
+  }
+  behaviorNum.value.like = res.data.likes;
+  if (res.data.likeMe === 1) {
+    isLiked.value = true;
+  }
+}
+
+
+
 
 const collectArticle = () => {
   console.log('收藏');
 
 }
 
+//点击评论滚到评论区
 const commentArticle = () => {
   if (commentsSection.value) {
     commentsSection.value.scrollIntoView({ behavior: 'smooth' });
   }
-
 }
 
-const comments = ref([])
-
-const commentContent = ref('');
-
+//获取评论列表
 const getCommentList = async () => {
   const res = await getCommentListAPI(articleId.value);
   if (res.code === 0) {
@@ -74,6 +115,7 @@ const getCommentList = async () => {
   comments.value = res.data;
 }
 
+//保存评论
 const saveComment = async () => {
   const data = {
     articleId: articleId.value,
@@ -98,7 +140,6 @@ const saveComment = async () => {
   }
   ElMessage.success('评论成功');
   commentContent.value = '';
-
   //重新获取评论列表
   getCommentList();
 }
@@ -146,6 +187,9 @@ onMounted(() => {
       <!-- 文章内容 -->
       <div class="article-text" v-html="articleDetail.content">
       </div>
+
+      <!-- 阅读数 -->
+      <div class="read-num">{{ 233 }} 浏览</div>
       <el-divider />
 
       <!-- 评论区 -->
@@ -178,15 +222,15 @@ onMounted(() => {
       <!-- 文章点赞、收藏、评论操作栏 -->
       <div class="article-fixed">
         <!-- 点赞 -->
-        <img src="@/assets/like.svg" alt="icon" width="30" height="30" class="icon-action ts" @click="likeArticle" />
-        <span class="icon-text">{{ userInfo.id }}</span>
+        <img :src="isLiked ? likedIcon : likeIcon" alt="icon" width="30" height="30" class="icon-action ts"
+          @click="likeArticle" />
+        <span class="icon-text">{{ behaviorNum.like }}</span>
 
         <!-- 收藏 -->
         <el-icon class="icon-action" @click="collectArticle">
-
           <Star />
         </el-icon>
-        <span class="icon-text">{{ userInfo.id }}</span>
+        <span class="icon-text">{{ behaviorNum.collect }}</span>
 
         <!-- 评论 -->
         <el-icon class="icon-action" @click="commentArticle">
@@ -212,6 +256,13 @@ onMounted(() => {
   display: flex;
   justify-content: center;
   padding: 20px;
+}
+
+.read-num {
+  margin-top: 20px;
+  font-size: 12px;
+  color: #999;
+  text-align: right;
 }
 
 .article-content {

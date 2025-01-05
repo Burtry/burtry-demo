@@ -111,6 +111,16 @@ const updateUserInfo = async () => {
 
 }
 
+const openUpdateUserInfo = () => {
+  if (userInfo.value.id === "0") {
+    ElMessage.warning("请先登录");
+    router.push("/login");
+    return;
+  }
+  userInfoForm.value = userInfo.value
+  dialogFormVisible.value = true;
+}
+
 </script>
 
 <template>
@@ -136,7 +146,7 @@ const updateUserInfo = async () => {
         <template #dropdown>
           <el-dropdown-menu>
             <el-dropdown-item @click="toUser">个人中心</el-dropdown-item>
-            <el-dropdown-item @click="dialogFormVisible = true">修改资料</el-dropdown-item>
+            <el-dropdown-item @click="openUpdateUserInfo">修改资料</el-dropdown-item>
             <el-dropdown-item @click="toText">发布文章</el-dropdown-item>
             <el-dropdown-item @click="toTextManagement">文章管理</el-dropdown-item>
             <el-dropdown-item divided @click="exit">退出登录</el-dropdown-item>
