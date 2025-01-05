@@ -7,7 +7,7 @@ import { getArticleDetailByIdAPI } from "@/api/article"
 import router from '@/router';
 import { useUserStore } from "@/stores/user";
 import { postCommentAPI, getCommentListAPI } from "@/api/comment";
-import { likeBehaviorAPI, getLikesAPI } from "@/api/behavior";
+import { likeBehaviorAPI, getDataAPI, readBehaviorAPI } from "@/api/behavior";
 // 使用 import 来引入图片
 import likeIcon from '@/assets/like.svg';
 import likedIcon from '@/assets/liked.svg';
@@ -32,7 +32,7 @@ const isLiked = ref(false);  // 默认未点赞
 
 const behaviorNum = ref({
   like: 0,
-  collect: 0,
+  views: 0
 })
 
 const getArticleDetail = async () => {
@@ -44,15 +44,9 @@ const getArticleDetail = async () => {
   articleDetail.value = res.data;
 
   //获取点赞数
-  getLikes();
+  getBehavior();
 
 }
-
-onMounted(() => {
-  getArticleDetail();
-})
-
-
 const likeArticle = async () => {
   const data = {
     articleId: articleId.value,
@@ -78,13 +72,14 @@ const likeArticle = async () => {
 }
 
 
-const getLikes = async () => {
-  const res = await getLikesAPI(articleId.value);
+const getBehavior = async () => {
+  const res = await getDataAPI(articleId.value);
   if (res.code === 0) {
     ElMessage.error(res.msg);
     return;
   }
   behaviorNum.value.like = res.data.likes;
+  behaviorNum.value.views = res.data.views;
   if (res.data.likeMe === 1) {
     isLiked.value = true;
   }
@@ -146,9 +141,17 @@ const saveComment = async () => {
 
 onMounted(() => {
   getCommentList();
+  getArticleDetail();
 })
 
+//延迟加载，当超过一定时间后执行阅读行为
+setTimeout(async () => {
+  const res = await readBehaviorAPI(articleId.value);
+  if (res.code === 0) {
+    console.log(res.msg);
+  }
 
+}, 5000)
 
 </script>
 
@@ -189,7 +192,7 @@ onMounted(() => {
       </div>
 
       <!-- 阅读数 -->
-      <div class="read-num">{{ 233 }} 浏览</div>
+      <div class="read-num">{{ behaviorNum.views }} 浏览</div>
       <el-divider />
 
       <!-- 评论区 -->

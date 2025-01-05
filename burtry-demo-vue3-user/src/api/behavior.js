@@ -10,12 +10,22 @@ export const likeBehaviorAPI = (data) => {
   })
 }
 
-export const getLikesAPI = (articleId) => {
+export const getDataAPI = (articleId) => {
   return instance({
-    url: 'behavior/api/v1/behavior/like',
+    url: 'behavior/api/v1/behavior/data',
     method: 'get',
     params: {
       articleId: articleId
     }
   })
+}
+export const readBehaviorAPI = (articleId) => {
+  return instance({
+    url: 'behavior/api/v1/behavior/read',
+    method: 'post',
+    params: {
+      articleId: articleId
+    }
+  })
+
 }

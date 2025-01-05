@@ -14,5 +14,12 @@ public interface IUserBehaviorService {
      * 获得点赞数据
      * @return
      */
-    Result getLikes(Long articleId);
+    Result getData(Long articleId);
+
+    /**
+     * 阅读文章
+     * @param articleId
+     * @return
+     */
+    Result read(Long articleId);
 }

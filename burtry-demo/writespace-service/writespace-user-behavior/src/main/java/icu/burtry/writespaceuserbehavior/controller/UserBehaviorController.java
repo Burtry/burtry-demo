@@ -22,9 +22,17 @@ public class UserBehaviorController {
         return userBehaviorService.like(likeBehaviorDTO);
     }
 
-    @GetMapping("/like")
-    public Result getLikeNum(Long articleId) {
-        log.info("获取点赞数据");
-        return userBehaviorService.getLikes(articleId);
+    @PostMapping("/read")
+    public Result read(Long articleId) {
+        log.info("阅读文章:{}",articleId);
+        return userBehaviorService.read(articleId);
     }
+
+    @GetMapping("/data")
+    public Result getLikeNum(Long articleId) {
+        log.info("获取行为数据:{}",articleId);
+        return userBehaviorService.getData(articleId);
+    }
+
+
 }
