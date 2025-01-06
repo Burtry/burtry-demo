@@ -15,5 +15,4 @@ public interface IUserClient {
     @GetMapping("/api/v1/channel/{id}")
     Channel getChannelById(@PathVariable Long id);
 
-
 }

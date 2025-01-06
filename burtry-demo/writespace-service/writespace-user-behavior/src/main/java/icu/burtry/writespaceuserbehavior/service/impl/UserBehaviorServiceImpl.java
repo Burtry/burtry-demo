@@ -1,9 +1,11 @@
 package icu.burtry.writespaceuserbehavior.service.impl;
 
-import com.alibaba.fastjson.JSON;
+import icu.burtry.apis.article.IArticleClient;
+import icu.burtry.writespacemodel.dto.ArticleDataDTO;
 import icu.burtry.writespacemodel.dto.CollectBehaviorDTO;
 import icu.burtry.writespacemodel.dto.LikeBehaviorDTO;
 import icu.burtry.writespacemodel.entity.User;
+import icu.burtry.writespacemodel.entity.article.Article;
 import icu.burtry.writespacemodel.vo.BehaviorDataVO;
 import icu.burtry.writespaceuserbehavior.service.IUserBehaviorService;
 import icu.burtry.writespaceutils.constant.BehaviorConstants;
@@ -21,6 +23,9 @@ public class UserBehaviorServiceImpl implements IUserBehaviorService {
     @Autowired
     private RedisTemplate<String,String> redisTemplate;
 
+    @Autowired
+    private IArticleClient articleClient;
+
 
     @Override
     public Result like(LikeBehaviorDTO likeBehaviorDTO) {
@@ -34,21 +39,26 @@ public class UserBehaviorServiceImpl implements IUserBehaviorService {
             return Result.error("需要登录");
         }
 
+        long likes = 0L;    //LIKE-BEHAVIOR: {articleId : 点赞数}
+        Object object = redisTemplate.opsForHash().get(BehaviorConstants.LIKE_BEHAVIOR, likeBehaviorDTO.getArticleId().toString());
+        if(object !=null) {
+            likes = Long.parseLong(object.toString());
+        }
+
         if(likeBehaviorDTO.getOperation() == 1) {
-            //点赞            //LIKE-BEHAVIOR-articleId : userId
-            Object object = redisTemplate.opsForHash().get(BehaviorConstants.LIKE_BEHAVIOR + likeBehaviorDTO.getArticleId().toString(), user.getId().toString());
+            //点赞
+            redisTemplate.opsForHash().put(BehaviorConstants.LIKE_BEHAVIOR,likeBehaviorDTO.getArticleId().toString(),String.valueOf(likes + 1));
 
-            if(object != null) {
-                return Result.success("已点赞","已点赞");
-            }
-
-            //向redis保存当前key
-            redisTemplate.opsForHash().put(BehaviorConstants.LIKE_BEHAVIOR + likeBehaviorDTO.getArticleId(),user.getId().toString(), JSON.toJSONString(likeBehaviorDTO));
+            //标记自己已点赞
+            redisTemplate.opsForValue().set(BehaviorConstants.LIKE_BEHAVIOR + "_" + likeBehaviorDTO.getArticleId(),user.getId().toString());
 
             return Result.success("点赞","点赞成功!");
         } else {
             //取消点赞
-            redisTemplate.opsForHash().delete(BehaviorConstants.LIKE_BEHAVIOR + likeBehaviorDTO.getArticleId(),user.getId().toString());
+            redisTemplate.opsForHash().put(BehaviorConstants.LIKE_BEHAVIOR,likeBehaviorDTO.getArticleId().toString(),String.valueOf(likes - 1));
+
+            //取消标记
+            redisTemplate.delete(BehaviorConstants.LIKE_BEHAVIOR + "_" + likeBehaviorDTO.getArticleId());
 
             return Result.success("取消点赞","取消点赞成功");
         }
@@ -59,9 +69,13 @@ public class UserBehaviorServiceImpl implements IUserBehaviorService {
         if(articleId == null) {
             return Result.error("阅读行为error");
         }
-        //READ-BEHAVIOR-articleId : 阅读数
-        String key = BehaviorConstants.READ_BEHAVIOR + articleId;
-        redisTemplate.opsForValue().increment(key, 1);
+        long views = 0L;
+        //READ-BEHAVIOR : {articleId : 阅读数 }
+        Object object = redisTemplate.opsForHash().get(BehaviorConstants.READ_BEHAVIOR, articleId.toString());
+        if (object != null) {
+            views = Long.parseLong(object.toString());
+        }
+        redisTemplate.opsForHash().put(BehaviorConstants.READ_BEHAVIOR,articleId.toString(), String.valueOf(views + 1));   //阅读数+1
         return Result.success();
     }
 
@@ -76,20 +90,26 @@ public class UserBehaviorServiceImpl implements IUserBehaviorService {
             return Result.error("需要登录");
         }
 
+        long collects = 0L;
+        //COLLECT-BEHAVIOR: {userId : collectBehaviorDTO}
+        Object object = redisTemplate.opsForHash().get(BehaviorConstants.COLLECTION_BEHAVIOR, collectBehaviorDTO.getArticleId().toString());
+
+        if(object != null) {
+            collects = Long.parseLong(object.toString());
+        }
+
         if(collectBehaviorDTO.getOperation() == 1) {
             //收藏文章行为
-            Object object = redisTemplate.opsForHash().get(BehaviorConstants.COLLECTION_BEHAVIOR + collectBehaviorDTO.getArticleId(), user.getId().toString());
-
-            if(object != null) {
-                return Result.success("已收藏","已收藏");
-            }
             //向redis保存当前key
-            redisTemplate.opsForHash().put(BehaviorConstants.COLLECTION_BEHAVIOR + collectBehaviorDTO.getArticleId(),user.getId().toString(),JSON.toJSONString(collectBehaviorDTO));
+            redisTemplate.opsForHash().put(BehaviorConstants.COLLECTION_BEHAVIOR ,collectBehaviorDTO.getArticleId().toString(),String.valueOf(collects + 1));
+            //标记自己已收藏
+            redisTemplate.opsForValue().set(BehaviorConstants.COLLECTION_BEHAVIOR + "_" + collectBehaviorDTO.getArticleId(),user.getId().toString());
 
             return Result.success("收藏","收藏成功!");
         } else  {
             //取消收藏
-            redisTemplate.opsForHash().delete(BehaviorConstants.COLLECTION_BEHAVIOR + collectBehaviorDTO.getArticleId(),user.getId().toString());
+            redisTemplate.opsForHash().put(BehaviorConstants.COLLECTION_BEHAVIOR ,collectBehaviorDTO.getArticleId().toString(),String.valueOf(collects - 1));
+            redisTemplate.delete(BehaviorConstants.COLLECTION_BEHAVIOR + "_" + collectBehaviorDTO.getArticleId());
             return Result.success("取消收藏","取消收藏成功");
         }
 
@@ -100,38 +120,51 @@ public class UserBehaviorServiceImpl implements IUserBehaviorService {
         if(articleId == null) {
             return Result.error("参数异常");
         }
-
-        //TODO 首先从缓存中获取，获取不到再向数据库中获取
-
-        //获取点赞数
-        Long likes = redisTemplate.opsForHash().size(BehaviorConstants.LIKE_BEHAVIOR + articleId);
-
         BehaviorDataVO behaviorDataVO = new BehaviorDataVO();
-        behaviorDataVO.setLikes(Math.toIntExact(likes));
-        //判断自己是否点赞
-        User user = UserThreadLocalUtil.getUser();
-        Object object = redisTemplate.opsForHash().get(BehaviorConstants.LIKE_BEHAVIOR + articleId, user.getId().toString());
 
-        if(object != null) {
-            //自己已点赞
-            behaviorDataVO.setLikeMe(1);
-        }
+
         //获得阅读数
-        String views = redisTemplate.opsForValue().get(BehaviorConstants.READ_BEHAVIOR + articleId);
-        if(views != null) {
-            behaviorDataVO.setViews(Integer.parseInt(views));
-        }
+        Object viewObject = redisTemplate.opsForHash().get(BehaviorConstants.READ_BEHAVIOR, articleId.toString());
+
+        //获得点赞数
+        Object likeObject = redisTemplate.opsForHash().get(BehaviorConstants.LIKE_BEHAVIOR, articleId.toString());
 
         //获得收藏数
-        Long collects = redisTemplate.opsForHash().size(BehaviorConstants.COLLECTION_BEHAVIOR + articleId);
-        behaviorDataVO.setCollects(Math.toIntExact(collects));
-        //判断自己是否收藏
-        Object object1 = redisTemplate.opsForHash().get(BehaviorConstants.COLLECTION_BEHAVIOR + articleId, user.getId().toString());
-        if(object1 != null) {
-            //自己已收藏
-            behaviorDataVO.setCollectMe(1);
+        Object collectObject = redisTemplate.opsForHash().get(BehaviorConstants.COLLECTION_BEHAVIOR, articleId.toString());
+
+        if(viewObject == null || likeObject == null || collectObject == null) {
+            ////从数据库获取文章并设置数据，并将数据存储到redis中
+            ArticleDataDTO articleDataDTO = articleClient.getArticleDataById(articleId);
+            behaviorDataVO.setViews(articleDataDTO.getViews());
+            behaviorDataVO.setLikes(articleDataDTO.getLikes());
+            behaviorDataVO.setCollects(articleDataDTO.getViews());
+
+            //将数据存储到redis中
+            redisTemplate.opsForHash().put(BehaviorConstants.LIKE_BEHAVIOR,articleId.toString(),articleDataDTO.getLikes().toString());
+            redisTemplate.opsForHash().put(BehaviorConstants.COLLECTION_BEHAVIOR,articleId.toString(),articleDataDTO.getViews().toString());
+            redisTemplate.opsForHash().put(BehaviorConstants.READ_BEHAVIOR,articleId.toString(),articleDataDTO.getViews().toString());
+        } else {
+            Integer views = Integer.parseInt(String.valueOf(viewObject));
+            Integer likes = Integer.parseInt(String.valueOf(likeObject));
+            Integer collects = Integer.parseInt(String.valueOf(collectObject));
+            behaviorDataVO.setViews(views);
+            behaviorDataVO.setCollects(collects);
+            behaviorDataVO.setLikes(likes);
         }
 
+        //判断自己是否点赞/收藏
+        int likeMe = 0; //1 已点赞 0 未点赞
+        int collectMe = 0;
+        String likeStr = redisTemplate.opsForValue().get(BehaviorConstants.LIKE_BEHAVIOR + "_" + articleId);
+        if(likeStr != null) {
+            likeMe = 1;
+        }
+        String collectStr = redisTemplate.opsForValue().get(BehaviorConstants.COLLECTION_BEHAVIOR + "_" + articleId);
+        if(collectStr != null) {
+            collectMe = 1;
+        }
+        behaviorDataVO.setLikeMe(likeMe);
+        behaviorDataVO.setCollectMe(collectMe);
         return Result.success(behaviorDataVO,"行为数据获取成功!");
     }
 

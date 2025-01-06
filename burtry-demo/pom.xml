@@ -17,6 +17,7 @@
         <module>writespace-feign-api</module>
         <module>writespace-utils</module>
         <module>writespace-service</module>
+        <module>xxl-job</module>
     </modules>
 
     <!-- 继承Spring boot工程 -->
