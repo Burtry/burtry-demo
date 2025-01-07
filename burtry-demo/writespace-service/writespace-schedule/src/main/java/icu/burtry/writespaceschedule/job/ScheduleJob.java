@@ -4,22 +4,35 @@ import com.xxl.job.core.context.XxlJobHelper;
 import com.xxl.job.core.handler.annotation.XxlJob;
 import icu.burtry.apis.article.IArticleClient;
 import icu.burtry.writespacemodel.dto.ArticleDataDTO;
+import icu.burtry.writespacemodel.entity.UserLike;
+import icu.burtry.writespaceschedule.mapper.UserCollectMapper;
+import icu.burtry.writespaceschedule.mapper.UserLikeMapper;
+import icu.burtry.writespaceschedule.service.AsyncTaskService;
 import icu.burtry.writespaceutils.constant.BehaviorConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.time.LocalDateTime;
+import java.util.*;
 
 @Component
 public class ScheduleJob {
 
     @Autowired
-    private RedisTemplate<String,String> redisTemplate;
+    private RedisTemplate<String, String> redisTemplate;
+
+    @Autowired
+    private AsyncTaskService asyncTaskService;
 
     @Autowired
     private IArticleClient articleClient;
+
+    @Autowired
+    private UserLikeMapper userLikeMapper;
+
+    @Autowired
+    private UserCollectMapper userCollectMapper;
 
     @XxlJob("writespaceScheduleHandler")
     public void demoJobHandler() throws Exception {
@@ -75,7 +88,48 @@ public class ScheduleJob {
 
         }
         //将数据批量写入数据库
-        articleClient.postBehaviorData(convertedData);
+        asyncTaskService.postBehaviorDataAsync(convertedData, articleClient);
+
+        //记录用户点赞、收藏
+        Set<String> likeKeys = redisTemplate.keys(BehaviorConstants.LIKE_BEHAVIOR + "_*");
+        Set<String> collectKeys = redisTemplate.keys(BehaviorConstants.COLLECTION_BEHAVIOR + "_*");
+
+        //LIKE_BEHAVIOR_userId_articleId
+        //COLLCET_BEHAVIOR_userId_articleId
+        List<UserLike> likeList = new ArrayList<>();
+        List<UserLike> collectList = new ArrayList<>();
+
+        ToList(likeKeys, likeList);
+        ToList(collectKeys, collectList);
+        //批量添加
+
+        if(!likeList.isEmpty()) {
+            userLikeMapper.batchInsertLikes(likeList);
+        }
+        if (!collectList.isEmpty()) {
+            userCollectMapper.batchInsertCollects(collectList);
+        }
     }
 
+
+    private void ToList(Set<String> sets, List<UserLike> list) {
+        if (sets != null) {
+            for (String key : sets) {
+                String[] split = key.split("_");
+                if (split.length == 3) {
+                    Long userId = Long.parseLong(split[1]);
+                    Long articleId = Long.parseLong(split[2]);
+
+                        //UserLike 与 UserCollection 属性相同
+                        UserLike articleLike = new UserLike();
+                        articleLike.setUserId(userId);
+                        articleLike.setArticleId(articleId);
+                        articleLike.setCreateTime(LocalDateTime.now());
+                        // 添加到列表中
+                    list.add(articleLike);
+
+                }
+            }
+        }
+    }
 }

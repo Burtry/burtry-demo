@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="icu.burtry.writespaceschedule.mapper.UserCollectMapper">
+
+    <insert id="batchInsertCollects" parameterType="java.util.List">
+        INSERT IGNORE INTO writespace.user_collection (user_id, article_id, create_time)
+        VALUES
+        <foreach collection="collectList" item="collect" separator=",">
+            (#{collect.userId}, #{collect.articleId}, #{collect.createTime})
+        </foreach>
+    </insert>
+</mapper>
