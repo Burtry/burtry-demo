@@ -2,6 +2,7 @@ package icu.burtry.writespacearticle.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import icu.burtry.writespacemodel.dto.ArticleDTO;
+import icu.burtry.writespacemodel.dto.ArticleDataDTO;
 import icu.burtry.writespacemodel.dto.ArticleLoadDTO;
 import icu.burtry.writespacemodel.entity.article.Article;
 import icu.burtry.writespacemodel.vo.ArticleContentVO;
@@ -10,6 +11,7 @@ import icu.burtry.writespacemodel.vo.ArticleVO;
 import icu.burtry.writespaceutils.result.Result;
 
 import java.util.List;
+import java.util.Map;
 
 public interface IArticleService extends IService<Article> {
 
@@ -60,4 +62,10 @@ public interface IArticleService extends IService<Article> {
      * @return
      */
     Result<List<ArticleVO>> load(ArticleLoadDTO articleLoadDTO);
+
+    /**
+     * 用户行为数据存储到数据库
+     * @param
+     */
+    void postData(Map<Long,ArticleDataDTO> map);
 }

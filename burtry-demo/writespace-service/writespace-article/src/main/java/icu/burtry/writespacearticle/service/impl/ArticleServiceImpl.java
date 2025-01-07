@@ -13,6 +13,7 @@ import icu.burtry.writespacearticle.mapper.ArticleContentMapper;
 import icu.burtry.writespacearticle.mapper.ArticleMapper;
 import icu.burtry.writespacearticle.service.IArticleService;
 import icu.burtry.writespacemodel.dto.ArticleDTO;
+import icu.burtry.writespacemodel.dto.ArticleDataDTO;
 import icu.burtry.writespacemodel.dto.ArticleLoadDTO;
 import icu.burtry.writespacemodel.entity.Channel;
 import icu.burtry.writespacemodel.entity.User;
@@ -392,5 +393,23 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
             articleVOS.add(articleVO);
         }
         return Result.success(articleVOS,"获取成功！");
+    }
+
+    @Override
+    public void postData(Map<Long,ArticleDataDTO> map) {
+        Collection<ArticleDataDTO> values = map.values();
+        List<Article> articles = values.stream()
+                .map(dto -> {
+                    Article article = new Article();
+                    article.setId(dto.getArticleId());
+                    article.setLikes(dto.getLikes());
+                    article.setViews(dto.getViews());
+                    article.setCollections(dto.getCollects());
+                    return article;
+                })
+                .collect(Collectors.toList());
+
+        //批量添加或更新
+        saveOrUpdateBatch(articles);
     }
 }
