@@ -238,6 +238,9 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
             return Result.error("文章不存在!");
         }
 
+        article.setStatus(6);   //6已删除
+        updateById(article);
+
         if(user.getId() != article.getAuthorId()) {
             return Result.error("只能删除自己的文章!");
         }

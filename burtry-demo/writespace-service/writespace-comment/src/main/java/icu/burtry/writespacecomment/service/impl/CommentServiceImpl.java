@@ -29,6 +29,9 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, ArticleCommen
     @Autowired
     private IUserClient userClient;
 
+    @Autowired
+    private CommentMapper commentMapper;
+
     @Override
     public Result saveComment(CommentDTO commentDTO) {
         if(BeanUtil.isEmpty(commentDTO)) {
@@ -46,6 +49,9 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, ArticleCommen
         BeanUtils.copyProperties(commentDTO,articleComment);
         articleComment.setCreateTime(LocalDateTime.now());
         save(articleComment);
+
+        //文章评论数加一
+        commentMapper.commentNumsAdd(commentDTO.getArticleId());
         return Result.success();
     }
 

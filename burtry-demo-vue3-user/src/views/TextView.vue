@@ -167,19 +167,27 @@ const scheduledPublish = async () => {
 
 
 const uploadImage = async (params) => {
-  const file = params.file
+  const file = params.file;
   // 根据后台需求数据格式
   const form = new FormData();
   // 文件对象
-  form.append('file', file);
+  form.append("file", file);
 
-  const res = await uploadFileAPI(form)
-  if (res.code === 0) {
-    ElMessage.error('上传失败')
-    return
+  try {
+    // 调用上传接口
+    const res = await uploadFileAPI(form);
+
+    // 判断接口返回结果
+    if (res.code === 1) {
+      imageUrl.value = res.data;
+      ElMessage.success("上传成功");
+    } else {
+      ElMessage.error("上传失败");
+    }
+  } catch (error) {
+    // 捕获超时或其他异常
+    ElMessage.error(error.message || "上传失败");
   }
-  imageUrl.value = res.data
-  ElMessage.success('上传成功')
 }
 
 
@@ -197,7 +205,6 @@ onMounted(() => {
       title.value = res.data.title
       valueHtml.value = res.data.content
       imageUrl.value = res.data.image
-      channelId.value = res.data.channelId
       closeComment.value = res.data.isComment === 0 ? false : true
 
     })

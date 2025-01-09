@@ -10,7 +10,7 @@ const baseURL = '/api'
 // 创建axios实例
 const instance = axios.create({
   baseURL: baseURL,
-  timeout: 10000
+  timeout: 3000
 })
 
 // axios请求拦截器
