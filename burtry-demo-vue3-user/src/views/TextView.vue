@@ -46,7 +46,7 @@ const channelList = ref([])
 const channelId = ref('')
 const getChannelList = async () => {
   const res = await getChannelListAPI()
-  channelList.value = res.data.slice(3)
+  channelList.value = res.data.filter((item) => item.id >= "4") // 筛选 id >= 4 的项
 }
 
 const closeComment = ref(false)
