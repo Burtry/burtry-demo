@@ -260,8 +260,8 @@ onMounted(() => {
           <el-button @click="handlerSave" type="default">暂存草稿</el-button>
           <el-button @click="scheduledDialog = true" type="default">定时发布</el-button>
           <div v-if="scheduledDialog">
-            <el-date-picker v-model="scheduledPublishTime" type="datetime" placeholder="选择时间"
-              format="YYYY-MM-DD hh:mm:ss" value-format="x">
+            <el-date-picker v-model="scheduledPublishTime" type="datetime" placeholder="选择时间" format="YYYY-MM-DD HH:mm"
+              value-format="x">
             </el-date-picker>
             <el-button @click="scheduledPublish" type="primary"
               style="margin-left: 40px; margin-top: 10px;">确认</el-button>
