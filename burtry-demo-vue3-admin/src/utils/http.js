@@ -51,25 +51,5 @@ instance.interceptors.response.use(res => {
   return Promise.reject(e)
 })
 
-// //响应拦截器
-// instance.interceptors.response.use(res => {
-//   // 检查请求 URL 是否是验证码请求，如果是，则直接返回原始响应，不进行二次处理
-//   if (res.config.url.includes('api/v1/code')) {
-//     return res;  // 直接返回原始响应
-//   }
-//   return res.data
-// }, e => {
-//   const userStore = useUserStore()
-//   const router = useRouter()
-//   //401处理
-//   if (e.response.status === 401) {
-//     console.log(e);
 
-
-//     userStore.removeUserInfo()
-//     ElMessage({ type: 'error', message: '登录过期，请重新登录' });
-//     router.push('/login')
-//   }
-//   return Promise.reject(e)
-// })
 export default instance

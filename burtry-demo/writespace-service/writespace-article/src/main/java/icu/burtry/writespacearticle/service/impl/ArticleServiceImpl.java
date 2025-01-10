@@ -113,9 +113,12 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
             //立即发布,设置发布时间为now
             article.setPublishTime(LocalDateTime.now());
         }
-        //TODO 审核 异步审核 ,计划发送消息到消息队列进行审核
+        //TODO 审核 x 敏感词过滤 √
 
-        //审核成功保存文章
+        //异步进行敏感词过滤(如果包含敏感词此文章会被设置为已锁定)
+
+
+        //保存文章
         save(article);
 
 
