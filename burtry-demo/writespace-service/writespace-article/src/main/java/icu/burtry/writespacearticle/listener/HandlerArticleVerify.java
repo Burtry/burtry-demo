@@ -27,7 +27,6 @@ public class HandlerArticleVerify {
 
     @RabbitHandler
     public void handlerArticleVerify(ArticleVerifyMessageDTO message) throws InterruptedException {
-        Thread.sleep(1000 * 5);
         log.info("进行敏感词过滤:{}",message);
 
         if (message == null || message.getArticleId() == null) {
