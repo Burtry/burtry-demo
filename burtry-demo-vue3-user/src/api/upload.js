@@ -4,7 +4,7 @@ export const uploadFileAPI = (data) => {
   return new Promise((resolve, reject) => {
     // 定义一个超时定时器
     const timeout = setTimeout(() => {
-      reject(new Error("上传失败：请求超时"));
+      reject(new Error("上传失败：请求超时,请重试"));
     }, 3000);
 
     // 发起请求

@@ -8,6 +8,7 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import icu.burtry.apis.user.IUserClient;
+import icu.burtry.writespacearticle.config.RabbitMQConfig;
 import icu.burtry.writespacearticle.mapper.ArticleConfigMapper;
 import icu.burtry.writespacearticle.mapper.ArticleContentMapper;
 import icu.burtry.writespacearticle.mapper.ArticleMapper;
@@ -15,6 +16,7 @@ import icu.burtry.writespacearticle.service.IArticleService;
 import icu.burtry.writespacemodel.dto.ArticleDTO;
 import icu.burtry.writespacemodel.dto.ArticleDataDTO;
 import icu.burtry.writespacemodel.dto.ArticleLoadDTO;
+import icu.burtry.writespacemodel.dto.ArticleVerifyMessageDTO;
 import icu.burtry.writespacemodel.entity.Channel;
 import icu.burtry.writespacemodel.entity.User;
 import icu.burtry.writespacemodel.entity.article.Article;
@@ -28,8 +30,10 @@ import icu.burtry.writespaceutils.constant.ChannelConstant;
 import icu.burtry.writespaceutils.result.Result;
 import icu.burtry.writespaceutils.thread.UserThreadLocalUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -56,6 +60,9 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
 
     @Autowired
     private IUserClient userClient;
+
+    @Autowired
+    private RabbitTemplate rabbitTemplate;
 
 
     @Override
@@ -113,15 +120,9 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
             //立即发布,设置发布时间为now
             article.setPublishTime(LocalDateTime.now());
         }
-        //TODO 审核 x 敏感词过滤 √
-
-        //异步进行敏感词过滤(如果包含敏感词此文章会被设置为已锁定)
-
 
         //保存文章
         save(article);
-
-
         //设置文章配置属性
         ArticleConfig articleConfig = new ArticleConfig();
         articleConfig.setArticleId(articleId);
@@ -137,7 +138,29 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         articleContent.setContent(articleDTO.getContent());
         articleContentMapper.insert(articleContent);
 
+        //异步进行敏感词过滤(如果包含敏感词此文章会被设置为已锁定)
+        sendArticleVerifyMessage(articleId, articleDTO.getContent(), articleDTO.getTitle(),articleDTO.getPublishTime() != null);
+
         return Result.success("文章发布成功!");
+    }
+
+    @Async
+    public void sendArticleVerifyMessage(Long articleId, String content, String title,Boolean isScheduledPublish) {
+        try {
+            ArticleVerifyMessageDTO articleVerifyMessageDTO = new ArticleVerifyMessageDTO();
+            articleVerifyMessageDTO.setArticleId(articleId);
+            articleVerifyMessageDTO.setContent(content);
+            articleVerifyMessageDTO.setTitle(title);
+            if (isScheduledPublish) {
+                articleVerifyMessageDTO.setIsScheduledPublish(true);
+            }
+            // 发送消息到 RabbitMQ
+            rabbitTemplate.convertAndSend(RabbitMQConfig.EXCHANGE_NAME, RabbitMQConfig.ROUTING_KEY, articleVerifyMessageDTO);
+        } catch (Exception e) {
+            // 异常处理
+            log.error("发送文章验证消息失败，articleId: {}", articleId, e);
+        }
+
     }
 
     private void updateArticle(ArticleDTO articleDTO) {
@@ -156,9 +179,6 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         article.setChannelName(channel.getName());
         updateById(article);
 
-        //TODO 审核 异步审核 ,计划发送消息到消息队列进行审核
-
-
         //更新文章配置
         ArticleConfig articleConfig = articleConfigMapper.selectOne(Wrappers.<ArticleConfig>lambdaQuery().eq(ArticleConfig::getArticleId, articleDTO.getId()));
 
@@ -172,7 +192,8 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         articleContent.setContent(articleDTO.getContent());
         articleContentMapper.updateById(articleContent);
 
-
+        //异步敏感词过滤
+        sendArticleVerifyMessage(article.getId(), articleDTO.getContent(),articleDTO.getTitle(),articleDTO.getPublishTime() != null);
     }
 
 
@@ -418,4 +439,6 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         //批量添加或更新
         saveOrUpdateBatch(articles);
     }
+
+
 }

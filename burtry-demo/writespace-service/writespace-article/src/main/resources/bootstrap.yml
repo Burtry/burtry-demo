@@ -12,8 +12,15 @@ spring:
         file-extension: yml
   profiles:
     active: dev
-
-
+  rabbitmq:
+    username: burtry
+    password: 123456
+    template:
+      retry:
+        enabled: true # 失败重试开启
+        multiplier: 1 # 下次重试的时间倍数
+    host: 192.168.50.134
+    port: 5672
 knife4j:
   enable: true
 
