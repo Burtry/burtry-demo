@@ -41,6 +41,10 @@ public class ArticleDetailVO {
      */
     private Long userId;
 
+    /**
+     * 文章状态
+     */
+    private Integer status = 0;
 
 
 }

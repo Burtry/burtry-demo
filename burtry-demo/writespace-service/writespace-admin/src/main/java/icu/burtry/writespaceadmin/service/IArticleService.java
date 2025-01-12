@@ -5,6 +5,7 @@ import icu.burtry.writespacemodel.dto.AdminArticleSearchDTO;
 import icu.burtry.writespacemodel.dto.PageDTO;
 import icu.burtry.writespacemodel.entity.Channel;
 import icu.burtry.writespacemodel.entity.article.Article;
+import icu.burtry.writespacemodel.vo.ArticleDetailVO;
 import icu.burtry.writespaceutils.result.Result;
 
 import java.util.List;
@@ -22,4 +23,14 @@ public interface IArticleService extends IService<Article> {
      * @return
      */
     Result<PageDTO<Article>> getArticleList(AdminArticleSearchDTO adminArticleSearchDTO);
+
+    /**
+     * 获得文章详情
+     * @param id
+     * @return
+     */
+    Result<ArticleDetailVO> getDetail(Long id);
+
+
+    Result updateStatus(Long id, Integer status);
 }

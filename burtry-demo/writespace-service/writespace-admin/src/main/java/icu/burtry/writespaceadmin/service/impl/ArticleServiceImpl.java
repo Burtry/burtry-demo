@@ -7,10 +7,13 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import icu.burtry.writespaceadmin.mapper.ArticleMapper;
 import icu.burtry.writespaceadmin.mapper.ChannelMapper;
 import icu.burtry.writespaceadmin.service.IArticleService;
+import icu.burtry.writespaceadmin.service.IUserService;
 import icu.burtry.writespacemodel.dto.AdminArticleSearchDTO;
 import icu.burtry.writespacemodel.dto.PageDTO;
 import icu.burtry.writespacemodel.entity.Channel;
+import icu.burtry.writespacemodel.entity.User;
 import icu.burtry.writespacemodel.entity.article.Article;
+import icu.burtry.writespacemodel.vo.ArticleDetailVO;
 import icu.burtry.writespaceutils.result.Result;
 import icu.burtry.writespaceutils.utils.ConvertToLocalDateTimeUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +21,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @Service
@@ -30,6 +32,9 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
 
     @Autowired
     private ArticleMapper articleMapper;
+
+    @Autowired
+    private IUserService userService;
 
     @Override
     public Result<List<Channel>> getChannelList() {
@@ -55,6 +60,57 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
             return Result.success(new PageDTO<>(page.getTotal(),page.getPages(),articleList),"获取成功");
         }
 
+    }
+
+    @Override
+    public Result<ArticleDetailVO> getDetail(Long id) {
+        if (id == null) {
+            return Result.error("参数错误");
+        }
+        Article article = getById(id);
+        if(article == null) {
+            return Result.error("文章不存在");
+        }
+        ArticleDetailVO articleDetailVO = new ArticleDetailVO();
+
+        //获得文章内容
+        String content = articleMapper.getContent(id);
+
+        articleDetailVO.setId(article.getId());
+        articleDetailVO.setTitle(article.getTitle());
+        articleDetailVO.setContent(content);
+        articleDetailVO.setUpdateTime(article.getUpdateTime());
+        articleDetailVO.setUserId(article.getAuthorId());
+        articleDetailVO.setUsername(article.getAuthorName());
+        articleDetailVO.setStatus(article.getStatus());
+
+        User user = userService.getById(article.getAuthorId());
+        if(user != null) {
+            articleDetailVO.setUserAvatar(user.getImage());
+        }
+
+        return Result.success(articleDetailVO,"获取成功");
+
+    }
+
+    @Override
+    public Result updateStatus(Long id, Integer status) {
+        if(id == null || status == null) {
+            return Result.error("参数异常");
+        }
+        Article article = getById(id);
+        if(article == null) {
+            return Result.error("文章不存在");
+        }
+        if(status == 6) {
+            //删除文章，将文章配置表中设置为删除文章
+            articleMapper.deleteArticle(id);
+            article.setStatus(status);
+        }
+
+        article.setStatus(status);
+        updateById(article);
+        return Result.success();
     }
 
     private static QueryWrapper<Article> getArticleQueryWrapper(AdminArticleSearchDTO adminArticleSearchDTO) {

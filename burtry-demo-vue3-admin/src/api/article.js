@@ -15,3 +15,21 @@ export const getArticleListAPI = (data) => {
     data: data
   })
 }
+
+export const getByIdAPI = (id) => {
+  return instance({
+    url: `/api/v1/article/${id}`,
+    method: "get"
+  })
+}
+
+export const updateArticleStatusAPI = (id, status) => {
+  return instance({
+    url: `/api/v1/article/status`,
+    method: "put",
+    params: {
+      id: id,
+      status: status
+    }
+  })
+}

@@ -1,31 +1,13 @@
 <script setup>
 import { useRouter } from "vue-router"
 const router = useRouter()
-
 import { useUserStore } from "@/stores/user";
-import { getStringAPI } from "@/api/user";
-import { ElMessage } from "element-plus";
 const userStore = useUserStore();
-
 const userInfo = userStore.userInfo;
-
-const getString = () => {
-  getStringAPI().then(res => {
-    ElMessage.success(res.data);
-  })
-}
-
-
-
-
 const exit = () => {
   userStore.removeUserInfo();
   router.push("/login");
 }
-
-
-
-
 </script>
 
 <template>
@@ -39,12 +21,6 @@ const exit = () => {
             <span class="app-title-text">WriteSpace 后台管理平台</span>
           </h1>
         </a>
-
-        <!-- 当前用户 -->
-        <el-button @click="getString">测试</el-button>
-
-
-
         <div class="user-info">
           <div style="font-size: large;">欢迎您：</div>
           <el-avatar :size="30" src="https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png">

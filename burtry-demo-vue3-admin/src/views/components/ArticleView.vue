@@ -1,7 +1,7 @@
 <script setup>
 import { onMounted, ref, onUnmounted } from 'vue';
 
-import { getChannelListAPI, getArticleListAPI } from "@/api/article";
+import { getChannelListAPI, getArticleListAPI, getByIdAPI, updateArticleStatusAPI } from "@/api/article";
 import { ElMessage } from 'element-plus';
 
 const articleId = ref('')
@@ -10,6 +10,7 @@ const status = ref(0)
 const channelList = ref([])
 const channelId = ref('')
 const dateRange = ref([])
+const articleDetail = ref({})
 
 const pageData = ref({
   pageSize: 10,
@@ -57,6 +58,23 @@ const shortcuts = [
     },
   },
 ]
+const drawer = ref(false);
+const handleView = async (id) => {
+  drawer.value = true
+  const res = await getByIdAPI(id)
+  if (res.code === 0) {
+    ElMessage.error(res.msg)
+    return
+  }
+  articleDetail.value = res.data
+
+  console.log(articleDetail.value);
+}
+
+const drawerClose = () => {
+  drawer.value = false
+  articleDetail.value = {}
+}
 
 
 const handleSearch = () => {
@@ -139,6 +157,50 @@ const handleAutoRefresh = () => {
   }
 };
 
+const handleLock = async (id) => {
+  const res = await updateArticleStatusAPI(id, 5); //锁定文章操作
+  if (res.code === 0) {
+    ElMessage.error(res.msg)
+    return
+  }
+  ElMessage.success("锁定成功")
+  getArticleList()
+  drawerClose()
+}
+
+const handlePass = async (id) => {
+  const res = await updateArticleStatusAPI(id, 4);
+  if (res.code === 0) {
+    ElMessage.error(res.msg)
+    return
+  }
+  ElMessage.success("审核通过")
+  getArticleList()
+  drawerClose()
+}
+
+const handleRecover = async (id) => {
+  const res = await updateArticleStatusAPI(id, 4);
+  if (res.code === 0) {
+    ElMessage.error(res.msg)
+    return
+  }
+  ElMessage.success("恢复成功")
+  getArticleList()
+  drawerClose()
+}
+
+const handleDelete = async (id) => {
+  const res = await updateArticleStatusAPI(id, 6);
+  if (res.code === 0) {
+    ElMessage.error(res.msg)
+    return
+  }
+  ElMessage.success("删除成功")
+  getArticleList()
+  drawerClose()
+}
+
 </script>
 
 <template>
@@ -151,7 +213,7 @@ const handleAutoRefresh = () => {
       <el-radio :value="6">已删除文章</el-radio>
     </el-radio-group>
     <!-- 定时刷新文章列表控制件 -->
-    <el-switch class="autoRefresh" v-model="autoRefresh" active-text="定时刷新" @change="handleAutoRefresh" />
+    <el-switch class="autoRefresh" v-model="autoRefresh" active-text="每5秒定时刷新" @change="handleAutoRefresh" />
     <br><br>
     <span>查 询：</span>
     <el-input v-model="articleId" style="width: 200px;" placeholder="请输入文章ID" />
@@ -177,7 +239,7 @@ const handleAutoRefresh = () => {
 
   <el-table :data="dataList" stripe style="width: 100%">
     <el-table-column prop="id" label="文章ID" width="200" />
-    <el-table-column prop="status" label="文章状态" width="200">
+    <el-table-column prop="status" label="文章状态" width="100">
       <template #default="{ row }">
         <el-tag
           :type="row.status === 4 ? 'success' : row.status === 5 ? 'warning' : row.status === 2 ? 'warning' : 'info'">
@@ -198,25 +260,69 @@ const handleAutoRefresh = () => {
     <el-table-column prop="views" label="浏览数" width="100" />
     <el-table-column prop="collections" label="收藏数" width="100" />
     <el-table-column prop="comments" label="评论数" width="100" />
-    <el-table-column prop="authorId" label="作者ID" width="200" />
+    <el-table-column prop="authorId" label="作者ID" width="100" />
 
     <el-table-column prop="publishTime" label="发布时间" width="150" />
     <el-table-column prop="createTime" label="创建时间" width="150" />
     <el-table-column prop="updateTime" label="更新时间" width="150" />
-    <el-table-column fixed="right" label="操作" min-width="120">
-      <template #default>
-        <el-button link type="primary" size="large" @click="handleClick">
-          查看
+    <el-table-column fixed="right" label="操作" min-width="80">
+      <template #default="{ row }">
+        <el-button link type="primary" size="large" @click="handleView(row.id)">
+          详情
         </el-button>
-        <el-button link type="primary" size="large">修改</el-button>
       </template>
     </el-table-column>
   </el-table>
 
 
-  <el-pagination v-model:current-page="pageData.pageNum" v-model:page-size="pageData.pageSize" background
-    layout="sizes, prev, pager, next, jumper,total, " :total="Number(pageData.total)"
+  <el-pagination v-if="!autoRefresh" v-model:current-page="pageData.pageNum" v-model:page-size="pageData.pageSize"
+    background layout="sizes, prev, pager, next, jumper,total, " :total="Number(pageData.total)"
     :page-sizes="[5, 10, 15, 20, 50, 100]" @size-change="OnSizeChange" @current-change="OnCurrentChange" class="page" />
+
+
+
+  <el-drawer v-model="drawer" title="文章详情" size="50%" :before-close="drawerClose">
+    <div>
+      <div class="article-content">
+        <h1 style="font-size: large;">{{ articleDetail.title }}</h1>
+        <br>
+
+        <!-- 用户信息 -->
+        <div class="user-info"><el-image class="user-image" :src="articleDetail.userAvatar" />
+          <div class="user-center">
+            <div class="user-name">{{ articleDetail.username }}</div>
+            <div class="publish-time">编辑于{{ articleDetail.updateTime }}</div>
+            <div class="publish-time">用户id:{{ articleDetail.userId }}</div>
+
+          </div>
+        </div>
+        <!-- 文章内容 -->
+
+        <div class="article-text" v-html="articleDetail.content">
+        </div>
+        <el-divider />
+        <!-- 文章操作 -->
+        <!-- 锁定文章  审核通过-->
+        <div style="display: flex; justify-content: flex-end;">
+          <el-button type="danger" @click="handleLock(articleDetail.id)"
+            v-if="articleDetail.status !== 5 && articleDetail.status !== 6">
+            锁定文章
+          </el-button>
+          <el-button type="success" @click="handlePass(articleDetail.id)"
+            v-if="articleDetail.status !== 4 && articleDetail.status !== 6">
+            人工审核通过
+          </el-button>
+          <el-button type="success" @click="handleRecover(articleDetail.id)" v-if="articleDetail.status === 6">
+            恢复文章
+          </el-button>
+
+          <el-button type="danger" @click="handleDelete(articleDetail.id)" v-if="articleDetail.status !== 6">
+            删除文章
+          </el-button>
+        </div>
+      </div>
+    </div>
+  </el-drawer>
 
 
 
@@ -235,5 +341,47 @@ const handleAutoRefresh = () => {
 .autoRefresh {
   //右靠齐
   float: right;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.user-center {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  margin-left: 15px;
+}
+
+.user-image {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  margin-top: 20px;
+}
+
+.user-name {
+  margin-left: 10px;
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.publish-time {
+
+  margin-left: 10px;
+  margin-top: 5px;
+  font-size: 12px;
+  color: #999;
+}
+
+.article-text {
+  margin-top: 20px;
+  font-size: 16px;
+  line-height: 1.5;
+  text-align: justify;
 }
 </style>
