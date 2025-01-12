@@ -11,13 +11,6 @@ export const getCodeAPI = (username) => {
   });
 };
 
-export const getStringAPI = () => {
-  return instance({
-    url: 'api/v1/get',
-    method: 'get'
-  });
-};
-
 export const loginAPI = (params) => {
   return instance({
     url: 'api/v1/login',
@@ -37,6 +30,17 @@ export const getUserListAPI = (params) => {
 export const updateUserStatusAPI = (id) => {
   return instance({
     url: 'api/v1/user',
+    method: 'put',
+    params: {
+      id: id
+    }
+  })
+}
+
+//重置密码
+export const resetPasswordAPI = (id) => {
+  return instance({
+    url: 'api/v1/user/rePassword',
     method: 'put',
     params: {
       id: id

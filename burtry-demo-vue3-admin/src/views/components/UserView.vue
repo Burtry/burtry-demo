@@ -1,6 +1,6 @@
 <script setup>
 import { onMounted, ref } from 'vue';
-import { getUserListAPI, updateUserStatusAPI } from "@/api/user";
+import { getUserListAPI, updateUserStatusAPI, resetPasswordAPI } from "@/api/user";
 import { ElMessage } from 'element-plus';
 const keyword = ref("")
 
@@ -29,6 +29,11 @@ const updateUserStatusBefore = (id) => {
   statusDialog.value = true
 }
 
+const rePasswordDialog = ref(false)
+const rePasswordBefore = (id) => {
+  userId.value = id
+  rePasswordDialog.value = true
+}
 
 const updateUserStatus = async () => {
   const res = await updateUserStatusAPI(userId.value)
@@ -40,6 +45,16 @@ const updateUserStatus = async () => {
     statusDialog.value = false
   }
 
+}
+
+const rePassword = async () => {
+  const res = await resetPasswordAPI(userId.value)
+  if (res.code === 0) {
+    ElMessage.error(res.msg)
+  } else {
+    ElMessage.success(res.msg)
+    rePasswordDialog.value = false
+  }
 }
 
 const OnCurrentChange = (pageNum) => {
@@ -56,10 +71,6 @@ const OnSizeChange = (pageSize) => {
 const handleSearch = () => {
   pageData.value.keyword = keyword.value
   getUserList()
-}
-
-const handleView = (id) => {
-  console.log(id)
 }
 
 onMounted(() => {
@@ -94,17 +105,14 @@ onMounted(() => {
     <el-table-column prop="phone" label="手机号" width="180" />
     <el-table-column prop="email" label="邮箱" width="180" />
     <el-table-column prop="createTime" label="创建时间" width="180" />
-    <el-table-column prop="address" label="地址" width="280" />
+    <el-table-column prop="address" label="地址" width="150" />
 
-    <el-table-column fixed="right" label="操作" min-width="200">
+    <el-table-column fixed="right" label="操作" min-width="150">
       <template #default="{ row }">
-        <el-button link type="primary" size="large" @click="handleView(row.id)">
-          查看
-        </el-button>
         <el-button link type="primary" size="large" @click="updateUserStatusBefore(row.id)">{{ row.status === 0 ? '锁定' :
           '解锁'
           }}</el-button>
-        <el-button link type="primary" size="large">重置密码</el-button>
+        <el-button link type="primary" size="large" @click="rePasswordBefore(row.id)">重置密码</el-button>
       </template>
     </el-table-column>
 
@@ -124,6 +132,19 @@ onMounted(() => {
       <div class="dialog-footer">
         <el-button @click="statusDialog = false">取消</el-button>
         <el-button type="primary" @click="updateUserStatus">
+          确认
+        </el-button>
+      </div>
+    </template>
+  </el-dialog>
+
+
+  <el-dialog v-model="rePasswordDialog" title="提示" width="500" align-center>
+    <span>确认要重置该用户密码吗</span>
+    <template #footer>
+      <div class="dialog-footer">
+        <el-button @click="rePasswordDialog = false">取消</el-button>
+        <el-button type="primary" @click="rePassword">
           确认
         </el-button>
       </div>
