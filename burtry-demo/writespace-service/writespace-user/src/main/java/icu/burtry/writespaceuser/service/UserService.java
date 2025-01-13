@@ -1,6 +1,7 @@
 package icu.burtry.writespaceuser.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import icu.burtry.writespacemodel.dto.RePasswordDTO;
 import icu.burtry.writespacemodel.dto.UpdateUserInfoDTO;
 import icu.burtry.writespacemodel.entity.User;
 import icu.burtry.writespaceutils.result.Result;
@@ -20,4 +21,11 @@ public interface UserService extends IService<User> {
      * @return
      */
     Result updateUserInfo(UpdateUserInfoDTO userInfoDTO);
+
+    /**
+     * 用户重置密码
+     * @param rePasswordDTO
+     * @return
+     */
+    Result rePassword(RePasswordDTO rePasswordDTO);
 }

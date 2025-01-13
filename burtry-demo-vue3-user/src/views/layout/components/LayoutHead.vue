@@ -5,7 +5,7 @@ const router = useRouter();
 import { useUserStore } from "@/stores/user";
 import { ElMessage } from "element-plus";
 import { uploadFileAPI } from "@/api/upload";
-import { updateUserInfoAPI } from "@/api/user";
+import { updateUserInfoAPI, rePasswordAPI } from "@/api/user";
 const userStore = useUserStore();
 
 const userInfo = ref(userStore.userInfo);
@@ -83,9 +83,6 @@ const cancelUpdateUserInfo = () => {
   }
 
 }
-
-
-//TODO
 const updateUserInfo = async () => {
   if (userInfo.value.id === "0") {
     ElMessage.warning("请先登录");
@@ -107,6 +104,57 @@ const updateUserInfo = async () => {
   ElMessage.success('更新成功，请重新登录')
   userStore.removeUserInfo();
   cancelUpdateUserInfo();
+  router.push("/login");
+
+}
+
+const rePasswordDialog = ref(false)
+const rePasswordForm = ref({
+  id: '',
+  oldPassword: '',
+  newPassword: '',
+  againPassword: ''
+})
+
+const openRePassword = () => {
+  if (userInfo.value.id === '0') {
+    ElMessage.warning('请先登录')
+    router.push('/login')
+    return
+  }
+  rePasswordDialog.value = true
+}
+
+const cancelRePassword = () => {
+  rePasswordDialog.value = false
+  rePasswordForm.value = {
+    id: '',
+    oldPassword: '',
+    newPassword: '',
+    againPassword: ''
+  }
+}
+
+const handleRePassword = async () => {
+  if (rePasswordForm.value.oldPassword === '' || rePasswordForm.value.newPassword === '' || rePasswordForm.value.againPassword === '') {
+    ElMessage.warning('请填写完整信息')
+    return
+  }
+  if (rePasswordForm.value.newPassword !== rePasswordForm.value.againPassword) {
+    ElMessage.warning('两次密码不一致')
+    return
+  }
+  rePasswordForm.value.id = userInfo.value.id
+  // 调用修改密码接口
+
+  const res = await rePasswordAPI(rePasswordForm.value)
+  if (res.code === 0) {
+    ElMessage.error('修改失败')
+    return
+  }
+  ElMessage.success('修改成功，请重新登录')
+  userStore.removeUserInfo();
+  cancelRePassword();
   router.push("/login");
 
 }
@@ -149,6 +197,7 @@ const openUpdateUserInfo = () => {
           <el-dropdown-menu>
             <el-dropdown-item @click="toUser">个人中心</el-dropdown-item>
             <el-dropdown-item @click="openUpdateUserInfo">修改资料</el-dropdown-item>
+            <el-dropdown-item @click="openRePassword">修改密码</el-dropdown-item>
             <el-dropdown-item @click="toText">发布文章</el-dropdown-item>
             <el-dropdown-item @click="toTextManagement">文章管理</el-dropdown-item>
             <el-dropdown-item divided @click="exit">退出登录</el-dropdown-item>
@@ -206,6 +255,27 @@ const openUpdateUserInfo = () => {
       </template>
     </el-dialog>
 
+    <el-dialog v-model="rePasswordDialog" title="重置密码 " width="500">
+      <el-form :model="rePasswordForm" label-width="80px">
+        <el-form-item label="旧密码" required>
+          <el-input v-model="rePasswordForm.oldPassword" type="password" prop="oldPassword" />
+        </el-form-item>
+        <el-form-item label="新密码" required>
+          <el-input v-model="rePasswordForm.newPassword" type="password" prop="newPassword" />
+        </el-form-item>
+        <el-form-item label="确认密码" required>
+          <el-input v-model="rePasswordForm.againPassword" type="password" prop="againPassword" />
+        </el-form-item>
+      </el-form>
+      <template #footer>
+        <div class="dialog-footer">
+          <el-button @click="cancelRePassword">取消</el-button>
+          <el-button type="primary" @click="handleRePassword">
+            提交
+          </el-button>
+        </div>
+      </template>
+    </el-dialog>
 
   </div>
 </template>

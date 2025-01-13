@@ -28,13 +28,6 @@ export const loginAPI = (params) => {
   });
 }
 
-export const getStringAPI = () => {
-  return instance({
-    url: '/user/api/v1/get',
-    method: 'get'
-  })
-}
-
 export const getUserByIdAPI = (id) => {
   return instance({
     url: `/user/api/v1/${id}`,
@@ -45,6 +38,14 @@ export const getUserByIdAPI = (id) => {
 export const updateUserInfoAPI = (data) => {
   return instance({
     url: '/user/api/v1/',
+    method: 'put',
+    data: data
+  })
+}
+
+export const rePasswordAPI = (data) => {
+  return instance({
+    url: '/user/api/v1/password',
     method: 'put',
     data: data
   })

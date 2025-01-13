@@ -1,5 +1,6 @@
 package icu.burtry.writespaceuser.controller;
 
+import icu.burtry.writespacemodel.dto.RePasswordDTO;
 import icu.burtry.writespacemodel.dto.UpdateUserInfoDTO;
 import icu.burtry.writespaceuser.service.UserService;
 import icu.burtry.writespaceutils.result.Result;
@@ -28,6 +29,12 @@ public class UserController {
     public Result updateUserInfo(@RequestBody UpdateUserInfoDTO userInfoDTO) {
         log.info("更新用户信息:{}",userInfoDTO);
         return userService.updateUserInfo(userInfoDTO);
+    }
+
+    @PutMapping("/password")
+    public Result rePassWord(@RequestBody RePasswordDTO rePasswordDTO) {
+        log.info("用户重置密码:{}", rePasswordDTO);
+        return userService.rePassword(rePasswordDTO);
     }
 
 
