@@ -102,14 +102,20 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         if(article == null) {
             return Result.error("文章不存在");
         }
-        if(status == 6) {
+        if(status == 6 && article.getStatus() == 4) {
             //删除文章，将文章配置表中设置为删除文章
             articleMapper.deleteArticle(id);
             article.setStatus(status);
+            updateById(article);
+            //TODO es中删除该文章
+
+
+        } else {
+            article.setStatus(status);
+            updateById(article);
         }
 
-        article.setStatus(status);
-        updateById(article);
+
         return Result.success();
     }
 

@@ -54,7 +54,6 @@ public class LoginServiceImpl extends ServiceImpl<LoginMapper, Admin> implements
         admin.setStatus(StatusConstant.NORMAL);
         admin.setLoginTime(LocalDateTime.now());
 
-        //TODO 设置用户头像url
         admin.setImage("user-url.png");
 
         save(admin);

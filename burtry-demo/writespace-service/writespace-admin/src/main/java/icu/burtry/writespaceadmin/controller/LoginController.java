@@ -50,7 +50,6 @@ public class LoginController {
         try {
             lineCaptcha.setGenerator(randomGenerator);
 
-            //TODO 将验证码存入Redis中方便验证
             redisTemplate.opsForValue().set(username,lineCaptcha.getCode(),120, TimeUnit.SECONDS);
 
             // 设置响应类型为图片

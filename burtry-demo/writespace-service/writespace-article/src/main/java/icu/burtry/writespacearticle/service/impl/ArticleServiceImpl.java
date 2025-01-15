@@ -73,7 +73,6 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         }
 
         if(articleDTO.getId() != null) {
-            //TODO 执行文章更新操作
             updateArticle(articleDTO);
             return Result.success("文章修改成功!");
         }
@@ -279,6 +278,9 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         articleConfig.setIsDelete(1);
 
         articleConfigMapper.updateById(articleConfig);
+
+        //TODO es中删除该文章
+
 
         return Result.success("删除成功!");
 

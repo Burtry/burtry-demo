@@ -77,7 +77,6 @@ public class LoginServiceImpl extends ServiceImpl<LoginMapper, User> implements 
         newuser.setSalt(slat);
         newuser.setStatus(StatusConstant.NORMAL);
 
-        //TODO 设置用户url
         newuser.setImage("user-url.png");
 
         save(newuser);

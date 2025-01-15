@@ -39,6 +39,7 @@ public class CheckPublishArticleJob {
             if (publishTime != null && !publishTime.isAfter(now)) {
                 article.setStatus(ArticleStatusConstant.PUBLISHED);   //设置为已发布状态
                 articleMapper.updateArticle(article);
+                //TODO 向es中 添加该文章
             }
         }
     }

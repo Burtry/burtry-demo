@@ -55,6 +55,7 @@ public class HandlerArticleVerify {
                 //设置为已发布状态
                 article.setStatus(4);
                 articleMapper.updateById(article);
+                //TODO 向es中添加该文章
             }
 
         }
