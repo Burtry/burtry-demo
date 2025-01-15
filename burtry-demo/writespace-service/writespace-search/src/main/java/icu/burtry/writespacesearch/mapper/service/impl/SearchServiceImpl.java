@@ -1,35 +1,23 @@
-package icu.burtry.writespacesearch;
+package icu.burtry.writespacesearch.mapper.service.impl;
 
-import com.alibaba.fastjson.JSON;
+import cn.hutool.core.bean.BeanUtil;
 import icu.burtry.writespacemodel.dto.SearchDTO;
-import icu.burtry.writespacemodel.entity.article.Article;
-import icu.burtry.writespacemodel.entity.article.ArticleContent;
 import icu.burtry.writespacemodel.vo.ArticleSearchVO;
-import icu.burtry.writespacesearch.mapper.ArticleContentMapper;
-import icu.burtry.writespacesearch.mapper.ArticleMapper;
 import icu.burtry.writespacesearch.mapper.service.SearchService;
+import icu.burtry.writespacesearch.result.SearchResult;
 import icu.burtry.writespaceutils.result.Result;
-import org.elasticsearch.action.bulk.BulkRequest;
-import org.elasticsearch.action.delete.DeleteRequest;
-import org.elasticsearch.action.get.GetRequest;
-import org.elasticsearch.action.get.GetResponse;
-import org.elasticsearch.action.index.IndexRequest;
-import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
-import org.elasticsearch.client.indices.GetIndexRequest;
 import org.elasticsearch.common.text.Text;
-import org.elasticsearch.common.xcontent.XContentType;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.fetch.subphase.highlight.HighlightBuilder;
 import org.elasticsearch.search.fetch.subphase.highlight.HighlightField;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -37,60 +25,42 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-@SpringBootTest
-class WritespaceSearchApplicationTests {
+@Service
+@Transactional
+public class SearchServiceImpl implements SearchService {
+
     @Autowired
     private RestHighLevelClient restHighLevelClient;
 
-    @Autowired
-    private ArticleMapper articleMapper;
-
-    @Autowired
-    private SearchService searchService;
-
-    @Test
-    void test() throws IOException {
-
-        GetResponse response = restHighLevelClient.get(new GetRequest("article_info", "1877690541823627264"), RequestOptions.DEFAULT);
-
-        restHighLevelClient.delete(new DeleteRequest("article_info", "1877690541823627264"), RequestOptions.DEFAULT);
-
-        System.out.println(response);
-
-    }
-
-    @Test
-    void bulkAddArticle() throws IOException {
-
-        BulkRequest bulkRequest = new BulkRequest();
-
-        //批量添加已审核通过的文章
-        List<ArticleSearchVO> list = articleMapper.getList();
-
-        for (ArticleSearchVO articleSearchVO : list) {
-            IndexRequest indexRequest = new IndexRequest("article_info");
-            indexRequest.id(articleSearchVO.getId().toString()).source(JSON.toJSONString(articleSearchVO), XContentType.JSON);
-            bulkRequest.add(indexRequest);
+    @Override
+    public SearchResult<List<ArticleSearchVO>> search(SearchDTO searchDTO) {
+        if (BeanUtil.isEmpty(searchDTO)) {
+            return SearchResult.error("参数异常，请重试");
         }
 
-        restHighLevelClient.bulk(bulkRequest, RequestOptions.DEFAULT);
-
-    }
-
-    @Test
-    void testSearch() throws IOException {
-
         SearchRequest searchRequest = new SearchRequest("article_info");
-
-        searchRequest.source().query(QueryBuilders.multiMatchQuery("测试", "title", "content"));
-
+        searchRequest.source().query(QueryBuilders.multiMatchQuery(searchDTO.getKeyWords(),"title","content"));
         searchRequest.source().highlighter(new HighlightBuilder().field("title").requireFieldMatch(false).field("content").requireFieldMatch(false));
 
-        SearchResponse response = restHighLevelClient.search(searchRequest, RequestOptions.DEFAULT);
+        // 分页参数设置
+        int pageNum = searchDTO.getPageNum() != null ? searchDTO.getPageNum() : 1; // 默认第一页
+        int pageSize = searchDTO.getPageSize() != null ? searchDTO.getPageSize() : 10; // 默认每页10条
+        int from = (pageNum - 1) * pageSize; // 计算起始位置
 
+        searchRequest.source()
+                .from(from) // 起始位置
+                .size(pageSize); // 每页数量
+
+        SearchResponse response;
+        try {
+            response = restHighLevelClient.search(searchRequest, RequestOptions.DEFAULT);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
         List<ArticleSearchVO> list = handleResponse(response);
+        long total = response.getHits().getTotalHits().value;
 
-        System.out.println(list);
+        return SearchResult.success(list,"查询成功",total,pageNum,pageSize);
 
     }
 
@@ -146,18 +116,4 @@ class WritespaceSearchApplicationTests {
 
         return resultList; // 返回结果列表
     }
-
-    @Test
-    void testAPI() throws IOException{
-        SearchDTO searchDTO = new SearchDTO();
-        searchDTO.setKeyWords("测试");
-        searchDTO.setPageNum(1);
-        searchDTO.setPageSize(10);
-        //Result<List<ArticleSearchVO>> search = searchService.search(searchDTO);
-
-
-        //System.out.println(search);
-
-    }
-
 }

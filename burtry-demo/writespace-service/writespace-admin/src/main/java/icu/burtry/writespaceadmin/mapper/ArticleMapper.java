@@ -12,6 +12,6 @@ public interface ArticleMapper extends BaseMapper<Article> {
     @Select("select content from writespace.article_content where article_id = #{id}")
     String getContent(Long id);
 
-    @Update("update writespace.article_config set article_config.is_delete = 6 where article_id = #{id} ")
+    @Update("update writespace.article_config set article_config.is_delete = 1 where article_id = #{id} ")
     void deleteArticle(Long id);
 }

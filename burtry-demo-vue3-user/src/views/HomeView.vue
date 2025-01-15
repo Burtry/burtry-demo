@@ -34,8 +34,6 @@ const loadArticles = async () => {
   loading.value = false;
 }
 
-const searchInfo = ref('');
-
 const channelList = ref([]);
 
 const getChannelList = async () => {
@@ -75,13 +73,29 @@ const load = () => {
   loadArticles();
 }
 
+const keyWords = ref('');
+const handleSearch = async () => {
+  if (!keyWords.value) {
+    ElMessage.error("请输入关键字");
+    return;
+  }
+  const searchUrl = `${window.location.origin}/search?keyWords=${encodeURIComponent(
+    keyWords.value
+  )}`;
+  window.open(searchUrl, '_blank');
+  // router.push({ path: '/search', query: { keyWords: keyWords.value } });
+  keyWords.value = '';
+
+}
+
 </script>
 
 <template>
   <div class="bg" v-infinite-scroll="load">
     <div class="search-container">
-      <el-input v-model="searchInfo" class="search" placeholder="输入关键字搜索" :prefix-icon="Search" clearable />
-      <el-button type="primary" class="submit">搜索</el-button>
+      <el-input v-model="keyWords" class="search" placeholder="输入关键字搜索" :prefix-icon="Search"
+        @keyup.enter="handleSearch" clearable />
+      <el-button type="primary" class="submit" @click="handleSearch">搜索</el-button>
     </div>
 
     <!-- 频道 -->

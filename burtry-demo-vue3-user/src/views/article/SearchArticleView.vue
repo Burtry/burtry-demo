@@ -11,12 +11,12 @@ defineProps({
 <template>
   <div class="article-view">
     <div class="image-container">
-      <RouterLink :to="`/article/${article.id}`"><el-image class="article-image" :src="article.image" /></RouterLink>
+      <RouterLink :to="`/article/${article.id}`"><el-image class="article-image" :src="article.images" /></RouterLink>
     </div>
     <div class="article-content">
       <!-- Title -->
       <RouterLink :to="`/article/${article.id}`">
-        <h3 class="article-title">{{ article.title }}</h3>
+        <h3 class="article-title" v-html="article.title"></h3>
       </RouterLink>
 
       <!-- Statistics -->
@@ -32,7 +32,7 @@ defineProps({
       <!-- Author and Time -->
       <div class="article-footer">
         <span style="font-weight: bolder;">作者:</span>
-        <RouterLink :to="`/user/${article.userId}`"> <span class="author-name">{{ article.username }}</span>
+        <RouterLink :to="`/user/${article.userId}`"> <span class="author-name">{{ article.authorName }}</span>
         </RouterLink>
         <span style="margin-left: 80px;">{{ article.channelName }}</span>
         <span class="publish-time">{{ article.publishTime }}</span>
@@ -41,7 +41,7 @@ defineProps({
   </div>
 </template>
 
-<style lang="scss" scoped>
+<style lang="scss">
 .article-view {
   display: flex;
   padding: 20px;
@@ -72,6 +72,13 @@ defineProps({
 
 .article-content {
   flex: 1;
+
+  em {
+    color: #e15f8f;
+    /* 设置为红色 */
+    font-style: normal;
+    /* 如果你希望去掉斜体，可以设置 font-style 为 normal */
+  }
 }
 
 .article-title {
@@ -81,6 +88,13 @@ defineProps({
 
   &:hover {
     color: #8bbcff;
+  }
+
+  em {
+    color: #e15f8f;
+    /* 设置为红色 */
+    font-style: normal;
+    /* 如果你希望去掉斜体，可以设置 font-style 为 normal */
   }
 }
 

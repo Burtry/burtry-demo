@@ -14,6 +14,11 @@ const router = createRouter({
           name: 'home',
           component: () => import("@/views/HomeView.vue")
         },
+        {
+          path: '/search',
+          name: 'search',
+          component: () => import("@/views/SearchView.vue")
+        },
         // 个人中心
         {
           path: '/user/:id',

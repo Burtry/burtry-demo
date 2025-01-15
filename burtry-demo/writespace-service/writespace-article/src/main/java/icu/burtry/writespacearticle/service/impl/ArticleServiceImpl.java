@@ -91,7 +91,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         Article article = new Article();
         article.setTitle(articleDTO.getTitle());
         article.setAuthorId(user.getId());
-        article.setAuthorName(user.getName());
+        article.setAuthorName(user.getNickName());
 
         Channel channel = userClient.getChannelById(articleDTO.getChannelId());
         if(channel == null) {
