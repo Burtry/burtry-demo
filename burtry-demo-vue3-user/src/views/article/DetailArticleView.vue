@@ -185,7 +185,7 @@ onMounted(() => {
     if (res.code === 0) {
       console.log(res.msg);
     }
-  }, 5000)  // 5s后执行阅读行为
+  }, 2000)  // 2s后执行阅读行为
 
 })
 

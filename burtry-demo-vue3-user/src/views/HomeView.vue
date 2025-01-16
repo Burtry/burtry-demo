@@ -20,6 +20,7 @@ const loadData = ref({
 // 获取文章列表
 const loadArticles = async () => {
   loadData.value.channelId = activeChannel.value;
+
   const res = await getHomeArticleListAPI(loadData.value)
   if (res.code === 0) {
     ElMessage.error("获取文章列表失败")
@@ -43,7 +44,7 @@ const getChannelList = async () => {
     return
   }
   channelList.value = res.data
-  activeChannel.value = channelList.value[0].id
+  activeChannel.value = channelList.value[1].id // 默认选中第二个频道(最新)
 
   // 获取文章列表
   loadArticles();

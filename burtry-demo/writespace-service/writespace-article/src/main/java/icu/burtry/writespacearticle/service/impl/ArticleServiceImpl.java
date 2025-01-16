@@ -2,6 +2,7 @@ package icu.burtry.writespacearticle.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.IdUtil;
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
@@ -25,6 +26,7 @@ import icu.burtry.writespacemodel.entity.article.ArticleContent;
 import icu.burtry.writespacemodel.vo.ArticleContentVO;
 import icu.burtry.writespacemodel.vo.ArticleDetailVO;
 import icu.burtry.writespacemodel.vo.ArticleVO;
+import icu.burtry.writespacemodel.vo.HotArticleVO;
 import icu.burtry.writespaceutils.constant.ArticleStatusConstant;
 import icu.burtry.writespaceutils.constant.ChannelConstant;
 import icu.burtry.writespaceutils.result.Result;
@@ -36,6 +38,7 @@ import org.elasticsearch.client.RestHighLevelClient;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -70,6 +73,9 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
 
     @Autowired
     private RestHighLevelClient restHighLevelClient;
+
+    @Autowired
+    private RedisTemplate<String,String> redisTemplate;
 
 
     @Override
@@ -400,6 +406,25 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
     public Result<List<ArticleVO>> load(ArticleLoadDTO articleLoadDTO) {
         if (BeanUtil.isEmpty(articleLoadDTO)) {
             return Result.error("请求参数异常，请重试!");
+        }
+
+        if(articleLoadDTO.getChannelId() == 1) {
+            //从redis 中获得 推荐文章
+            String string = redisTemplate.opsForValue().get("hotArticleList");
+
+            List<HotArticleVO> hotArticleVOList = JSON.parseArray(string, HotArticleVO.class);
+
+            if(hotArticleVOList == null || hotArticleVOList.isEmpty()) {
+                return Result.error("暂无推荐文章");
+            }
+
+            List<ArticleVO> result = new ArrayList<>();
+            for (HotArticleVO hotArticleVO : hotArticleVOList) {
+                ArticleVO articleVO = new ArticleVO();
+                BeanUtils.copyProperties(hotArticleVO,articleVO);
+                result.add(articleVO);
+            }
+            return Result.success(result,"获得推荐文章成功");
         }
 
         Page<Article> page = new Page<>(articleLoadDTO.getPageNum(), articleLoadDTO.getPageSize());

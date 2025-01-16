@@ -21,4 +21,9 @@ public interface ArticleMapper {
 
     @Select("select writespace.article_content.content from writespace.article_content where article_id = #{id}")
     String getContentById(Long id);
+
+    List<Article> selectListByIds(List<Long> articleIdList);
+
+
+    List<Article> selectArticlesWithinThreeDays(List<Long> articleIdList);
 }
