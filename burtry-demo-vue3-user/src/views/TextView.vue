@@ -205,6 +205,7 @@ onMounted(() => {
       title.value = res.data.title
       valueHtml.value = res.data.content
       imageUrl.value = res.data.image
+      channelId.value = res.data.channelId
       closeComment.value = res.data.isComment === 0 ? false : true
 
     })

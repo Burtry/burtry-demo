@@ -75,9 +75,7 @@ defineProps({
 
   em {
     color: #e15f8f;
-    /* 设置为红色 */
     font-style: normal;
-    /* 如果你希望去掉斜体，可以设置 font-style 为 normal */
   }
 }
 
@@ -92,9 +90,7 @@ defineProps({
 
   em {
     color: #e15f8f;
-    /* 设置为红色 */
     font-style: normal;
-    /* 如果你希望去掉斜体，可以设置 font-style 为 normal */
   }
 }
 

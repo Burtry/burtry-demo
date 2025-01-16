@@ -137,10 +137,15 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         articleContent.setContent(articleDTO.getContent());
         articleContentMapper.insert(articleContent);
 
+        //如果为草稿，则直接返回
+        if(article.getStatus() == 1) {
+            return Result.success("草稿保存成功");
+        }
+
         //异步进行敏感词过滤(如果包含敏感词此文章会被设置为已锁定)
         sendArticleVerifyMessage(articleId, articleDTO.getContent(), articleDTO.getTitle(),articleDTO.getPublishTime() != null);
 
-        return Result.success("文章发布成功!");
+        return Result.success("文章发布成功");
     }
 
     @Async
