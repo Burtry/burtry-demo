@@ -23,6 +23,8 @@ public class ArticleVO {
 
     private String username;
 
+    private Long userId;
+
     private String image;
 
     private Integer status;

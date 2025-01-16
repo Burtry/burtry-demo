@@ -431,6 +431,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
             articleVO.setComments(article.getComments());
             articleVO.setUserAvatar(user.getImage());
             articleVO.setUsername(user.getNickName());
+            articleVO.setUserId(user.getId());
             articleVO.setImage(article.getImages());
             articleVO.setStatus(article.getStatus());
             articleVO.setChannelName(article.getChannelName());

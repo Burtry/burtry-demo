@@ -52,10 +52,13 @@ onMounted(() => {
     </div>
 
     <el-divider />
-    <div class="article-list" style="overflow: auto">
+    <div class="article-list" style="overflow: auto" v-if="articles.length > 0">
       <div v-for="article in articles" :key="article.id" class="article-item">
         <SearchArticleView :article="article" />
       </div>
+    </div>
+    <div v-else>
+      <el-empty description="暂无数据" />
     </div>
 
     <!-- 分页条 -->
