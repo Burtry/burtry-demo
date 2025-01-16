@@ -30,6 +30,9 @@ import icu.burtry.writespaceutils.constant.ChannelConstant;
 import icu.burtry.writespaceutils.result.Result;
 import icu.burtry.writespaceutils.thread.UserThreadLocalUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.elasticsearch.action.delete.DeleteRequest;
+import org.elasticsearch.client.RequestOptions;
+import org.elasticsearch.client.RestHighLevelClient;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,6 +40,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.IOException;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -63,6 +67,9 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
 
     @Autowired
     private RabbitTemplate rabbitTemplate;
+
+    @Autowired
+    private RestHighLevelClient restHighLevelClient;
 
 
     @Override
@@ -284,11 +291,16 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
 
         articleConfigMapper.updateById(articleConfig);
 
-        //TODO es中删除该文章
+        try {
+            if(article.getId() != null) {
+                restHighLevelClient.delete(new DeleteRequest("article_info",article.getId().toString()), RequestOptions.DEFAULT);
+            }
 
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
 
         return Result.success("删除成功!");
-
 
     }
 

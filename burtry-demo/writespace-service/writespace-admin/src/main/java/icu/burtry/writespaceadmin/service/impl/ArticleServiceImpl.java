@@ -16,10 +16,14 @@ import icu.burtry.writespacemodel.entity.article.Article;
 import icu.burtry.writespacemodel.vo.ArticleDetailVO;
 import icu.burtry.writespaceutils.result.Result;
 import icu.burtry.writespaceutils.utils.ConvertToLocalDateTimeUtil;
+import org.elasticsearch.action.delete.DeleteRequest;
+import org.elasticsearch.client.RequestOptions;
+import org.elasticsearch.client.RestHighLevelClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -35,6 +39,9 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
 
     @Autowired
     private IUserService userService;
+
+    @Autowired
+    private RestHighLevelClient restHighLevelClient;
 
     @Override
     public Result<List<Channel>> getChannelList() {
@@ -107,7 +114,13 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
             articleMapper.deleteArticle(id);
             article.setStatus(status);
             updateById(article);
-            //TODO es中删除该文章
+            try {
+                if(article.getId() != null) {
+                    restHighLevelClient.delete(new DeleteRequest("article_info",article.getId().toString()), RequestOptions.DEFAULT);
+                }
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
 
 
         } else {

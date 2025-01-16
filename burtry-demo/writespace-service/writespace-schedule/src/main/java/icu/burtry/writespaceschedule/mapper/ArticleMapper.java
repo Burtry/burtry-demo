@@ -19,4 +19,6 @@ public interface ArticleMapper {
     @Update("UPDATE writespace.article SET status = #{status} WHERE id = #{id}")
     void updateArticle(Article article);
 
+    @Select("select writespace.article_content.content from writespace.article_content where article_id = #{id}")
+    String getContentById(Long id);
 }
