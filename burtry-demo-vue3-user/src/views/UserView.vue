@@ -7,20 +7,15 @@ import router from "@/router";
 import { ElMessage } from "element-plus";
 const articles = ref([]);
 
-import { useUserStore } from "@/stores/user";
-
-const userStore = useUserStore();
-
-
 const userInfo = ref({
-  id: userStore.userInfo.id,
-  nickName: userStore.userInfo.nickName,
-  phone: userStore.userInfo.phone,
-  email: userStore.userInfo.email,
-  status: userStore.userInfo.status,
-  avatar: userStore.userInfo.avatar,
-  createTime: userStore.userInfo.createTime,
-  updateTime: userStore.userInfo.updateTime,
+  id: '',
+  nickName: '',
+  phone: '',
+  email: '',
+  status: '',
+  avatar: '',
+  createTime: '',
+  updateTime: '',
 });
 
 const overViewData = ref({

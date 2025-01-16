@@ -4,11 +4,13 @@ import cn.hutool.core.bean.BeanUtil;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import icu.burtry.apis.user.IUserClient;
+import icu.burtry.writespacecomment.mapper.ArticleMapper;
 import icu.burtry.writespacecomment.mapper.CommentMapper;
 import icu.burtry.writespacecomment.service.ICommentService;
 import icu.burtry.writespacemodel.dto.CommentDTO;
 import icu.burtry.writespacemodel.entity.ArticleComment;
 import icu.burtry.writespacemodel.entity.User;
+import icu.burtry.writespacemodel.entity.article.ArticleConfig;
 import icu.burtry.writespacemodel.vo.CommentVO;
 import icu.burtry.writespaceutils.result.Result;
 import lombok.extern.slf4j.Slf4j;
@@ -32,6 +34,9 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, ArticleCommen
     @Autowired
     private CommentMapper commentMapper;
 
+    @Autowired
+    private ArticleMapper articleMapper;
+
     @Override
     public Result saveComment(CommentDTO commentDTO) {
         if(BeanUtil.isEmpty(commentDTO)) {
@@ -44,6 +49,12 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, ArticleCommen
 
         if(commentDTO.getContent().isEmpty()) {
             return Result.error("评论不能为空!");
+        }
+
+        //获得文章配置表
+        ArticleConfig articleConfig = articleMapper.getArticleById(commentDTO.getArticleId());
+        if (articleConfig.getIsComment() == 1) {
+            return Result.error("作者设置文章不可评论");
         }
         ArticleComment articleComment = new ArticleComment();
         BeanUtils.copyProperties(commentDTO,articleComment);
