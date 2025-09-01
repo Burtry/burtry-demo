@@ -34,8 +34,8 @@
 
     <!-- 右边展示图片 -->
     <div class="right-content">
-      <el-image src="https://wsw-demo.oss-cn-beijing.aliyuncs.com/imagev1.2.png"
-        :preview-src-list="['https://wsw-demo.oss-cn-beijing.aliyuncs.com/imagev1.2.png']" alt="简历" />
+      <el-image src="https://writespace-demo.oss-cn-beijing.aliyuncs.com/images_v1.5.png"
+        :preview-src-list="['https://writespace-demo.oss-cn-beijing.aliyuncs.com/images_v1.5.png']" alt="简历" />
     </div>
   </div>
 </template>

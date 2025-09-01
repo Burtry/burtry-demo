@@ -1,0 +1,7 @@
+docker run -d \
+--name mysql \
+-e MYSQL_ROOT_PASSWORD=burtry \
+-p 3306:3306 \
+-v /root/project-me/burtry/mysql/mysql-data:/var/lib/mysql \
+mysql
+

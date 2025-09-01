@@ -136,26 +136,57 @@ onMounted(() => {
 
 const autoRefresh = ref(false);
 let isRequesting = ref(false);  // 用来标识请求是否正在进行
+let timer = null; // 保存定时器ID
+//TODO 定时刷新bug 关闭之后依旧触发
+// const handleAutoRefresh = () => {
+//   if (autoRefresh.value) {
+//     const timer = setInterval(async () => {
+//       // 只有在没有请求进行时才发起新的请求
+//       if (!isRequesting.value) {
+//         isRequesting.value = true;  // 设置为请求中
+//         try {
+//           await getArticleList();  // 等待请求完成
+//         } finally {
+//           isRequesting.value = false;  // 请求完成，重置状态
+//         }
+//       }
+//     }, 5000);
+
+//     onUnmounted(() => {
+//       clearInterval(timer);
+//     });
+//   }
+// };
+
 
 const handleAutoRefresh = () => {
+  // 先清理旧定时器
+  if (timer) {
+    clearInterval(timer);
+    timer = null;
+  }
+
   if (autoRefresh.value) {
-    const timer = setInterval(async () => {
-      // 只有在没有请求进行时才发起新的请求
+    timer = setInterval(async () => {
       if (!isRequesting.value) {
-        isRequesting.value = true;  // 设置为请求中
+        isRequesting.value = true;
         try {
-          await getArticleList();  // 等待请求完成
+          await getArticleList();
         } finally {
-          isRequesting.value = false;  // 请求完成，重置状态
+          isRequesting.value = false;
         }
       }
     }, 5000);
-
-    onUnmounted(() => {
-      clearInterval(timer);
-    });
   }
 };
+
+// 组件卸载时清理定时器
+onUnmounted(() => {
+  if (timer) {
+    clearInterval(timer);
+    timer = null;
+  }
+});
 
 const handleLock = async (id) => {
   const res = await updateArticleStatusAPI(id, 5); //锁定文章操作
@@ -244,8 +275,8 @@ const handleDelete = async (id) => {
         <el-tag
           :type="row.status === 4 ? 'success' : row.status === 5 ? 'warning' : row.status === 2 ? 'warning' : 'info'">
           {{ row.status === 2 ? '待审核' : row.status === 3 ? "已审核" : row.status === 4 ? "已发布" : row.status === 5 ? "已锁定"
-            :
-            "已删除" }}
+          :
+          "已删除" }}
         </el-tag>
       </template>
     </el-table-column>

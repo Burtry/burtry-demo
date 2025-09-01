@@ -50,10 +50,10 @@ public class ArticleDTO {
 
     //快速判空
     public boolean hasNullOrEmptyFields() {
-        return title == null || title.isBlank()
-                || content == null || content.isBlank()
+        return title == null || title.isEmpty()
+                || content == null || content.isEmpty()
                 || channelId == null
                 || closeComment == null
-                || images == null || images.isBlank();
+                || images == null || images.isEmpty();
     }
 }

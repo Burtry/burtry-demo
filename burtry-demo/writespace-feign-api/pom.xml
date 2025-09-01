@@ -6,7 +6,7 @@
         <groupId>icu.burtry</groupId>
         <artifactId>burtry-demo</artifactId>
         <version>1.0.0-TESTDEMO</version>
-        <relativePath/>
+        <relativePath>../pom.xml</relativePath>
     </parent>
 
     <artifactId>writespace-feign-api</artifactId>

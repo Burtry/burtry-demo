@@ -6,6 +6,7 @@
 		<groupId>icu.burtry</groupId>
 		<artifactId>burtry-demo</artifactId>
 		<version>1.0.0-TESTDEMO</version>
+		<relativePath>../pom.xml</relativePath>
 	</parent>
 
 	<artifactId>writespace-gateway</artifactId>
@@ -40,6 +41,4 @@
 
 
 	</dependencies>
-
-
 </project>
