@@ -211,7 +211,7 @@ const handlePass = async (id) => {
 }
 
 const handleRecover = async (id) => {
-  const res = await updateArticleStatusAPI(id, 4);
+  const res = await updateArticleStatusAPI(id, 5);  //恢复为已锁定状态，等待人工审核通过
   if (res.code === 0) {
     ElMessage.error(res.msg)
     return
