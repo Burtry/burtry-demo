@@ -1,8 +1,8 @@
-package icu.burtry.writespacesearch.mapper.controller;
+package icu.burtry.writespacesearch.controller;
 
 import icu.burtry.writespacemodel.dto.SearchDTO;
 import icu.burtry.writespacemodel.vo.ArticleSearchVO;
-import icu.burtry.writespacesearch.mapper.service.SearchService;
+import icu.burtry.writespacesearch.service.SearchService;
 import icu.burtry.writespacesearch.result.SearchResult;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,11 +1,10 @@
-package icu.burtry.writespacesearch.mapper.service.impl;
+package icu.burtry.writespacesearch.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
 import icu.burtry.writespacemodel.dto.SearchDTO;
 import icu.burtry.writespacemodel.vo.ArticleSearchVO;
-import icu.burtry.writespacesearch.mapper.service.SearchService;
+import icu.burtry.writespacesearch.service.SearchService;
 import icu.burtry.writespacesearch.result.SearchResult;
-import icu.burtry.writespaceutils.result.Result;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.RequestOptions;

@@ -1,4 +1,4 @@
-package icu.burtry.writespacesearch.mapper.service;
+package icu.burtry.writespacesearch.service;
 
 import icu.burtry.writespacemodel.dto.SearchDTO;
 import icu.burtry.writespacemodel.vo.ArticleSearchVO;
