@@ -23,7 +23,7 @@ const loadArticles = async () => {
 
   const res = await getHomeArticleListAPI(loadData.value)
   if (res.code === 0) {
-    ElMessage.error("获取文章列表失败")
+    ElMessage.error(res.msg)
     return
   }
   if (res.data.length === 0) {
