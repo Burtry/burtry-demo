@@ -33,7 +33,7 @@ public class LoginServiceImpl extends ServiceImpl<LoginMapper, User> implements 
 
     @Autowired
     private LoginMapper loginMapper;
-    
+
     @Autowired
     private RedisTemplate<String,String> redisTemplate;
 
@@ -42,7 +42,7 @@ public class LoginServiceImpl extends ServiceImpl<LoginMapper, User> implements 
         if (BeanUtil.isEmpty(userRegisterDTO)) {
             return Result.error("注册信息为空");
         }
-        
+
         //判断验证码是否正确
         String captcha = redisTemplate.opsForValue().get("user_" + userRegisterDTO.getName() + "_code");
         if (captcha == null) {
@@ -77,7 +77,7 @@ public class LoginServiceImpl extends ServiceImpl<LoginMapper, User> implements 
         newuser.setSalt(slat);
         newuser.setStatus(StatusConstant.NORMAL);
 
-        newuser.setImage("user-url.png");
+        newuser.setImage("https://writespace-demo.oss-cn-beijing.aliyuncs.com/default.jpg");
 
         save(newuser);
 

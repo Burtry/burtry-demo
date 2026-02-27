@@ -30,7 +30,7 @@ public class LoginServiceImpl extends ServiceImpl<LoginMapper, Admin> implements
 
     @Autowired
     private LoginMapper loginMapper;
-    
+
     @Autowired
     private RedisTemplate<String,String> redisTemplate;
 
@@ -54,7 +54,7 @@ public class LoginServiceImpl extends ServiceImpl<LoginMapper, Admin> implements
         admin.setStatus(StatusConstant.NORMAL);
         admin.setLoginTime(LocalDateTime.now());
 
-        admin.setImage("user-url.png");
+        admin.setImage("https://writespace-demo.oss-cn-beijing.aliyuncs.com/default.jpg");
 
         save(admin);
 
@@ -68,7 +68,7 @@ public class LoginServiceImpl extends ServiceImpl<LoginMapper, Admin> implements
         if (StringUtils.isBlank(adminLoginDTO.getUsername()) || StringUtils.isBlank(adminLoginDTO.getPassword())) {
             return Result.error("输入信息有误");
         }
-        
+
         //验证验证码
         String code = redisTemplate.opsForValue().get(adminLoginDTO.getUsername());
 
