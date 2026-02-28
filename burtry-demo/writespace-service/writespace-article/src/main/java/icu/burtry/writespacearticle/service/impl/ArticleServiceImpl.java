@@ -408,47 +408,49 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
             return Result.error("请求参数异常，请重试!");
         }
 
-        if(articleLoadDTO.getChannelId() == 1) {
-            //从redis 中获得 推荐文章
-            String string = redisTemplate.opsForValue().get("hotArticleList");
+        int pageNum = articleLoadDTO.getPageNum() == null ? 1 : articleLoadDTO.getPageNum();
+        int pageSize = articleLoadDTO.getPageSize() == null ? 10 : articleLoadDTO.getPageSize();
 
+        if(articleLoadDTO.getChannelId() == 1) {
+            // 从 Redis 获取推荐文章
+            String string = redisTemplate.opsForValue().get("hotArticleList");
             List<HotArticleVO> hotArticleVOList = JSON.parseArray(string, HotArticleVO.class);
 
             if(hotArticleVOList == null || hotArticleVOList.isEmpty()) {
                 return Result.error("暂无推荐文章");
             }
 
+            // 分页逻辑
+            int start = (pageNum - 1) * pageSize;
+            if(start >= hotArticleVOList.size()) {
+                return Result.success(Collections.emptyList(), "没有更多推荐文章");
+            }
+            int end = Math.min(start + pageSize, hotArticleVOList.size());
+
             List<ArticleVO> result = new ArrayList<>();
-            for (HotArticleVO hotArticleVO : hotArticleVOList) {
+            for (HotArticleVO hotArticleVO : hotArticleVOList.subList(start, end)) {
                 ArticleVO articleVO = new ArticleVO();
-                BeanUtils.copyProperties(hotArticleVO,articleVO);
+                BeanUtils.copyProperties(hotArticleVO, articleVO);
                 result.add(articleVO);
             }
-            return Result.success(result,"获得推荐文章成功");
+            return Result.success(result, "获得推荐文章成功");
         }
 
-        Page<Article> page = new Page<>(articleLoadDTO.getPageNum(), articleLoadDTO.getPageSize());
-
-        //按发布时间倒序排序查询10条文章、频道筛选、已发布文章且未删除的文章
+        // 普通文章分页查询
+        Page<Article> page = new Page<>(pageNum, pageSize);
         IPage<Article> articlePage = articleMapper.loadArticles(page, articleLoadDTO.getChannelId());
-
         List<Article> articleList = articlePage.getRecords();
 
         ArrayList<ArticleVO> articleVOS = new ArrayList<>();
-
         for (Article article : articleList) {
             ArticleVO articleVO = new ArticleVO();
-            //获取每个文章内容
-            ArticleContent articleContent = articleContentMapper.selectOne(Wrappers.<ArticleContent>lambdaQuery().eq(ArticleContent::getArticleId, article.getId()));
-            if(articleContent != null) {
-                //设置文章内容
-                articleVO.setContent(articleContent.getContent());
-            } else {
-                articleVO.setContent("获取文章内容错误!");
-            }
+            // 获取文章内容
+            ArticleContent articleContent = articleContentMapper.selectOne(
+                    Wrappers.<ArticleContent>lambdaQuery().eq(ArticleContent::getArticleId, article.getId())
+            );
+            articleVO.setContent(articleContent != null ? articleContent.getContent() : "获取文章内容错误!");
 
             User user = userClient.findUserById(article.getAuthorId());
-            //属性设置
             articleVO.setId(article.getId());
             articleVO.setTitle(article.getTitle());
             articleVO.setLikes(article.getLikes());
@@ -464,7 +466,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
             articleVO.setUpdateTime(article.getUpdateTime());
             articleVOS.add(articleVO);
         }
-        return Result.success(articleVOS,"获取成功！");
+        return Result.success(articleVOS, "获取成功！");
     }
 
     @Override

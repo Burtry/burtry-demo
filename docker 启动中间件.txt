@@ -1,0 +1,1 @@
+docker start writespace-redis writespace-rabbitmq writespace-nacos-server writespace-es writespace-kibana

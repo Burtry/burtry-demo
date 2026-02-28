@@ -106,6 +106,14 @@ defineProps({
   font-size: 16px;
   color: #555;
   margin-bottom: 15px;
+
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .article-footer {
