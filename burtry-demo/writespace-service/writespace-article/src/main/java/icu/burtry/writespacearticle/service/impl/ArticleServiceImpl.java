@@ -472,19 +472,16 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
     @Override
     public void postData(Map<Long,ArticleDataDTO> map) {
         Collection<ArticleDataDTO> values = map.values();
-        List<Article> articles = values.stream()
-                .map(dto -> {
-                    Article article = new Article();
-                    article.setId(dto.getArticleId());
-                    article.setLikes(dto.getLikes());
-                    article.setViews(dto.getViews());
-                    article.setCollections(dto.getCollects());
-                    return article;
-                })
-                .collect(Collectors.toList());
 
-        //批量添加或更新
-        saveOrUpdateBatch(articles);
+        values.forEach(dto -> {
+            Article article = new Article();
+            article.setId(dto.getArticleId());
+            article.setLikes(dto.getLikes());
+            article.setViews(dto.getViews());
+            article.setCollections(dto.getCollects());
+
+            this.updateById(article);
+        });
     }
 
 
