@@ -297,14 +297,14 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
 
         articleConfigMapper.updateById(articleConfig);
 
-        try {
-            if(article.getId() != null) {
-                restHighLevelClient.delete(new DeleteRequest("article_info",article.getId().toString()), RequestOptions.DEFAULT);
-            }
-
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        //try {
+        //    if(article.getId() != null) {
+        //        restHighLevelClient.delete(new DeleteRequest("article_info",article.getId().toString()), RequestOptions.DEFAULT);
+        //    }
+        //
+        //} catch (IOException e) {
+        //    throw new RuntimeException(e);
+        //}
 
         return Result.success("删除成功!");
 
