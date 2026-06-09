@@ -1,5 +1,6 @@
 server:
   port: 8801
+
 spring:
   application:
     name: writespace-admin
@@ -11,3 +12,15 @@ spring:
         server-addr: localhost:8848
         file-extension: yml
         refresh-enabled: true
+
+  elasticsearch:
+    rest:
+      uris: http://localhost:9201
+
+logging:
+  level:
+    org.elasticsearch.client: DEBUG
+    org.apache.http: DEBUG
+    org.apache.http.wire: DEBUG
+    org.elasticsearch.client.RestClient: DEBUG
+    org.elasticsearch.client.RestHighLevelClient: DEBUG

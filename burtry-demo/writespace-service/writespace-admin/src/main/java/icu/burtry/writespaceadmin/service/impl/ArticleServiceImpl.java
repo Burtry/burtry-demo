@@ -1,5 +1,6 @@
 package icu.burtry.writespaceadmin.service.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -14,11 +15,17 @@ import icu.burtry.writespacemodel.entity.Channel;
 import icu.burtry.writespacemodel.entity.User;
 import icu.burtry.writespacemodel.entity.article.Article;
 import icu.burtry.writespacemodel.vo.ArticleDetailVO;
+import icu.burtry.writespacemodel.vo.ArticleSearchVO;
 import icu.burtry.writespaceutils.result.Result;
 import icu.burtry.writespaceutils.utils.ConvertToLocalDateTimeUtil;
 import org.elasticsearch.action.delete.DeleteRequest;
+import org.elasticsearch.action.get.GetRequest;
+import org.elasticsearch.action.get.GetResponse;
+import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
+import org.elasticsearch.common.xcontent.XContentType;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -115,21 +122,53 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
             article.setStatus(status);
             updateById(article);
 
-            //try {
-            //    if(article.getId() != null) {
-            //        restHighLevelClient.delete(new DeleteRequest("article_info",article.getId().toString()), RequestOptions.DEFAULT);
-            //    }
-            //} catch (IOException e) {
-            //    throw new RuntimeException(e);
-            //}
-
+            try {
+                if(article.getId() != null) {
+                    restHighLevelClient.delete(new DeleteRequest("article_info",article.getId().toString()), RequestOptions.DEFAULT);
+                }
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
 
         } else {
-            article.setStatus(status);
+
+
             if(status == 2) {
                 //恢复文章,将文章配置表设置为未删除
                 articleMapper.unDeleteArticle(id);
             }
+            if(status == 4) {
+                String content = articleMapper.getContent(article.getId());
+                //发布文章 向es中添加文章
+                ArticleSearchVO articleSearchVO = new ArticleSearchVO();
+                BeanUtils.copyProperties(article,articleSearchVO);
+                articleSearchVO.setContent(content);
+
+                //向es中添加该文章
+                IndexRequest indexRequest = new IndexRequest("article_info");
+                indexRequest.id(article.getId().toString()).source(JSON.toJSONString(articleSearchVO), XContentType.JSON);
+
+                try {
+                    restHighLevelClient.index(indexRequest, RequestOptions.DEFAULT);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+
+            }
+
+            if(status == 5) {
+                //锁定文章 删除es中的文章
+                try {
+                    if(article.getId() != null) {
+                        restHighLevelClient.delete(new DeleteRequest("article_info",article.getId().toString()), RequestOptions.DEFAULT);
+                    }
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+
+            }
+
+            article.setStatus(status);
             updateById(article);
         }
 
