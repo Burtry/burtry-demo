@@ -14,4 +14,6 @@ public interface ArticleMapper extends BaseMapper<Article> {
 
     @Update("update writespace.article_config set article_config.is_delete = 1 where article_id = #{id} ")
     void deleteArticle(Long id);
+    @Update("update writespace.article_config set article_config.is_delete = 0 where article_id = #{id} ")
+    void unDeleteArticle(Long id);
 }

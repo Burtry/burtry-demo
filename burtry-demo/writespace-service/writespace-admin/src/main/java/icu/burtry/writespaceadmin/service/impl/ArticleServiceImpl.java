@@ -114,17 +114,22 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
             articleMapper.deleteArticle(id);
             article.setStatus(status);
             updateById(article);
-            try {
-                if(article.getId() != null) {
-                    restHighLevelClient.delete(new DeleteRequest("article_info",article.getId().toString()), RequestOptions.DEFAULT);
-                }
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
+
+            //try {
+            //    if(article.getId() != null) {
+            //        restHighLevelClient.delete(new DeleteRequest("article_info",article.getId().toString()), RequestOptions.DEFAULT);
+            //    }
+            //} catch (IOException e) {
+            //    throw new RuntimeException(e);
+            //}
 
 
         } else {
             article.setStatus(status);
+            if(status == 2) {
+                //恢复文章,将文章配置表设置为未删除
+                articleMapper.unDeleteArticle(id);
+            }
             updateById(article);
         }
 

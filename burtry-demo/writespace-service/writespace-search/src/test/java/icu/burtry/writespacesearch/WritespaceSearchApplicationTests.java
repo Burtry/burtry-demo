@@ -44,9 +44,9 @@ class WritespaceSearchApplicationTests {
     @Test
     void test() throws IOException {
 
-        GetResponse response = restHighLevelClient.get(new GetRequest("article_info", "1877690541823627264"), RequestOptions.DEFAULT);
+        GetResponse response = restHighLevelClient.get(new GetRequest("article_info", "2064247081131970560"), RequestOptions.DEFAULT);
 
-        restHighLevelClient.delete(new DeleteRequest("article_info", "1877690541823627264"), RequestOptions.DEFAULT);
+        restHighLevelClient.delete(new DeleteRequest("article_info", "2064247081131970560"), RequestOptions.DEFAULT);
 
         System.out.println(response);
 
