@@ -37,6 +37,11 @@ const behaviorNum = ref({
   collects: 0
 })
 
+const handleReport = () => {
+  //todo 举报功能
+  ElMessage.success('举报成功，感谢您的反馈');
+}
+
 const getArticleDetail = async () => {
   const res = await getArticleDetailByIdAPI(articleId.value);
   if (res.code === 0) {
@@ -222,7 +227,7 @@ onBeforeUnmount(() => {
             </span>
             <template #dropdown>
               <el-dropdown-menu>
-                <el-dropdown-item>举报</el-dropdown-item>
+                <el-dropdown-item @click="handleReport">举报</el-dropdown-item>
               </el-dropdown-menu>
             </template>
           </el-dropdown>

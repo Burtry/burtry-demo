@@ -347,7 +347,7 @@ const handleDelete = async (id) => {
             恢复文章
           </el-button>
 
-          <el-button type="danger" @click="handleDelete(articleDetail.id)" v-if="articleDetail.status !== 6">
+          <el-button type="danger" @click="handleDelete(articleDetail.id)" v-if="articleDetail.status !== 4">
             删除文章
           </el-button>
         </div>
